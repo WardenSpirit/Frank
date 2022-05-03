@@ -1,0 +1,52 @@
+Systém pro prohlížení databáze fotografií vlaků:
+Taťka mi navrhl systém pro filtrování fotografií vlaků podle lokality (na mapě) a dalších parametrů (autor, přibližné datum, č. trati, č. lokomotivy).
+Výstupem bude seznam fotografií (třeba s miniaturami) a mapa míst, kde byly focené.
+Při najetí kurzorem na fotografii se pak zvýrazní lokalita na výstupové mapě.
+
+
+
+Systém pro vytváření stromové struktury
+uživatel bude moct vytvořit svoji vlastní stromovou strukturu, kde každý uzel bude pojmenován,
+strukturu pak uživatel bude moci procházet klikáním nebo v ní vyhledávat podle štítků, názvů uzlů a prostřednictvím historie procházení,
+listy stromu budou obsahovat text a štítky pro vyhledávání pomocí nichž půjde vyhledávat,
+
+
+
+ZVOLENO:
+Hra Schizofrenie
+Jedná se o tahovou hru pro 2 a více hráčů.
+Herní prostor je náhodně vygenerovaná mřížka se 4 typy políček:
+	- políčko, kde je figurka (tuto jedinou figurku ve hře ovládají všichni hráči současně)
+	- políčko, kde je překážka (např. oheň; na toto políčko figurku hráči nesmí dostat)
+	- volné políčko
+	- cílové políčko
+Cílem hry je společnými silami dostat figurku do cílového políčka.
+V jednom tahu musí každý hráč dát figurce jeden z příkazů např. pomocí tlačítka (na počítači možnost použití klávesnice), příkazy jsou:
+	- vzhůru,
+	- vpravo,
+	- dolů,
+	- vlevo
+Pořadí hráčů není nijak dáno a pořadí je určeno časy, v jakých je hráči odeslali.
+Příkazy ostatních hráčů nikdo nevidí až do chvíle, kdy ten svůj vloží poslední hráč.
+Figurka se poté pohybuje z políčka na políčko podle příkazů od hráčů v takovém pořadí, v jakém přišly.
+Po příchodu nového hráče do hry se tento hráč může okamžitě přidat k ostatním a ovládat s nimi figurku začínaje probíhajícím tahem.
+
+Myslím, že už tak bude aplikace dostatečně složitá, avšak měl jsem ještě pár nápadů, o které by bylo možné zadání rozšířit. Např.:
+	- nastavení přezdívky před příchodem do hry,
+	- přidání časového limitu pro odeslání příkazu,
+	- možnost nastavení barvy figurky pro nejrychleji hrajícího hráče,
+	- systém úrovní: čím více hráčů bludiště dokončí, tím více zkušeností každý z nich získá
+	- systém smajlíků: mezi tahy bude možné hromadně posílat smajlíky, za každou úroveň se pak odemkne smajlík.
+
+
+
+Hra Dup
+alespoň 2 hráči se připojí do hry, začne odpočet do startu
+arénou je mřížka,
+hráči se snaží přijít na políčko svého soupeře a tím ho "vyhodit" ze hry dříve, než se to povede jemu
+aréna se zmenšuje, kdo zůstane, prohrál
+
+
+
+Odpovědi z formuláře na zadání semestrální práce:
+https://docs.google.com/forms/d/e/1FAIpQLScINoTWwKy7ZYxYFFvMqIVjonM35Y8e5wE3ZSKAlPV0egfR0w/viewanalytics
