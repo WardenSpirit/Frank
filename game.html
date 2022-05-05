@@ -15,19 +15,56 @@
     <button id="downerButton">↓</button>
 
     <script>
+
         const upperButton = document.querySelector("upperButton");
         const lefterButton = document.querySelector("lefterButton");
         const righterButton = document.querySelector("righterButton");
         const downerButton = document.querySelector("downerButton");
 
-        upperButton.addEventListener("click", sendMove("up"));
-        lefterButton.addEventListener("click", sendMove("left"));
-        righterButton.addEventListener("click", sendMove("right"));
-        downerButton.addEventListener("click", sendMove("down"));
+        upperButton.addEventListener("click", tryMove("up"));
+        lefterButton.addEventListener("click", tryMove("left"));
+        righterButton.addEventListener("click", tryMove("right"));
+        downerButton.addEventListener("click", tryMove("down"));
 
+        document.body.addEventListener("keydown", e => handleKeyDown(e));
+        const handleKeyDown = function (e) {
+            switch (e.code) {
+                case "ArrowUp":
+                    tryMove('top'); break;      //up
+                case "ArrowLeft":
+                    tryMove('left'); break;     //left
+                case "ArrowRight":
+                    tryMove('right'); break;    //right
+                case "ArrowDown":
+                    tryMove('down'); break;     //down
+            }
+        }
+
+        const tryMove = function (direction) {
+            //todo: create and use a global variable if possible (control has to be on server side as well)
+            if (notTurnedYet) {
+                sendMove(direction);
+            }
+        }
         const sendMove = function (direction) {
             gameWebSocket.send(direction);
         }
+
+        const gameWebSocket = new WebSocket("ws://localhost:8186");
+        const gameSpace = document.querySelector("gameSpace");
+
+        gameWebSocket.addEventListener("open", e => {
+            //ask for the current state of the game and show it using canvas
+        });
+
+        gameWebSocket.addEventListener("error", e => {
+            //learn what error it can be, how it can occur in the game and deal with it
+        });
+
+        gameWebSocket.addEventListener("message", e => {
+            //handle information arriving from the server
+            //only info messages from the server should be accepted here
+        });
     </script>
 </body>
 
