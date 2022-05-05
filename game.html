@@ -8,14 +8,26 @@
 </head>
 
 <body>
-    <canvas width="1200" height="1200"></canvas>
-    <button>↑</button>
-    <button>←</button>
-    <button>→</button>
-    <button>↓</button>
+    <canvas id="gameSpace" width="1200" height="1200"></canvas>
+    <button id="upperButton">↑</button>
+    <button id="lefterButton">←</button>
+    <button id="righterButton">→</button>
+    <button id="downerButton">↓</button>
 
     <script>
-        
+        const upperButton = document.querySelector("upperButton");
+        const lefterButton = document.querySelector("lefterButton");
+        const righterButton = document.querySelector("righterButton");
+        const downerButton = document.querySelector("downerButton");
+
+        upperButton.addEventListener("click", sendMove("up"));
+        lefterButton.addEventListener("click", sendMove("left"));
+        righterButton.addEventListener("click", sendMove("right"));
+        downerButton.addEventListener("click", sendMove("down"));
+
+        const sendMove = function (direction) {
+            gameWebSocket.send(direction);
+        }
     </script>
 </body>
 
