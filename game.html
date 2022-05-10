@@ -8,29 +8,35 @@
 </head>
 
 <body>
-    <canvas id="gameSpace" width="1200" height="1200"></canvas>
+    <canvas id="gameSpace" width="800" height="800"></canvas>
+    <br>
     <button id="upperButton">↑</button>
+    <br>
     <button id="lefterButton">←</button>
     <button id="righterButton">→</button>
+    <br>
     <button id="downerButton">↓</button>
 
     <script>
 
-        const upperButton = document.querySelector("upperButton");
-        const lefterButton = document.querySelector("lefterButton");
-        const righterButton = document.querySelector("righterButton");
-        const downerButton = document.querySelector("downerButton");
+        notTurnedYet = true;
 
-        upperButton.addEventListener("click", tryMove("up"));
-        lefterButton.addEventListener("click", tryMove("left"));
-        righterButton.addEventListener("click", tryMove("right"));
-        downerButton.addEventListener("click", tryMove("down"));
+        const gameWebSocket = new WebSocket("ws://localhost:8186");
 
-        document.body.addEventListener("keydown", e => handleKeyDown(e));
-        const handleKeyDown = function (e) {
+        const upperButton = document.querySelector("#upperButton");
+        const lefterButton = document.querySelector("#lefterButton");
+        const righterButton = document.querySelector("#righterButton");
+        const downerButton = document.querySelector("#downerButton");
+
+        upperButton.addEventListener("click", () => tryMove("up"));
+        lefterButton.addEventListener("click", () => tryMove("left"));
+        righterButton.addEventListener("click", () => tryMove("right"));
+        downerButton.addEventListener("click", () => tryMove("down"));
+
+        function handleKeyDown(e) {
             switch (e.code) {
                 case "ArrowUp":
-                    tryMove('top'); break;      //up
+                    tryMove('up'); break;      //up
                 case "ArrowLeft":
                     tryMove('left'); break;     //left
                 case "ArrowRight":
@@ -40,28 +46,35 @@
             }
         }
 
-        const tryMove = function (direction) {
+        function tryMove(direction) {
             //todo: create and use a global variable if possible (control has to be on server side as well)
             if (notTurnedYet) {
                 sendMove(direction);
             }
         }
-        const sendMove = function (direction) {
+
+        function sendMove(direction) {
             gameWebSocket.send(direction);
         }
 
-        const gameWebSocket = new WebSocket("ws://localhost:8186");
+        document.body.addEventListener("keydown", e => handleKeyDown(e));
+
+
+
         const gameSpace = document.querySelector("gameSpace");
 
         gameWebSocket.addEventListener("open", e => {
+            console.log("open, client")
             //ask for the current state of the game and show it using canvas
         });
 
         gameWebSocket.addEventListener("error", e => {
+            console.log("error occured, client")
             //learn what error it can be, how it can occur in the game and deal with it
         });
 
         gameWebSocket.addEventListener("message", e => {
+            console.log("message, client")
             //handle information arriving from the server
             //only info messages from the server should be accepted here
         });
