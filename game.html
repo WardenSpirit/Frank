@@ -28,28 +28,30 @@
         const righterButton = document.querySelector("#righterButton");
         const downerButton = document.querySelector("#downerButton");
 
-        upperButton.addEventListener("click", () => tryMove("up"));
-        lefterButton.addEventListener("click", () => tryMove("left"));
-        righterButton.addEventListener("click", () => tryMove("right"));
-        downerButton.addEventListener("click", () => tryMove("down"));
+        upperButton.addEventListener("click", () => tryMove("UP"));
+        lefterButton.addEventListener("click", () => tryMove("LEFT"));
+        righterButton.addEventListener("click", () => tryMove("RIGHT"));
+        downerButton.addEventListener("click", () => tryMove("DOWN"));
+        
+        document.body.addEventListener("keydown", e => handleKeyDown(e));
 
         function handleKeyDown(e) {
             switch (e.code) {
                 case "ArrowUp":
-                    tryMove('up'); break;      //up
+                    tryMove('UP'); break;      //up
                 case "ArrowLeft":
-                    tryMove('left'); break;     //left
+                    tryMove('LEFT'); break;     //left
                 case "ArrowRight":
-                    tryMove('right'); break;    //right
+                    tryMove('RIGHT'); break;    //right
                 case "ArrowDown":
-                    tryMove('down'); break;     //down
+                    tryMove('DOWN'); break;     //down
             }
         }
 
         function tryMove(direction) {
-            //todo: create and use a global variable if possible (control has to be on server side as well)
             if (notTurnedYet) {
                 sendMove(direction);
+                notTurnedYet = true;
             }
         }
 
@@ -57,24 +59,20 @@
             gameWebSocket.send(direction);
         }
 
-        document.body.addEventListener("keydown", e => handleKeyDown(e));
-
-
-
         const gameSpace = document.querySelector("gameSpace");
 
         gameWebSocket.addEventListener("open", e => {
-            console.log("open, client")
-            //ask for the current state of the game and show it using canvas
+            console.log("open, client");
+            //do nothing
         });
 
         gameWebSocket.addEventListener("error", e => {
-            console.log("error occured, client")
+            console.log("error occured, client");
             //learn what error it can be, how it can occur in the game and deal with it
         });
 
         gameWebSocket.addEventListener("message", e => {
-            console.log("message, client")
+            console.log("message, client");
             //handle information arriving from the server
             //only info messages from the server should be accepted here
         });
