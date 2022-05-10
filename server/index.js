@@ -88,8 +88,8 @@ function performMove(direction) {
 }
 
 function isPositionWithinMapBounds(inspectedPosition) {
-    return inspectedPosition.x >= 0 && inspectedPosition < game.map.length &&
-        inspectedPosition.x >= 0 && inspectedPosition < game.map[0].length;
+    return inspectedPosition.x >= 0 && inspectedPosition.x < game.map.length &&
+        inspectedPosition.y >= 0 && inspectedPosition.y < game.map[0].length;
 }
 
 function heroOutOfPath() {
