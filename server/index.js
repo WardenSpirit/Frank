@@ -1,17 +1,16 @@
-require("./gameState.js");
 const WebSocket = require("ws");
+const GameState = require("./gameState.js");
 
 const webSocketServer = new WebSocket.Server({ port: 8186 });
 
-game = null;
-const HOLE = 1;     //destroy this field (it's already in Game)
+let game = null;
 
 let webSockets = []
 let moves = [];
 
 webSocketServer.on("connection", webSocket => {
 
-    webSockets[webSocckets.length] = webSocket;
+    webSockets[webSockets.length] = webSocket;
 
     if (webSockets.length == 1) {
         startANewGame();
@@ -52,8 +51,7 @@ function realizeTurn() {
     sendMovesToAll();
     performMoves();
     if (heroOutOfPath()) {
-        game = new Game();
-        sendToAll(game);
+        startANewGame();
     }
 }
 
@@ -107,7 +105,7 @@ function didHeroStepInHole() {
 }
 
 function startANewGame() {
-    game = new Game();
+    game = new GameState();
     sendToAll(game);
 }
 

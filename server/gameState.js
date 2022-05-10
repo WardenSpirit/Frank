@@ -1,79 +1,90 @@
-module.exports = {
-    GameState: class {
-        static MAP_SIZE = 14;
-        static PATH = 0;
-        static HOLE = 1;
+class GameState {
+    static {
+        this.MAP_SIZE = 14;
+        this.HOLE_RATIO = 0.25;
+        this.PATH = 0;
+        this.HOLE = 1;
+    }
+    constructor() {
+        //generating function must be called in this order
+        this.map = this.generateMap();
 
-        constructor() {
-            //generating function must be called in this order
-            this.map = generateMap();
-            this.treasurePosition = generateTreasurePosition()
-            this.heroPosition = generateHeroPosition(treasurePosition);
-        }
+        this.treasurePosition = this.generateTreasurePosition();
+        this.heroPosition = this.generateHeroPosition();
+    }
 
-        static generateMap() {
-            let map = [];
+    generateMap() {
+        let map = [];
+        const terrainGenerator = this.terrainGenerator();
 
-            for (let i = 0; i < MAP_SIZE; i++) {
-                map[i] = [];
-                
-                for (let j = 0; j < MAP_SIZE; j++) {
-                    map[i][j] = this.terrainGenerator.next().value;
-                }
-            }
-
-            return map;
-        }
-
-        *terrainGenerator() {
-            let squaresToMake = MAP_SIZE * MAP_SIZE;
-            let holesToMake = squaresToMake * HOLE_RATIO;
-
-            while (squaresToMake > 0) {
-                if (Math.random() * squaresToMake > holesToMake) {
-                    yield PATH;
-                } else {
-                    yield HOLE;
-                    holesToMake--;
-                }
-                squaresToMake--;
+        for (let i = 0; i < GameState.MAP_SIZE; i++) {
+            map[i] = [];
+            for (let j = 0; j < GameState.MAP_SIZE; j++) {
+                map[i][j] = terrainGenerator.next().value;
             }
         }
 
-        generateTreasurePosition() {
-            do {
-                treasurePosition = { x: getRandomIndex(this.map), y: this.getRandomIndex(this.map[0]) };
-            } while (this.map[treasurePosition.x][treasurePosition.y] === HOLE);
+        return map;
+    }
 
-        }
+    * terrainGenerator() {
+        let squaresToMake = GameState.MAP_SIZE * GameState.MAP_SIZE;
+        let holesToMake = squaresToMake * GameState.HOLE_RATIO;
 
-        generateHeroPosition(treasurePosition) {
-            let heroPosition = { x: treasurePosition.x, y: treasurePosition.y };
-
-            for (let i = 0; i < MAP_SIZE * MAP_SIZE; i++) {
-                let possibleNewCoordinates = findPossibleMovesOut(heroPosition);
-                let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
-                heroPosition = randomPossibleNewCoordinates;
+        while (squaresToMake > 0) {
+            if (Math.random() * squaresToMake > holesToMake) {
+                yield GameState.PATH;
+            } else {
+                yield GameState.HOLE;
+                holesToMake--;
             }
-
-            return heroPosition;
-        }
-
-        findPossibleMovesOut(newHeroPosition) {
-            return [
-                { x: newHeroPosition.x, y: newHeroPosition.y - 1 },
-                { x: newHeroPosition.x + 1, y: newHeroPosition.y },
-                { x: newHeroPosition.x, y: newHeroPosition.y + 1 },
-                { x: newHeroPosition.x - 1, y: newHeroPosition.y }
-            ].filter(coordinates => isPath(coordinates));
-        }
-
-        isPath(coordinates) {
-            return this.map[coordinates.x][coordinates.y] === PATH;
-        }
-
-        static getRandomIndex(array) {
-            return Math.floor(Math.random(array.length));
+            squaresToMake--;
         }
     }
-};
+
+    generateTreasurePosition() {
+        let treasurePosition;
+
+        do {
+            treasurePosition =
+            {
+                x: GameState.getRandomIndex(this.map),
+                y: GameState.getRandomIndex(this.map[0])
+            };
+        } while (this.map[treasurePosition.x][treasurePosition.y] === GameState.HOLE);
+
+        return treasurePosition;
+    }
+
+    generateHeroPosition() {
+        console.log("this.treasurePosition: " + this.treasurePosition);
+        let heroPosition = { x: this.treasurePosition.x, y: this.treasurePosition.y };
+
+        for (let i = 0; i < GameState.MAP_SIZE * GameState.MAP_SIZE; i++) {
+            let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
+            let randomPossibleNewCoordinates = possibleNewCoordinates[GameState.getRandomIndex(possibleNewCoordinates)];
+            heroPosition = randomPossibleNewCoordinates;
+        }
+
+        return heroPosition;
+    }
+
+    findPossibleMovesOut(heroPosition) {
+        return [
+            { x: heroPosition.x, y: heroPosition.y - 1 },
+            { x: heroPosition.x + 1, y: heroPosition.y },
+            { x: heroPosition.x, y: heroPosition.y + 1 },
+            { x: heroPosition.x - 1, y: heroPosition.y }
+        ].filter(coordinates => this.isPath(coordinates) && );
+    }
+
+    isPath(coordinates) {
+        console.log("coordinates: [" + coordinates.x + "; " + coordinates.y + "]");
+        return this.map[coordinates.x][coordinates.y] === GameState.PATH;
+    }
+
+    static getRandomIndex(array) {
+        return Math.floor(Math.random(array.length));
+    }
+}
+module.exports = GameState;

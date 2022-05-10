@@ -32,7 +32,7 @@
         lefterButton.addEventListener("click", () => tryMove("LEFT"));
         righterButton.addEventListener("click", () => tryMove("RIGHT"));
         downerButton.addEventListener("click", () => tryMove("DOWN"));
-        
+
         document.body.addEventListener("keydown", e => handleKeyDown(e));
 
         function handleKeyDown(e) {
@@ -73,6 +73,7 @@
 
         gameWebSocket.addEventListener("message", e => {
             console.log("message, client");
+            
             //handle information arriving from the server
             //only info messages from the server should be accepted here
         });
