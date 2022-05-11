@@ -1,6 +1,5 @@
 const WebSocket = require("ws");
 const GameState = require("./gameState.js");
-const convertGameToArray = require("./dataConversion.js");
 
 const webSocketServer = new WebSocket.Server({ port: 8186 });
 
@@ -12,7 +11,9 @@ let moves = [];
 webSocketServer.on("connection", webSocket => {
 
     webSockets[webSockets.length] = webSocket;
+ 
 
+    console.log("new connection, n: " + webSockets.length);
     if (webSockets.length == 1) {
         startANewGame();
     }
@@ -58,6 +59,7 @@ function realizeTurn() {
 
 function sendMovesToAll() {
     for (let i = 0; i < webSockets.length; i++) {
+        console.log("sending: " + JSON.stringify(moves));
         webSockets[i].send(JSON.stringify(moves));
     }
 }
@@ -69,6 +71,7 @@ function startANewGame() {
 
 function sendGameToAll(game) {
     for (let i = 0; i < webSockets.length; i++) {
+        console.log("sending: " + JSON.stringify(game));
         webSockets[i].send(JSON.stringify(game));
     }
 }

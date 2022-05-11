@@ -19,7 +19,8 @@
 
     <script>
 
-        notTurnedYet = true;
+        let notTurnedYet = true;
+        let expectedMessageType;
 
         const gameWebSocket = new WebSocket("ws://localhost:8186");
 
@@ -57,25 +58,32 @@
 
         function sendMove(direction) {
             gameWebSocket.send(direction);
+            expectedMessageType = "MOVES";
         }
 
         const gameSpace = document.querySelector("gameSpace");
 
         gameWebSocket.addEventListener("open", e => {
             console.log("open, client");
-            //do nothing
+            expectedMessageType = "GAME";
         });
 
         gameWebSocket.addEventListener("error", e => {
-            console.log("error occured, client");
-            //learn what error it can be, how it can occur in the game and deal with it
+            console.log("Sorry, but an error occured while I was trying to connect you to the game server.");
         });
 
         gameWebSocket.addEventListener("message", message => {
-            console.log("message: " + JSON.parse(data)[0]);
-            console.log("m: " + message.data[1]);
-            
-            //handle information arriving from the server
+            data = JSON.parse(message.data);
+            if (expectedMessageType === "GAME") {       //kontroluj podle stavu hry, ne podle unefined
+                console.log("map: " + JSON.parse(message.data).map);
+                //zobraz mapu, hrdinu a poklad
+                renderGame(JSON.parse(message.data));
+            } else {        //expectedMessageType === "MOVES"
+                console.log("moves: " + JSON.parse(message.data));
+                //proveď s figurkou tahy
+                renderMoves(JSON.parse(message.data));
+            }
+
             //only info messages from the server should be accepted here
         });
     </script>

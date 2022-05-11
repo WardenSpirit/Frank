@@ -124,7 +124,7 @@ class GameState {
     }
     
     isGameBeingFinished() {
-        return didHeroFindTreasure() || didHeroStepInHole();
+        return didHeroFindTreasure.call(this) || didHeroStepInHole.call(this);
         function didHeroFindTreasure() {
             return this.heroPosition.x == this.treasurePosition.x && this.heroPosition.y == this.treasurePosition.y;
         }
