@@ -5,13 +5,14 @@ const webSocketServer = new WebSocket.Server({ port: 8186 });
 
 let game = null;
 
-let webSockets = []
+let webSockets = [];
 let moves = [];
+let alreadySentMove = [];
 
 webSocketServer.on("connection", webSocket => {
 
     webSockets[webSockets.length] = webSocket;
- 
+
 
     console.log("new connection, n: " + webSockets.length);
     if (webSockets.length == 1) {
@@ -22,6 +23,11 @@ webSocketServer.on("connection", webSocket => {
         if (!hasAlreadySentMove(webSocket) &&
             data === "UP" || data === "RIGHT" || data === "DOWN" || data === "LEFT") {
             fillInMove(data);
+            alreadySentMove[alreadySentMove.length] = webSocket;
+        }
+
+        function hasAlreadySentMove(webSocket) {
+            return alreadySentMove.includes(webSocket);
         }
     });
 
