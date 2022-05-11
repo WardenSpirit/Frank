@@ -86,7 +86,7 @@ class GameState {
     }
 
 
-    performMoves() {
+    performMoves(moves) {
         for (let i = 0; i < moves.length; i++) {
             this.performMove(moves[i]);
             if (!this.isGameBeingFinished()) {

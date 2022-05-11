@@ -71,8 +71,9 @@
             //learn what error it can be, how it can occur in the game and deal with it
         });
 
-        gameWebSocket.addEventListener("message", e => {
-            console.log("message, client");
+        gameWebSocket.addEventListener("message", message => {
+            console.log("message: " + JSON.parse(data)[0]);
+            console.log("m: " + message.data[1]);
             
             //handle information arriving from the server
             //only info messages from the server should be accepted here
