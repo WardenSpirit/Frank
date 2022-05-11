@@ -49,59 +49,10 @@ function allMovesSent() {
 
 function realizeTurn() {
     sendMovesToAll();
-    performMoves();
-    if (heroOutOfPath()) {
+    game.performMoves();
+    if (game.isGameBeingFinished()) {
         startANewGame();
     }
-}
-
-function performMoves() {
-    for (let i = 0; i < moves.length; i++) {
-        performMove(moves[i]);
-        if (!heroOutOfPath()) {
-            break;
-        }
-    }
-}
-
-function performMove(direction) {
-
-    let potentialNewHeroPosition;
-    switch (direction) {
-        case "UP":
-            potentialNewHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y - 1 };
-            break;
-        case "RIGHT":
-            potentialNewHeroPosition = { x: game.heroPosition.x + 1, y: game.heroPosition.y };
-            break;
-        case "DOWN":
-            potentialNewHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y + 1 };
-            break;
-        case "LEFT":
-            potentialNewHeroPosition = { x: game.heroPosition.x - 1, y: game.heroPosition.y };
-            break;
-    }
-
-    if (isPositionWithinMapBounds(potentialNewHeroPosition)) {
-        game.heroPosition = potentialNewHeroPosition;
-    }
-}
-
-function isPositionWithinMapBounds(inspectedPosition) {
-    return inspectedPosition.x >= 0 && inspectedPosition.x < game.map.length &&
-        inspectedPosition.y >= 0 && inspectedPosition.y < game.map[0].length;
-}
-
-function heroOutOfPath() {
-    return didHeroFindTreasure() || didHeroStepInHole();
-}
-
-function didHeroFindTreasure() {
-    return game.heroPosition.x == game.treasurePosition.x && game.heroPosition.y == game.treasurePosition.y;
-}
-
-function didHeroStepInHole() {
-    return game.map[game.heroPosition.x][game.heroPosition.y] == Game.HOLE;
 }
 
 function startANewGame() {
