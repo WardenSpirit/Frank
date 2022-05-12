@@ -4,7 +4,6 @@ const GameState = require("./gameState.js");
 const webSocketServer = new WebSocket.Server({ port: 8186 });
 
 let game = null;
-
 let webSockets = [];
 let moves = [];
 let alreadySentMove = [];
@@ -18,65 +17,70 @@ webSocketServer.on("connection", webSocket => {
     }
 
     webSocket.addEventListener("message", ({ data }) => {
-        if (!hasAlreadySentMove(webSocket) &&
-            data === "UP" || data === "RIGHT" || data === "DOWN" || data === "LEFT") {
-            fillInMove(data);
+        if (isValidMove(webSocket, data)) {
+            recordMove(webSocket, data);
+            if (allMovesSent()) {
+                realizeTurn();
+            }
+        }
+
+        function recordMove(webSocket, direction) {
+            moves[moves.length] = direction;
             alreadySentMove[alreadySentMove.length] = webSocket;
         }
 
-        function hasAlreadySentMove(webSocket) {
-            return alreadySentMove.includes(webSocket);
+        function isValidMove(webSocket, direction) {
+            return !hasAlreadySentMove(webSocket) && isValidDirection(direction);
+            function hasAlreadySentMove(webSocket) {
+                return alreadySentMove.includes(webSocket);
+            }
+            function isValidDirection(direction) {
+                return direction === "UP" ||
+                    direction === "RIGHT" ||
+                    direction === "DOWN" ||
+                    direction === "LEFT";
+            }
         }
+
     });
 
     webSocket.addEventListener("close", () => {
         console.log("connection closed");
         eliminateWebSocket(webSocket);
+
+        function eliminateWebSocket(webSocket) {
+            webSockets.splice(webSockets.indexOf(webSocket), 1);
+            if (allMovesSent) {
+                realizeTurn();
+            }
+        }
     });
 });
 //maybe the disconnection can be handled here as well, next to handling connection
 
-function fillInMove(direction) {
-    moves[moves.length] = direction;
-    if (allMovesSent()) {
-        realizeTurn();
-    }
-}
-
-function eliminateWebSocket(webSocket) {
-    webSockets.splice(webSockets.indexOf(webSocket), 1);
-    if (allMovesSent) {
-        realizeTurn();
-    }
-}
-
 function allMovesSent() {
-    return moves.length == webSockets.length;
+    return moves.length === webSockets.length;
 }
 
 function realizeTurn() {
-    sendMovesToAll();
-    game.performMoves(moves);
+    sendToAll(moves);
+    game.makeMoves(moves);
+
+    moves = [];
+    alreadySentMove = [];
+
     if (game.isGameBeingFinished()) {
         startANewGame();
     }
 }
 
-function sendMovesToAll() {
-    for (let i = 0; i < webSockets.length; i++) {
-        console.log("sending moves");
-        webSockets[i].send(JSON.stringify(moves));
-    }
-}
-
 function startANewGame() {
     game = new GameState();
-    sendGameToAll(game);
+    sendToAll(game);
 }
 
-function sendGameToAll(game) {
+function sendToAll(data) {
     for (let i = 0; i < webSockets.length; i++) {
-        console.log("sending a game via the webSocket " + i);
-        webSockets[i].send(JSON.stringify(game));
+        webSockets[i].send(JSON.stringify(data));
     }
 }

@@ -1,6 +1,9 @@
+import * as utils from './utils.js';
+
 const gameCanvas = document.querySelector("#game");
 const ctx = gameCanvas.getContext("2d");
 let squareSize = { width: 0, height: 0 };
+let game;
 
 const grassImage = new Image();
 const holeImage = new Image();
@@ -12,21 +15,22 @@ holeImage.src = "./assets/Hole.png";
 heroImage.src = "./assets/Figure.png";
 treasureImage.src = "./assets/Treasure.png";
 
-export function renderGame(game) {
-    squareSize.width = gameCanvas.offsetWidth / game.map.length;
-    squareSize.height = gameCanvas.offsetHeight / game.map[0].length;
+export function renderGame(renderedGame) {
+    squareSize.width = gameCanvas.offsetWidth / renderedGame.map.length;
+    squareSize.height = gameCanvas.offsetHeight / renderedGame.map[0].length;
 
-    renderMap(game.map);
-    renderSquare(heroImage, game.heroPosition);
-    renderSquare(treasureImage, game.heroPosition);
+    renderMap(renderedGame.map);
+    renderSquare(heroImage, renderedGame.heroPosition);
+    renderSquare(treasureImage, renderedGame.treasurePosition);
+
+    game = renderedGame;
 }
 
 function renderMap(map) {
     ctx.clearRect(0, 0, gameCanvas.offsetWidth, gameCanvas.offsetHeight)
     for (let x = 0; x < map.length; x++) {
         for (let y = 0; y < map[x].length; y++) {
-            let position = { x: x, y: y };
-            renderTerrain(map[x][y], position);
+            renderTerrain(map[x][y], { x: x, y: y });
         }
     }
 }
@@ -34,7 +38,7 @@ function renderMap(map) {
 function renderTerrain(terrainCode, position) {
     const terrainImage = (terrainCode === 0) ?
         grassImage : holeImage;
-        renderSquare(terrainImage, position)
+    renderSquare(terrainImage, position)
 }
 
 function renderSquare(image, position) {
@@ -42,6 +46,12 @@ function renderSquare(image, position) {
     ctx.drawImage(image, origin.x, origin.y, squareSize.width, squareSize.height);
 }
 
-export function animateMoves(moves) {
+export function animateMove(oldHeroPosition, newHeroPosition, move) {
     //animate hero's movement
+    console.log("animateMove: " +
+        utils.positionToString(oldHeroPosition) +
+        " " + move + " to " +
+        utils.positionToString(newHeroPosition));
+    renderSquare(grassImage, oldHeroPosition);
+    renderSquare(heroImage, newHeroPosition);
 }

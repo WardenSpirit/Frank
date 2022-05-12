@@ -75,7 +75,8 @@ class GameState {
             { x: heroPosition.x, y: heroPosition.y - 1 },
             { x: heroPosition.x + 1, y: heroPosition.y },
             { x: heroPosition.x, y: heroPosition.y + 1 },
-            { x: heroPosition.x - 1, y: heroPosition.y }
+            { x: heroPosition.x - 1, y: heroPosition.y },
+            { x: heroPosition.x, y: heroPosition.y }
         ].filter(coordinates => GameState.isPositionWithinMapBounds(coordinates) && this.isPath(coordinates));
     }
 
@@ -84,16 +85,16 @@ class GameState {
     }
 
 
-    performMoves(moves) {
+    makeMoves(moves) {
         for (let i = 0; i < moves.length; i++) {
-            this.performMove(moves[i]);
+            this.makeMove(moves[i]);
             if (!this.isGameBeingFinished()) {
                 break;
             }
         }
     }
 
-    performMove(direction) {
+    makeMove(direction) {
 
         let potentialNewHeroPosition;
         switch (direction) {

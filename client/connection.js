@@ -1,4 +1,4 @@
-import * as view from './view.js';
+import * as model from './model.js';
 
 let expectedMessageType;
 
@@ -22,15 +22,17 @@ gameWebSocket.addEventListener("error", e => {
 
 gameWebSocket.addEventListener("message", message => {
     let data = JSON.parse(message.data);
-    if (expectedMessageType === "GAME") {       //kontroluj podle stavu hry, ne podle unefined
-        console.log("I got a map!: " + JSON.stringify(message.data));
-        view.renderGame(JSON.parse(message.data));
-    } else {        //expectedMessageType === "MOVES"
-        console.log("moves: " + JSON.parse(message.data));
-        view.animateMoves(JSON.parse(message.data));
-    }
+    if (expectedMessageType === "GAME") {
+        console.log("I got game: " + data);
+        model.updateGame(data);
 
-    //only info messages from the server should be accepted here
+    } else {        //expectedMessageType === "MOVES"
+        console.log("I got moves: " + data);
+        model.applyMoves(data);
+        if (model.isGameFinished()) {
+            expectedMessageType = "GAME";
+        }
+    }
 });
 
 export { sendMove };
