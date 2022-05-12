@@ -1,4 +1,4 @@
-import * as connection from 'connection.js';
+import * as connection from './connection.js';
 
 let notTurnedYet = true;
 

@@ -28,6 +28,8 @@ class GameState {
         }
 
         return map;
+
+
     }
 
     * terrainGenerator() {
@@ -96,7 +98,7 @@ class GameState {
     }
 
     performMove(direction) {
-        
+
         let potentialNewHeroPosition;
         switch (direction) {
             case "UP":
@@ -112,19 +114,20 @@ class GameState {
                 potentialNewHeroPosition = { x: this.heroPosition.x - 1, y: this.heroPosition.y };
                 break;
         }
-    
+
         if (GameState.isPositionWithinMapBounds(potentialNewHeroPosition)) {
             this.heroPosition = potentialNewHeroPosition;
         }
     }
-    
+
     static isPositionWithinMapBounds(inspectedPosition) {
         return inspectedPosition.x >= 0 && inspectedPosition.x < GameState.MAP_WIDTH &&
             inspectedPosition.y >= 0 && inspectedPosition.y < GameState.MAP_HEIGHT;
     }
-    
+
     isGameBeingFinished() {
         return didHeroFindTreasure.call(this) || didHeroStepInHole.call(this);
+
         function didHeroFindTreasure() {
             return this.heroPosition.x == this.treasurePosition.x && this.heroPosition.y == this.treasurePosition.y;
         }

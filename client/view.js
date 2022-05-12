@@ -36,5 +36,5 @@ function renderHero(heroPosition) {
 }
 
 export function animateMoves(moves) {
-    //proveď s figurkou tahy
+    //animate hero's movement
 }

@@ -21,7 +21,7 @@ gameWebSocket.addEventListener("error", e => {
 });
 
 gameWebSocket.addEventListener("message", message => {
-    data = JSON.parse(message.data);
+    let data = JSON.parse(message.data);
     if (expectedMessageType === "GAME") {       //kontroluj podle stavu hry, ne podle unefined
         console.log("map: " + JSON.parse(message.data).map);
         view.renderGame(JSON.parse(message.data));
@@ -33,4 +33,4 @@ gameWebSocket.addEventListener("message", message => {
     //only info messages from the server should be accepted here
 });
 
-module.exports = { sendMove };
+export { sendMove };
