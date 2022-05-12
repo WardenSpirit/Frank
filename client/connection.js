@@ -12,7 +12,7 @@ function sendMove(direction) {
 const gameSpace = document.querySelector("gameSpace");
 
 gameWebSocket.addEventListener("open", e => {
-    console.log("open, client");
+    console.log("Connected! =D");
     expectedMessageType = "GAME";
 });
 
@@ -23,7 +23,7 @@ gameWebSocket.addEventListener("error", e => {
 gameWebSocket.addEventListener("message", message => {
     let data = JSON.parse(message.data);
     if (expectedMessageType === "GAME") {       //kontroluj podle stavu hry, ne podle unefined
-        console.log("map: " + JSON.parse(message.data).map);
+        console.log("I got a map!: " + JSON.stringify(message.data));
         view.renderGame(JSON.parse(message.data));
     } else {        //expectedMessageType === "MOVES"
         console.log("moves: " + JSON.parse(message.data));

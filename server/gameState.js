@@ -11,7 +11,6 @@ class GameState {
     constructor() {
         //generating function must be called in this order
         this.map = this.generateMap();
-
         this.treasurePosition = this.generateTreasurePosition();
         this.heroPosition = this.generateHeroPosition();
     }
@@ -28,8 +27,6 @@ class GameState {
         }
 
         return map;
-
-
     }
 
     * terrainGenerator() {
@@ -47,7 +44,7 @@ class GameState {
         }
     }
 
-    generateTreasurePosition() {
+    generateTreasurePosition() {        //game crashes when it's generated position is surrounded by holes
         let treasurePosition;
 
         do {
@@ -64,7 +61,7 @@ class GameState {
     generateHeroPosition() {
         let heroPosition = { x: this.treasurePosition.x, y: this.treasurePosition.y };
 
-        for (let i = 0; i < GameState.MAP_SIZE * GameState.MAP_SIZE; i++) {
+        for (let i = 0; i < GameState.MAP_WIDTH  * GameState.MAP_HEIGHT; i++) {
             let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
             let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
             heroPosition = randomPossibleNewCoordinates;
@@ -83,7 +80,6 @@ class GameState {
     }
 
     isPath(coordinates) {
-        console.log("coordinates: [" + coordinates.x + "; " + coordinates.y + "]");
         return this.map[coordinates.x][coordinates.y] === GameState.PATH;
     }
 

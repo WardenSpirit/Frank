@@ -13,8 +13,6 @@ webSocketServer.on("connection", webSocket => {
 
     webSockets[webSockets.length] = webSocket;
 
-
-    console.log("new connection, n: " + webSockets.length);
     if (webSockets.length == 1) {
         startANewGame();
     }
@@ -32,6 +30,7 @@ webSocketServer.on("connection", webSocket => {
     });
 
     webSocket.addEventListener("close", () => {
+        console.log("connection closed");
         eliminateWebSocket(webSocket);
     });
 });
@@ -65,7 +64,7 @@ function realizeTurn() {
 
 function sendMovesToAll() {
     for (let i = 0; i < webSockets.length; i++) {
-        console.log("sending: " + JSON.stringify(moves));
+        console.log("sending moves");
         webSockets[i].send(JSON.stringify(moves));
     }
 }
@@ -77,7 +76,7 @@ function startANewGame() {
 
 function sendGameToAll(game) {
     for (let i = 0; i < webSockets.length; i++) {
-        console.log("sending: " + JSON.stringify(game));
+        console.log("sending a game via the webSocket " + i);
         webSockets[i].send(JSON.stringify(game));
     }
 }
