@@ -23,7 +23,7 @@ gameWebSocket.addEventListener("error", e => {
 gameWebSocket.addEventListener("message", message => {
     let data = JSON.parse(message.data);
     if (expectedMessageType === "GAME") {
-        console.log("I got game: " + data);
+        console.log("I got a game: " + data);
         model.updateGame(data);
 
     } else {        //expectedMessageType === "MOVES"

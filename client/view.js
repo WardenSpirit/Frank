@@ -1,4 +1,5 @@
 import * as utils from './utils.js';
+import * as animations from './animations.js';
 
 const gameCanvas = document.querySelector("#game");
 const ctx = gameCanvas.getContext("2d");
@@ -10,10 +11,20 @@ const holeImage = new Image();
 const heroImage = new Image();
 const treasureImage = new Image();
 
-grassImage.src = "./assets/Grass.png";
+grassImage.src = "./assets/Sprout_Lands/Grass.png";
 holeImage.src = "./assets/Hole.png";
 heroImage.src = "./assets/Figure.png";
 treasureImage.src = "./assets/Treasure.png";
+
+const tileSize = 16;
+const grassLine = 0;
+const grassCount = 8;
+const grassMaskForWaterLine = 1;
+const grassMaskForWaterCount = 2;
+const waterLine = 2;
+const waterCount = 4;
+
+
 
 export function renderGame(renderedGame) {
     squareSize.width = gameCanvas.offsetWidth / renderedGame.map.length;

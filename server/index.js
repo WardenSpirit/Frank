@@ -9,15 +9,20 @@ let moves = [];
 let alreadySentMove = [];
 
 webSocketServer.on("connection", webSocket => {
+    console.log("new connection");
 
     webSockets[webSockets.length] = webSocket;
 
+    console.log("webSockets.length == " + webSockets.length);
     if (webSockets.length == 1) {
         startANewGame();
+    } else {
+        webSocket.send(JSON.stringify(game));
     }
 
     webSocket.addEventListener("message", ({ data }) => {
         if (isValidMove(webSocket, data)) {
+            console.log("isValidMove.");
             recordMove(webSocket, data);
             if (allMovesSent()) {
                 realizeTurn();
@@ -70,6 +75,7 @@ function realizeTurn() {
     alreadySentMove = [];
 
     if (game.isGameBeingFinished()) {
+        console.log("game finished");
         startANewGame();
     }
 }

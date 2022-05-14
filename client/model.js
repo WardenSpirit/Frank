@@ -5,6 +5,7 @@ const HOLE = 1;
 let game;
 
 export function updateGame(newGame) {
+    console.log("updateGame(" + newGame + ") called");
     game = newGame;
     view.renderGame(game);
 }
@@ -13,7 +14,7 @@ export function applyMoves(moves) {
     for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
 
-        const oldHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y };
+        const oldHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y }; //game undefined?
         moveHero(move);
         view.animateMove(oldHeroPosition, game.heroPosition, move);
 
