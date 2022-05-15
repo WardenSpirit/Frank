@@ -3,8 +3,16 @@
     padding: 0;
 }
 
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
 canvas {
     border-style: solid;
     border-width: 1px;
     border-color: black;
+    position: absolute;
+    max-width: 100%;
+    max-width: 100%;
 }

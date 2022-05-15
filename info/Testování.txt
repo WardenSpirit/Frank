@@ -1,4 +1,6 @@
-"npx serve" ve složce serveru, "node game.html" ve složce klienta, localhost:3000/client/game
-npm→ webový server - např.: serve (npm i -g serve)
+"npx serve" ve složce serveru,
+npx serve ve složce "Semestrální práce",
+"localhost:3000/client/game" v prohlížeči
 
+(npm → webový server - např.: serve (npm i -g serve))
 naučit se s github pages
