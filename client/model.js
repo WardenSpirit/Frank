@@ -16,7 +16,7 @@ export function applyMoves(moves) {
 
         const oldHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y }; //game undefined?
         moveHero(move);
-        view.animateMove(oldHeroPosition, game.heroPosition, move);
+        view.displayMove(oldHeroPosition, game.heroPosition, move);
 
         if (isGameFinished()) {
             break;
