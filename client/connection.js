@@ -25,7 +25,6 @@ gameWebSocket.addEventListener("message", message => {
         model.updateGame(data);
 
     } else {        //expectedMessageType === "MOVES"
-        console.log("I got moves: " + data);
         model.applyMoves(data);
         if (model.isGameFinished()) {
             expectedMessageType = "GAME";

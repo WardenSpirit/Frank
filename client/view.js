@@ -1,7 +1,7 @@
 import * as utils from './utils.js';
 
 let images = [];
-let imagePromises = [makeImagePromise("./assets/Terrain.png"), makeImagePromise("./assets/Hero2.png"), makeImagePromise("./assets/Treasure.png")];
+let imagePromises = [makeImagePromise("./assets/Terrain.png"), makeImagePromise("./assets/Hero2.png"), makeImagePromise("./assets/Dust.png"), makeImagePromise("./assets/Treasure.png")];
 function makeImagePromise(imageSource) {
     return new Promise(function (resolve, reject) {
         const image = new Image();
@@ -13,7 +13,8 @@ function makeImagePromise(imageSource) {
 }
 const terrainImage = images[0];
 const heroImage = images[1];
-const treasureImage = images[2];
+const dustImage = images[2];
+const treasureImage = images[3];
 const GRASS_CODE = 0;
 
 const sourceSquareSize = 16;
@@ -25,30 +26,33 @@ const walkUpHeroLine = 1;
 const walkRightHeroLine = 2;
 const walkDownHeroLine = 3;
 const walkLeftHeroLine = 4;
+const dustLine = 0;
 
 const grassCount = 8;
 const maskForWaterCount = 4;
 const waterCount = 4;
 const heroCount = 4;
+const dustCount = 4;
 
 let squareSize = {};
 
-const ANIMATION_INTERVAL = 300;
+const heroAnimationInterval = 300;
+const dustAnimationInterval = 150;
 let heroState = "STANDING";
-let lastUpdateTime = 0;
-let lastSourceOriginChangeTime = lastUpdateTime;
+let lastHeroUpdateTime = 0;
+let lastHeroSourceOriginChangeTime = 0;
 let heroSourceOrigin;
 let heroTargetOrigin;
 let lastHeroTargetOrigin;
 
-let dustPositions = [];
+let dusts = [];
 
 const gameCanvas = document.querySelector("#game");
 const heroCanvas = document.querySelector("#hero");
 const gameContext = gameCanvas.getContext("2d");
-const heroContext = heroCanvas.getContext("2d");
+const objectContext = heroCanvas.getContext("2d");
 gameContext.imageSmoothingEnabled = false;
-heroContext.imageSmoothingEnabled = false;
+objectContext.imageSmoothingEnabled = false;
 
 
 export async function renderGame(renderedGame) {
@@ -59,7 +63,7 @@ export async function renderGame(renderedGame) {
     await Promise.allSettled(imagePromises);
     renderMap(renderedGame.map);
     startRenderingHero(renderedGame.heroPosition);
-    //startRenderingDust();
+    startRenderingDust();
     renderTreasure(renderedGame.treasurePosition);
 
     function renderMap(map) {
@@ -88,7 +92,7 @@ export async function renderGame(renderedGame) {
             function renderWater(position) {
                 renderWaterBase(position);
                 renderMaskForWater(position);
-            
+
                 function renderWaterBase(position) {
                     const sourceOrigin = {
                         x: Math.floor(Math.random() * waterCount) * sourceSquareSize,
@@ -96,7 +100,7 @@ export async function renderGame(renderedGame) {
                     };
                     renderTerrainSquare(sourceOrigin, position);
                 }
-            
+
                 function renderMaskForWater(position) {
                     const sourceOrigin = {
                         x: Math.floor(Math.random() * maskForWaterCount) * sourceSquareSize,
@@ -114,29 +118,29 @@ export async function renderGame(renderedGame) {
     }
 
     function startRenderingHero(position) {
-    
+
         heroSourceOrigin = { x: 0, y: standingHeroLine };
         heroTargetOrigin = calculateTargetOriginFromPosition(position);
-    
-        requestAnimationFrame(function animate(documentAge) {
+
+        requestAnimationFrame(function animateHero(documentAge) {
             updateHeroAnimationOrigins(documentAge);
             if (lastHeroTargetOrigin != undefined) {
                 clearHero();
             }
             drawHero();
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateHero);
         });
-    
+
         function updateHeroAnimationOrigins(currentTime) {
-            const deltaTime = currentTime - lastUpdateTime;
-            lastUpdateTime = currentTime;
-    
+            const deltaTime = currentTime - lastHeroUpdateTime;
+            lastHeroUpdateTime = currentTime;
+
             heroSourceOrigin = calculateHeroSourceOrigin(currentTime);
             heroTargetOrigin = calculateHeroTargetOrigin(deltaTime);
-    
+
             function calculateHeroSourceOrigin(currentTime) {
-                if (currentTime - lastSourceOriginChangeTime > ANIMATION_INTERVAL) {
-                    lastSourceOriginChangeTime = currentTime - currentTime % ANIMATION_INTERVAL;
+                if (currentTime - lastHeroSourceOriginChangeTime > heroAnimationInterval) {
+                    lastHeroSourceOriginChangeTime = currentTime - currentTime % heroAnimationInterval;
                     const x = (heroSourceOrigin.x + sourceSquareSize) % (heroCount * sourceSquareSize);
                     let y;
                     switch (heroState) {
@@ -160,15 +164,15 @@ export async function renderGame(renderedGame) {
                 }
                 return heroSourceOrigin;
             }
-    
+
             function calculateHeroTargetOrigin(deltaTime) {
                 let speed = getHeroSpeed();
                 return {
                     x: heroTargetOrigin.x + speed.x * deltaTime,
                     y: heroTargetOrigin.y + speed.y * deltaTime
                 };
-    
-    
+
+
                 function getHeroSpeed() {
                     switch (heroState) {
                         case ("UP"):
@@ -185,15 +189,54 @@ export async function renderGame(renderedGame) {
                 }
             }
         }
-    
+
         function clearHero() {
-            heroContext.clearRect(lastHeroTargetOrigin.x, lastHeroTargetOrigin.y, squareSize.width, squareSize.height);
+            objectContext.clearRect(lastHeroTargetOrigin.x, lastHeroTargetOrigin.y, squareSize.width, squareSize.height);
         }
-    
+
         function drawHero() {
-            heroContext.drawImage(heroImage, heroSourceOrigin.x, heroSourceOrigin.y, sourceSquareSize, sourceSquareSize, heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
+            objectContext.drawImage(heroImage, heroSourceOrigin.x, heroSourceOrigin.y, sourceSquareSize, sourceSquareSize, heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
             lastHeroTargetOrigin = heroTargetOrigin;
         }
+    }
+
+    function startRenderingDust() {
+        requestAnimationFrame(function animateDust() {
+            updateDusts(Date.now());
+            requestAnimationFrame(animateDust);
+
+            function updateDusts(currentTime) {
+                for (let i = 0; i < dusts.length; i++) {
+                    const dust = dusts[i];
+
+                    const oldPhase = dust.phase;
+                    dust.phase = Math.floor((currentTime - dust.spawnTime) / dustAnimationInterval);
+
+                    if (oldPhase != dust.phase) {
+                        clearDust(dust);
+                        if (dust.phase >= dustCount) {
+                            dusts.splice(i, 1);
+                        } else {
+                            drawDust(dust)
+                        }
+                    }
+                }
+
+                function clearDust(dust) {
+                    const targetOrigin = calculateTargetOriginFromPosition(dust.position);
+                    objectContext.clearRect(targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+                }
+
+                function drawDust(dust) {
+                    const sourceOrigin = {
+                        x: dust.phase * sourceSquareSize,
+                        y: dustLine * sourceSquareSize
+                    };
+                    const targetOrigin = calculateTargetOriginFromPosition(dust.position);
+                    objectContext.drawImage(dustImage, sourceOrigin.x, sourceOrigin.y, sourceSquareSize, sourceSquareSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+                }
+            }
+        });
     }
 
     function renderTreasure(position) {
@@ -202,12 +245,37 @@ export async function renderGame(renderedGame) {
     }
 }
 
-export function displayMove(oldHeroPosition, newHeroPosition, move) {
-
+export function displayMove(oldHeroPosition, newHeroPosition) {
+    console.log("dusts.length: " + dusts.length);
+    dusts[dusts.length] = { position: oldHeroPosition, spawnTime: calculateSpawnTime() };
     heroTargetOrigin = calculateTargetOriginFromPosition(newHeroPosition);
-    dustPositions[dustPositions.length] = oldHeroPosition;
+    removeStompedDusts(newHeroPosition);
+
+    function calculateSpawnTime() {
+        const currentTime = Date.now();
+        if (dusts.length == 0) {
+            return currentTime;
+        } else {
+            console.log(`max(${dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length}, ${currentTime}): ` +
+            Math.max(dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length, currentTime));
+            return Math.max(dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length, currentTime);
+        }
+    }
+
+    function removeStompedDusts(stompedPosition) {
+        for (let i = dusts.length - 1; i >= 0; i--) {
+            const dust = dusts[i];
+            if (arePositionsSame(dust.position, stompedPosition)) {
+                dusts.splice(i, 1);
+            }
+        }
+    }
 }
 
 function calculateTargetOriginFromPosition(position) {
     return { x: position.x * squareSize.width, y: position.y * squareSize.height };
+}
+
+function arePositionsSame(firstPosition, secondPosition) {
+    return firstPosition.x == secondPosition.x && firstPosition.y == secondPosition.y;
 }
