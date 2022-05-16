@@ -12,7 +12,6 @@ function sendMove(direction) {
 const gameSpace = document.querySelector("gameSpace");
 
 gameWebSocket.addEventListener("open", e => {
-    console.log("Connected! =D");
     expectedMessageType = "GAME";
 });
 
@@ -23,7 +22,6 @@ gameWebSocket.addEventListener("error", e => {
 gameWebSocket.addEventListener("message", message => {
     let data = JSON.parse(message.data);
     if (expectedMessageType === "GAME") {
-        console.log("I got a game: " + data);
         model.updateGame(data);
 
     } else {        //expectedMessageType === "MOVES"
