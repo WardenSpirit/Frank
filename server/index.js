@@ -12,8 +12,6 @@ webSocketServer.on("connection", webSocket => {
     console.log("new connection");
 
     webSockets[webSockets.length] = webSocket;
-
-    console.log("webSockets.length == " + webSockets.length);
     if (webSockets.length == 1) {
         startANewGame();
     } else {
@@ -22,7 +20,6 @@ webSocketServer.on("connection", webSocket => {
 
     webSocket.addEventListener("message", ({ data }) => {
         if (isValidMove(webSocket, data)) {
-            console.log("isValidMove.");
             recordMove(webSocket, data);
             if (allMovesSent()) {
                 realizeTurn();

@@ -41,6 +41,8 @@ let heroSourceOrigin;
 let heroTargetOrigin;
 let lastHeroTargetOrigin;
 
+let dustPositions = [];
+
 const gameCanvas = document.querySelector("#game");
 const heroCanvas = document.querySelector("#hero");
 const gameContext = gameCanvas.getContext("2d");
@@ -57,6 +59,7 @@ export async function renderGame(renderedGame) {
     await Promise.allSettled(imagePromises);
     renderMap(renderedGame.map);
     startRenderingHero(renderedGame.heroPosition);
+    //startRenderingDust();
     renderTreasure(renderedGame.treasurePosition);
 
     function renderMap(map) {
@@ -133,7 +136,7 @@ export async function renderGame(renderedGame) {
     
             function calculateHeroSourceOrigin(currentTime) {
                 if (currentTime - lastSourceOriginChangeTime > ANIMATION_INTERVAL) {
-                    lastSourceOriginChangeTime += ANIMATION_INTERVAL;
+                    lastSourceOriginChangeTime = currentTime - currentTime % ANIMATION_INTERVAL;
                     const x = (heroSourceOrigin.x + sourceSquareSize) % (heroCount * sourceSquareSize);
                     let y;
                     switch (heroState) {
@@ -200,13 +203,9 @@ export async function renderGame(renderedGame) {
 }
 
 export function displayMove(oldHeroPosition, newHeroPosition, move) {
-    console.log("animateMove: " +
-        utils.positionToString(oldHeroPosition) +
-        " " + move + " to " +
-        utils.positionToString(newHeroPosition));
 
-    //renderGrass(oldHeroPosition);
     heroTargetOrigin = calculateTargetOriginFromPosition(newHeroPosition);
+    dustPositions[dustPositions.length] = oldHeroPosition;
 }
 
 function calculateTargetOriginFromPosition(position) {

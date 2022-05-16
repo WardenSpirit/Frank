@@ -25,11 +25,11 @@ function handleKeyDown(e) {
         case "ArrowDown":
             tryMove('DOWN'); break;     //down
     }
-}
 
-function tryMove(direction) {
-    if (notTurnedYet) {
-        connection.sendMove(direction);
-        notTurnedYet = true;
+    function tryMove(direction) {
+        if (notTurnedYet) {
+            connection.sendMove(direction);
+            notTurnedYet = true;
+        }
     }
 }

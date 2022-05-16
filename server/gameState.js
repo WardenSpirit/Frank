@@ -44,7 +44,7 @@ class GameState {
         }
     }
 
-    generateTreasurePosition() {        //game crashes when it's generated position is surrounded by holes
+    generateTreasurePosition() {
         let treasurePosition;
 
         do {
@@ -53,21 +53,33 @@ class GameState {
                 x: getRandomIndex(this.map),
                 y: getRandomIndex(this.map[0])
             };
-        } while (this.map[treasurePosition.x][treasurePosition.y] === GameState.HOLE);
+        } while (this.map[treasurePosition.x][treasurePosition.y] === GameState.HOLE ||
+            isTreasureSurroundedByHoles.call(this));
 
         return treasurePosition;
+
+        function isTreasureSurroundedByHoles() {
+            return (treasurePosition.y == 0 || this.map[treasurePosition.x][treasurePosition.y - 1] == GameState.HOLE) &&
+            (treasurePosition.x == this.map.length - 1 || this.map[treasurePosition.x + 1][treasurePosition.y] == GameState.HOLE) &&
+            (treasurePosition.y == this.map[0].length - 1 || this.map[treasurePosition.x][treasurePosition.y + 1] == GameState.HOLE) &&
+            (treasurePosition.x == 0 || this.map[treasurePosition.x - 1][treasurePosition.y] == GameState.HOLE);
+        }
     }
 
     generateHeroPosition() {
         let heroPosition = { x: this.treasurePosition.x, y: this.treasurePosition.y };
 
-        for (let i = 0; i < GameState.MAP_WIDTH  * GameState.MAP_HEIGHT; i++) {
+        for (let i = 0; i < GameState.MAP_WIDTH  * GameState.MAP_HEIGHT || arePositionsSame(heroPosition, this.treasurePosition); i++) {
             let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
             let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
             heroPosition = randomPossibleNewCoordinates;
         }
 
         return heroPosition;
+
+        function arePositionsSame(firstPosition, secondPosition) {
+            return firstPosition.x == secondPosition.x && firstPosition.y == secondPosition.y;
+        }
     }
 
     findPossibleMovesOut(heroPosition) {
