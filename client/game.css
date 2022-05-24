@@ -1,19 +1,25 @@
 * {
     margin: 0;
+    border: 0;
     padding: 0;
 }
 
-body {
-    width: 100vw;
-    height: 100vw;
+div#gamespace>canvas {
+    width: 100%;
+    max-width: 100vh;
+    max-height: 81.4vh;
 }
 
-canvas {
+div#gamespace>canvas#hero {
     position: absolute;
-    border-style: solid;
-    border-width: 1px;
-    border-color: black;
+    top: 0;
+    left: 0;
+}
+
+div#table>img {
     position: absolute;
+    top: 81.4vh;
+    left: 0;
     width: 100%;
-    width: 100%;
+    max-width: 100vh;
 }

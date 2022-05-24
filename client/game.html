@@ -3,23 +3,25 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Schizofrenie</title>
+    <title>Frank</title>
     <link rel="stylesheet" href="game.css">
 </head>
 
 <body>
-    <div>
-        <canvas id="game" width="800" height="800"></canvas>
-        <canvas id="hero" width="800" height="800"></canvas>
-    </div>
-    <br>
-    <button id="upperButton">↑</button>
-    <br>
-    <button id="lefterButton">←</button>
-    <button id="righterButton">→</button>
-    <br>
-    <button id="downerButton">↓</button>
+    <div id="page">
+        <div id="gamespace">
+            <canvas id="game" width="800" height="800"></canvas>
+            <canvas id="hero" width="800" height="800"></canvas>
+        </div>
 
+        <div id="table">
+            <img src="./assets/Table.png"> <!-- width="800" height="167.857" -->
+            <canvas id="treasures"></canvas>
+            <canvas id="holes"></canvas>
+            <canvas id="time"></canvas>
+            <canvas id="timePerTreasure"></canvas>
+        </div>
+    </div>
     <script type="module" src="./controls.js">
     </script>
 </body>
