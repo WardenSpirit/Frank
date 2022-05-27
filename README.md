@@ -10,9 +10,10 @@
 6. otevření dalších n karet na téže stránce
 
 ### Dobré vědět
-- - Cílem je dostat se co nejrychleji k truhle pomocí šipek, na mobilech pomocí gest jedním ze 4 směrů.
+- Cílem je dostat se co nejrychleji k truhle pomocí šipek, na mobilech pomocí gest jedním ze 4 směrů.
 - Tahy se mají vždy provést až poté, co jsou odeslány tahy ode všech připojených klientů.
 - V tabulce pod mapou jsem nestihl implementovat ukazatele času a skóre, ale to není v zadání (dostupném níže).
+- Animace obláčků prachu za hrdinou (kočkou) mají ten účel, aby hráč znal pořadí tahů (a neměl motivaci dívat se do dev tools na příchozí zprávy). Je to jediná možnost, jak se s ostatními hráči dorozumět. Komunikace nabyde významu při počítání skóre a měření času.
 
 ### Nepovinné kategorie
 |Položka         |Splněno?                       |
