@@ -20,7 +20,7 @@
 |----------------|-------------------------------|
 |Validita |nevím, zda funguje pro všechny prohlížeče |
 |Grafika - SVG / Canvas |ANO |
-|Média - Audio/Video |NE, hra je bez zvuku |
+|Média - Audio/Video |NE, hra je bohužel bez zvuku |
 |Formulářové prvky |NE, hráč se nechce zdržovat s vyplňováním |
 |Offline aplikace |NE, běh zajišťuje server |
 |Pokročilé selektory |ANO |
