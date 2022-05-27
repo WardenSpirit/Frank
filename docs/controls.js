@@ -12,7 +12,7 @@ document.body.addEventListener("touchstart", e => handleTouchEnd(e));
 document.body.addEventListener("keydown", e => handleKeyDown(e));
 
 let touchStartX, touchStartY;
-function handleTouchEnd(e) {
+function handleTouchStart(e) {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
 }

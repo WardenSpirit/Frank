@@ -246,7 +246,6 @@ export async function renderGame(renderedGame) {
 }
 
 export function displayMove(oldHeroPosition, newHeroPosition) {
-    console.log("dusts.length: " + dusts.length);
     dusts[dusts.length] = { position: oldHeroPosition, spawnTime: calculateSpawnTime() };
     heroTargetOrigin = calculateTargetOriginFromPosition(newHeroPosition);
     removeStompedDusts(newHeroPosition);
@@ -256,8 +255,6 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
         if (dusts.length == 0) {
             return currentTime;
         } else {
-            console.log(`max(${dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length}, ${currentTime}): ` +
-            Math.max(dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length, currentTime));
             return Math.max(dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length, currentTime);
         }
     }

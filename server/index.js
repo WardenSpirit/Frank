@@ -65,15 +65,21 @@ function allMovesSent() {
 }
 
 function realizeTurn() {
+    console.log("got the same number of moves as the number of players")
     sendToAll(moves);
     game.makeMoves(moves);
 
     moves = [];
     alreadySentMove = [];
 
+    console.log(`HeroCoords: ${game.heroPosition.x}, ${game.heroPosition.y}
+    TreasureCoords: ${game.treasurePosition.x}, ${game.treasurePosition.y}`)
+
     if (game.isGameBeingFinished()) {
         console.log("game finished");
         startANewGame();
+    } else {
+        console.log("game not finished");
     }
 }
 

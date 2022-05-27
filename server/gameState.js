@@ -100,7 +100,7 @@ class GameState {
     makeMoves(moves) {
         for (let i = 0; i < moves.length; i++) {
             this.makeMove(moves[i]);
-            if (!this.isGameBeingFinished()) {
+            if (this.isGameBeingFinished()) {
                 break;
             }
         }
