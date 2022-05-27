@@ -1,6 +1,0 @@
-"npx serve" ve složce serveru,
-npx serve ve složce "Semestrální práce",
-"localhost:3000/client/game" v prohlížeči
-
-(npm → webový server - např.: serve (npm i -g serve))
-naučit se s github pages
