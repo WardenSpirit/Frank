@@ -30,7 +30,7 @@
 |Funkční historie |NE |
 |Ovládání medií |NE |
 |Offline aplikace |NE |
-|JS práce se SVG |NE, nicméně jsem hodně pracoval s canvasem (vč. animací) |
+|JS práce se SVG |NE, nicméně jsem čas trávil s canvasem (hlavně na animacích) |
 
 
 ## Zadání
