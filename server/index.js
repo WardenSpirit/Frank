@@ -8,10 +8,13 @@ let webSockets = [];
 let moves = [];
 let alreadySentMove = [];
 
+/**
+ * Sets up a web socket connection. Starts listening to the events catched by each connected socket.
+ */
 webSocketServer.on("connection", webSocket => {
     console.log("new connection");
 
-    webSockets[webSockets.length] = webSocket;
+        webSockets.push(webSocket);
     if (webSockets.length == 1) {
         startANewGame();
     } else {
@@ -27,8 +30,8 @@ webSocketServer.on("connection", webSocket => {
         }
 
         function recordMove(webSocket, direction) {
-            moves[moves.length] = direction;
-            alreadySentMove[alreadySentMove.length] = webSocket;
+            moves.push(direction);
+            alreadySentMove.push(webSocket);
         }
 
         function isValidMove(webSocket, direction) {
@@ -58,36 +61,38 @@ webSocketServer.on("connection", webSocket => {
         }
     });
 });
-//maybe the disconnection can be handled here as well, next to handling connection
 
 function allMovesSent() {
     return moves.length === webSockets.length;
 }
 
+/**
+ * Realizes a turn with the moves that have come.
+ */
 function realizeTurn() {
-    console.log("got the same number of moves as the number of players")
     sendToAll(moves);
     game.makeMoves(moves);
 
     moves = [];
     alreadySentMove = [];
 
-    console.log(`HeroCoords: ${game.heroPosition.x}, ${game.heroPosition.y}
-    TreasureCoords: ${game.treasurePosition.x}, ${game.treasurePosition.y}`)
-
     if (game.isGameBeingFinished()) {
-        console.log("game finished");
         startANewGame();
-    } else {
-        console.log("game not finished");
     }
 }
 
+/**
+ * Sets up a new game and informs the clients by sending them the information about it's state.
+ */
 function startANewGame() {
     game = new GameState();
     sendToAll(game);
 }
 
+/**
+ * Sends JSON-stringified data to every connected web socket.
+ * @param data 
+ */
 function sendToAll(data) {
     for (let i = 0; i < webSockets.length; i++) {
         webSockets[i].send(JSON.stringify(data));

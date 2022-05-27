@@ -1,7 +1,16 @@
 import * as utils from './utils.js';
 
+/**
+ * Array that holds all the images returned by the promises.
+ */
 let images = [];
 let imagePromises = [makeImagePromise("./assets/Terrain.png"), makeImagePromise("./assets/Hero2.png"), makeImagePromise("./assets/Dust.png"), makeImagePromise("./assets/Treasure.png")];
+
+/**
+ * Makes and returns a promise for loading the picture with the specified path.
+ * @param imageSource Path of the picture which should be loaded.
+ * @returns Promise of the picture.
+ */
 function makeImagePromise(imageSource) {
     return new Promise(function (resolve, reject) {
         const image = new Image();
@@ -15,9 +24,20 @@ const terrainImage = images[0];
 const heroImage = images[1];
 const dustImage = images[2];
 const treasureImage = images[3];
+
+/**
+ * Constant that represents holes on the game map. Numbers are used to shorten strings sent between the server and clients.
+ */
 const GRASS_CODE = 0;
 
+/**
+ * Size (both vertical and horizontal sizes are the same) of the square in the used pictures.
+ */
 const sourceSquareSize = 16;
+
+/**
+ * Parameters which are used when calculating the correct part of picture source. That part is then drew on the canvases.
+ */
 const grassLine = 0;
 const maskForWaterLine = 1;
 const waterLine = 2;
@@ -34,8 +54,14 @@ const waterCount = 4;
 const heroCount = 4;
 const dustCount = 4;
 
+/**
+ * Sizes of one square on the canvases.
+ */
 let squareSize = {};
 
+/**
+ * Parameters, which are used for drawing the hero.
+ */
 const heroAnimationInterval = 300;
 const dustAnimationInterval = 150;
 let heroState = "STANDING";
@@ -45,8 +71,14 @@ let heroSourceOrigin;
 let heroTargetOrigin;
 let lastHeroTargetOrigin;
 
+/**
+ * Coordinations of animation "dusts", that use to be displayed behind the hero after he/she moves.
+ */
 let dusts = [];
 
+/**
+ * Canvases and context configuration settings.
+ */
 const gameCanvas = document.querySelector("#game");
 const heroCanvas = document.querySelector("#hero");
 const gameContext = gameCanvas.getContext("2d");
@@ -54,7 +86,10 @@ const objectContext = heroCanvas.getContext("2d");
 gameContext.imageSmoothingEnabled = false;
 objectContext.imageSmoothingEnabled = false;
 
-
+/**
+ * Displays the specified game on the screen.
+ * @param renderedGame The game to be rendered.
+ */
 export async function renderGame(renderedGame) {
 
     squareSize.width = gameCanvas.width / renderedGame.map.length;
@@ -245,6 +280,11 @@ export async function renderGame(renderedGame) {
     }
 }
 
+/**
+ * Displays the move specified by old and new coordinations pairs on the screen.
+ * @param oldHeroPosition The position which the hero moves from.
+ * @param newHeroPosition The position which the hero moves to.
+ */
 export function displayMove(oldHeroPosition, newHeroPosition) {
     dusts[dusts.length] = { position: oldHeroPosition, spawnTime: calculateSpawnTime() };
     heroTargetOrigin = calculateTargetOriginFromPosition(newHeroPosition);
@@ -269,10 +309,22 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
     }
 }
 
+/**
+ * Calculates and returns the position on the canvas, where an image should be drew
+ * (the coordinations of the top-left corner of the image).
+ * @param position The game position of the drew image, in other words, the position on the map.
+ * @returns The coordinations of the top-left corner of the image
+ */
 function calculateTargetOriginFromPosition(position) {
     return { x: position.x * squareSize.width, y: position.y * squareSize.height };
 }
 
+/**
+ * Tells whether the two arguments represent the same position in the game.
+ * @param firstPosition The first position to compare with the other one.
+ * @param secondPosition The other position to compare with the first one.
+ * @returns True if the x and y coordinations of both specified positions are equal.
+ */
 function arePositionsSame(firstPosition, secondPosition) {
     return firstPosition.x == secondPosition.x && firstPosition.y == secondPosition.y;
 }

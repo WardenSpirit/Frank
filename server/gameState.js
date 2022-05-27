@@ -60,16 +60,28 @@ class GameState {
 
         function isTreasureSurroundedByHoles() {
             return (treasurePosition.y == 0 || this.map[treasurePosition.x][treasurePosition.y - 1] == GameState.HOLE) &&
-            (treasurePosition.x == this.map.length - 1 || this.map[treasurePosition.x + 1][treasurePosition.y] == GameState.HOLE) &&
-            (treasurePosition.y == this.map[0].length - 1 || this.map[treasurePosition.x][treasurePosition.y + 1] == GameState.HOLE) &&
-            (treasurePosition.x == 0 || this.map[treasurePosition.x - 1][treasurePosition.y] == GameState.HOLE);
+                (treasurePosition.x == this.map.length - 1 || this.map[treasurePosition.x + 1][treasurePosition.y] == GameState.HOLE) &&
+                (treasurePosition.y == this.map[0].length - 1 || this.map[treasurePosition.x][treasurePosition.y + 1] == GameState.HOLE) &&
+                (treasurePosition.x == 0 || this.map[treasurePosition.x - 1][treasurePosition.y] == GameState.HOLE);
         }
     }
 
+    /**
+     * Calculates and returns a pseudorandom position on the map. The function uarantees,
+     * that there exists at least one path from the hero to the treasure,
+     * which means it does not break the winnability of the game.
+     * @returns A pseudorandom position intended for the hero.
+     */
     generateHeroPosition() {
         let heroPosition = { x: this.treasurePosition.x, y: this.treasurePosition.y };
 
-        for (let i = 0; i < GameState.MAP_WIDTH  * GameState.MAP_HEIGHT || arePositionsSame(heroPosition, this.treasurePosition); i++) {
+        let numberOfRepositions = 2 * GameState.MAP_WIDTH * GameState.MAP_HEIGHT;
+        for (let i = 0; i < numberOfRepositions; i++) {
+            let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
+            let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
+            heroPosition = randomPossibleNewCoordinates;
+        }
+        while(arePositionsSame(heroPosition, this.treasurePosition)) {
             let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
             let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
             heroPosition = randomPossibleNewCoordinates;
@@ -82,6 +94,11 @@ class GameState {
         }
     }
 
+    /**
+     * Finds all the moves from the specified position that are safe. In other words, they don't lead to a hole.
+     * @param heroPosition The default position of the moves that are looked for.
+     * @returns Safe moves from the specified position.
+     */
     findPossibleMovesOut(heroPosition) {
         return [
             { x: heroPosition.x, y: heroPosition.y - 1 },
@@ -96,7 +113,10 @@ class GameState {
         return this.map[coordinates.x][coordinates.y] === GameState.PATH;
     }
 
-
+    /**
+     * Moves the hero in the specified directions and given order. Stops when the hero finds himself
+     * in a hole or finds the treasure.
+     */
     makeMoves(moves) {
         for (let i = 0; i < moves.length; i++) {
             this.makeMove(moves[i]);
@@ -106,6 +126,10 @@ class GameState {
         }
     }
 
+    /**
+     * Makes a move in the specified direction.
+     * @param direction String indicating the direction of the executed move.
+     */
     makeMove(direction) {
 
         let potentialNewHeroPosition;
@@ -134,6 +158,10 @@ class GameState {
             inspectedPosition.y >= 0 && inspectedPosition.y < GameState.MAP_HEIGHT;
     }
 
+    /**
+     * Tells whether the game should end or not based on the coordinations of the hero, the treasure and the holes.
+     * @returns True if the game is in an ending state.
+     */
     isGameBeingFinished() {
         return didHeroFindTreasure.call(this) || didHeroStepInHole.call(this);
 
