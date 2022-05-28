@@ -60,5 +60,6 @@ Práci jsem si rozdělil na server a klient, server bude zdrojem pravdy a bude z
 
 ## Hlavní problémy
 - Web Sockets - nebyly k nalezení zdroje pro moji strukturu aplikace
+- Moduly - odlišná syntaxe na serverovém JS
 - Asset packs - asset pack bylo těžké vybrat
 - Animations - náročné časování a překreslování
