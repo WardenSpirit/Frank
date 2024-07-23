@@ -1,4 +1,4 @@
-#  Semestrální práce z předmětu KAJ: Hra Schyzofrenie
+#  Semestrální práce z předmětu KAJ: Hra Frank
 ## Instrukce pro hodnotitele
 1. instalace Node.js, pokud chybí (funguje s verzí 16.11.0, ostatní nemám vyzkoušené)
 2.	clone tohoto repozitáře
