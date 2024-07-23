@@ -8,7 +8,7 @@ let expectedMessageType;
 /**
  * WebSocket via which the client connects to the server.
  */
-const gameWebSocket = new WebSocket("ws://localhost:8186");
+const gameWebSocket = new WebSocket("ws://localhost:3000");
 
 /**
  * Sends the user's decision to the server via the web socket and sets the expectedMessageType to "MOVES".
