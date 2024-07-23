@@ -1,14 +1,16 @@
-const GameState = require("./gameState.js");
+const GameFactory = require('./gameFactory.js');
+const GameState = require('./gameState.js');
 
 console.log("websockets call");
 
+let gameFactory = new GameFactory();
 let game = null;
 let webSockets = [];
 let moves = [];
 let alreadySentMove = [];
 
 /**
- * Sets up a web socket connection. Starts listening to the events catched by each connected socket.
+ * Sets up a web socket GameFactoryconnection. Starts listening to the events catched by each connected socket.
  */
 
 function onConnect(webSocket) {
@@ -85,7 +87,7 @@ function realizeTurn() {
  * Sets up a new game and informs the clients by sending them the information about it's state.
  */
 function startANewGame() {
-    game = new GameState();
+    game = gameFactory.createGame();
     sendToAll(game);
 }
 
