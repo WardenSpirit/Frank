@@ -2,7 +2,8 @@ const { readFile } = require('fs');
 const express = require('express');
 const app = express();
 
-app.use(express.static("/home/jan/Desktop/Frank/client"));
+console.log(__dirname.slice(__dirname.lastIndexOf('/')) + "/client");
+app.use(express.static(__dirname.slice(__dirname.lastIndexOf('/')) + "/client"));
 
 app.get('/', (_request, response) => {
     readFile('./index.html', 'utf8', (err, html) => {
