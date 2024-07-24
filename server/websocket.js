@@ -1,7 +1,4 @@
 const GameFactory = require('./gameFactory.js');
-const GameState = require('./gameState.js');
-
-console.log("websockets call");
 
 let gameFactory = new GameFactory();
 let game = null;

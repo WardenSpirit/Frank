@@ -11,8 +11,8 @@ class GameFactory {
         this.map = this.generateMap();
         /*this.treasurePosition = this.generateTreasurePosition();
         this.heroPosition = this.generateHeroPosition();*/
-        let positionsOnTheSameLand = this.generateTwoSameLandPositions()[0];
-        this.treasurePosition = positionsOnTheSameLand[0];
+        let positionsOnTheSameLand = this.generateTwoSameLandPositions();
+        this.heroPosition = positionsOnTheSameLand[0];
         this.treasurePosition = positionsOnTheSameLand[1];
 
         return new Game(this.map, this.treasurePosition, this.heroPosition);
@@ -57,13 +57,17 @@ class GameFactory {
             };
             positionsOnTheSameLand = this.findSameLand(origin);
         } while (positionsOnTheSameLand.length <= 1);
-
+        
         positionsOnTheSameLand.slice(positionsOnTheSameLand.indexOf(origin), 1);
-        return [origin, getRandomElement(positionsOnTheSameLand)];
+        let secondPosition = getRandomElement(positionsOnTheSameLand);
+
+        return [origin, secondPosition];
     }
 
     findSameLand(currentPosition) {
-        let isLandMap = Array.from({ length: this.map.length }, () => Array.from({ length: this.map[0].length }, () => false));
+        let isLandMap = Array.from({ length: this.map.length },
+            () => Array.from({ length: this.map[0].length },
+                () => false));
 
         this.noteSameLandsDown(currentPosition, isLandMap);
 
