@@ -4,7 +4,6 @@ const app = express();
 
 const pathLevelSign = process.platform == 'linux' ? '/' : '\\' 
 const path = __dirname.slice(0, __dirname.lastIndexOf(pathLevelSign)) + pathLevelSign + 'client';
-console.log("path", path);
 app.use(express.static(path));
 
 app.get('/', (_request, response) => {

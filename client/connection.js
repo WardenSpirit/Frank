@@ -8,7 +8,11 @@ let expectedMessageType;
 /**
  * WebSocket via which the client connects to the server.
  */
-const gameWebSocket = new WebSocket("ws://localhost:3000");
+const gameWebSocket = new WebSocket("wss://frank-thecat.glitch.me/", {
+    headers: {
+        "User-Agent": "Brave"
+    }
+});
 
 /**
  * Sends the user's decision to the server via the web socket and sets the expectedMessageType to "MOVES".

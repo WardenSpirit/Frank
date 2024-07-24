@@ -16,8 +16,5 @@
   "dependencies": {
     "express": "^4.19.2",
     "ws": "^8.18.0"
-  },
-  "devDependencies": {
-    "gh-pages": "^6.1.1"
   }
 }
