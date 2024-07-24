@@ -1,7 +1,7 @@
 const params = require('./params.json');
 const getRandomIndex = require('./array').getRandomIndex;
 const getRandomElement = require('./array').getRandomElement;
-const Game = require('./gameState')
+const Game = require('./game')
 const dataRepresentation = require('./dataRepresentation');
 
 class GameFactory {
@@ -9,8 +9,6 @@ class GameFactory {
     createGame() {
         //generating function must be called in this order
         this.map = this.generateMap();
-        /*this.treasurePosition = this.generateTreasurePosition();
-        this.heroPosition = this.generateHeroPosition();*/
         let positionsOnTheSameLand = this.generateTwoSameLandPositions();
         this.heroPosition = positionsOnTheSameLand[0];
         this.treasurePosition = positionsOnTheSameLand[1];
