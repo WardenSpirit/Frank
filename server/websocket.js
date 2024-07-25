@@ -12,6 +12,7 @@ let alreadySentMove = [];
 
 function onConnect(webSocket) {
     console.log("+ connection");
+    console.log("+ connection");
 
     webSockets.push(webSocket);
     if (webSockets.length == 1) {
