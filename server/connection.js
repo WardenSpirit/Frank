@@ -3,10 +3,12 @@ const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const webSocket = require('./websocket');
 
+const PORT = process.env.PORT || 5000
 
-server.listen(process.env.PORT || 3000, () =>
-    console.log('Available on http://localhost:' + (process.env.PORT || 3000)));
+server.listen(PORT, () => console.log('Now access. Port:' + PORT));
 
 const websocketServer = new WebSocket.Server({ server: server });
 
 websocketServer.on("connection", websocket => webSocket.onConnect(websocket));
+
+console.log( (new Date()) + " Server is listening on port " + PORT);

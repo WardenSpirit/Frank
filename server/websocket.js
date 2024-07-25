@@ -1,7 +1,4 @@
 const GameFactory = require('./gameFactory.js');
-const GameState = require('./gameState.js');
-
-console.log("websockets call");
 
 let gameFactory = new GameFactory();
 let game = null;
@@ -14,7 +11,7 @@ let alreadySentMove = [];
  */
 
 function onConnect(webSocket) {
-    console.log("new connection");
+    console.log("+ connection");
 
     webSockets.push(webSocket);
     if (webSockets.length == 1) {
@@ -26,7 +23,7 @@ function onConnect(webSocket) {
     webSocket.addEventListener("message", ({ data }) => {
         if (isValidMove(webSocket, data)) {
             recordMove(webSocket, data);
-            if (allMovesSent()) {
+            if (allMovesGathered()) {
                 realizeTurn();
             }
         }
@@ -48,23 +45,22 @@ function onConnect(webSocket) {
                     direction === "LEFT";
             }
         }
-
     });
 
     webSocket.addEventListener("close", () => {
-        console.log("connection closed");
+        console.log("- connection");
         eliminateWebSocket(webSocket);
 
         function eliminateWebSocket(webSocket) {
             webSockets.splice(webSockets.indexOf(webSocket), 1);
-            if (allMovesSent) {
+            if (allMovesGathered()) {
                 realizeTurn();
             }
         }
     });
 };
 
-function allMovesSent() {
+function allMovesGathered() {
     return moves.length === webSockets.length;
 }
 

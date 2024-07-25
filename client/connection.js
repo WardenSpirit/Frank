@@ -8,7 +8,9 @@ let expectedMessageType;
 /**
  * WebSocket via which the client connects to the server.
  */
-const gameWebSocket = new WebSocket("ws://localhost:3000");
+const serverAddress = 'wss://frank-thecat.glitch.me/';
+//const gameWebSocket = new WebSocket("ws://localhost:3000");
+const gameWebSocket = new WebSocket(serverAddress);
 
 /**
  * Sends the user's decision to the server via the web socket and sets the expectedMessageType to "MOVES".
@@ -28,6 +30,9 @@ gameWebSocket.addEventListener("error", e => {
 });
 
 gameWebSocket.addEventListener("message", message => {
+    console.log("message: ");
+    console.log(message);
+    console.log(": message");
     let data = JSON.parse(message.data);
     if (expectedMessageType === "GAME") {
         model.updateGame(data);

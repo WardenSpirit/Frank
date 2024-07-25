@@ -1,5 +1,7 @@
-function getRandomIndex(array) {
+exports.getRandomIndex = function(array) {
     return Math.floor(Math.random() * array.length);
 }
 
-module.exports = getRandomIndex;
+exports.getRandomElement = function(array) {
+    return array[exports.getRandomIndex(array)];
+}

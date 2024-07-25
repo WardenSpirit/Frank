@@ -1,23 +1,18 @@
 {
-  "homapege": "https://WardenSpirit.github.io/Frank",
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A game based on limited communication",
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "predeploy": "npm install",
-    "deploy": "gh-pages -d build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "predeploy": "npm install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "http": "^0.0.1-security",
     "ws": "^8.18.0"
-  },
-  "devDependencies": {
-    "gh-pages": "^6.1.1"
   }
 }

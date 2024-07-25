@@ -1,6 +1,7 @@
 const params = require('./params.json');
-const getRandomIndex = require('./array');
-const GameState = require('./gameState')
+const getRandomIndex = require('./array').getRandomIndex;
+const getRandomElement = require('./array').getRandomElement;
+const Game = require('./game')
 const dataRepresentation = require('./dataRepresentation');
 
 class GameFactory {
@@ -8,10 +9,11 @@ class GameFactory {
     createGame() {
         //generating function must be called in this order
         this.map = this.generateMap();
-        this.treasurePosition = this.generateTreasurePosition();
-        this.heroPosition = this.generateHeroPosition();
+        let positionsOnTheSameLand = this.generateTwoSameLandPositions();
+        this.heroPosition = positionsOnTheSameLand[0];
+        this.treasurePosition = positionsOnTheSameLand[1];
 
-        return new GameState(this.map, this.treasurePosition, this.heroPosition);
+        return new Game(this.map, this.treasurePosition, this.heroPosition);
     }
 
     generateMap() {
@@ -43,73 +45,63 @@ class GameFactory {
         }
     }
 
-    generateTreasurePosition() {
-        let treasurePosition;
-
+    generateTwoSameLandPositions() {
+        let origin;
+        let positionsOnTheSameLand;
         do {
-            treasurePosition =
-            {
+            origin = {
                 x: getRandomIndex(this.map),
                 y: getRandomIndex(this.map[0])
             };
-        } while (this.map[treasurePosition.x][treasurePosition.y] === dataRepresentation.HOLE ||
-            isTreasureSurroundedByHoles.call(this));
+            positionsOnTheSameLand = this.findSameLand(origin);
+        } while (positionsOnTheSameLand.length <= 1);
+        
+        positionsOnTheSameLand.slice(positionsOnTheSameLand.indexOf(origin), 1);
+        let secondPosition = getRandomElement(positionsOnTheSameLand);
 
-        return treasurePosition;
-
-        function isTreasureSurroundedByHoles() {
-            return (treasurePosition.y == 0 || this.map[treasurePosition.x][treasurePosition.y - 1] == dataRepresentation.HOLE) &&
-                (treasurePosition.x == this.map.length - 1 || this.map[treasurePosition.x + 1][treasurePosition.y] == dataRepresentation.HOLE) &&
-                (treasurePosition.y == this.map[0].length - 1 || this.map[treasurePosition.x][treasurePosition.y + 1] == dataRepresentation.HOLE) &&
-                (treasurePosition.x == 0 || this.map[treasurePosition.x - 1][treasurePosition.y] == dataRepresentation.HOLE);
-        }
+        return [origin, secondPosition];
     }
 
-    /**
-     * Calculates and returns a pseudorandom position on the map. The function uarantees,
-     * that there exists at least one path from the hero to the treasure,
-     * which means it does not break the winnability of the game.
-     * @returns A pseudorandom position intended for the hero.
-     */
-    generateHeroPosition() {
-        let heroPosition = { x: this.treasurePosition.x, y: this.treasurePosition.y };
+    findSameLand(currentPosition) {
+        let isLandMap = Array.from({ length: this.map.length },
+            () => Array.from({ length: this.map[0].length },
+                () => false));
 
-        let numberOfRepositions = 2 * params.MAP_WIDTH * params.MAP_HEIGHT;
-        for (let i = 0; i < numberOfRepositions; i++) {
-            let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
-            let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
-            heroPosition = randomPossibleNewCoordinates;
-        }
-        while(arePositionsSame(heroPosition, this.treasurePosition)) {
-            let possibleNewCoordinates = this.findPossibleMovesOut(heroPosition);
-            let randomPossibleNewCoordinates = possibleNewCoordinates[getRandomIndex(possibleNewCoordinates)];
-            heroPosition = randomPossibleNewCoordinates;
-        }
+        this.noteSameLandsDown(currentPosition, isLandMap);
 
-        return heroPosition;
-
-        function arePositionsSame(firstPosition, secondPosition) {
-            return firstPosition.x == secondPosition.x && firstPosition.y == secondPosition.y;
+        const sameLand = [];
+        for (let x = 0; x < isLandMap.length; x++) {
+            for (let y = 0; y < isLandMap[x].length; y++) {
+                if (isLandMap[x][y]) {
+                    sameLand.push({ x: x, y: y });
+                }
+            }
         }
+        return sameLand;
     }
 
-    /**
-     * Finds all the moves from the specified position that are safe. In other words, they don't lead to a hole.
-     * @param heroPosition The default position of the moves that are looked for.
-     * @returns Safe moves from the specified position.
-     */
-    findPossibleMovesOut(heroPosition) {
+    noteSameLandsDown(current, foundPositionsMap) {
+        if (this.map[current.x][current.y] !== dataRepresentation.HOLE) {
+            foundPositionsMap[current.x][current.y] = true;
+            this.positionsAround(current).forEach(neighbour => {
+                if (!foundPositionsMap[neighbour.x][neighbour.y]) {
+                    this.noteSameLandsDown(neighbour, foundPositionsMap)
+                }
+            });
+        }
+    };
+
+    positionsAround(position) {
         return [
-            { x: heroPosition.x, y: heroPosition.y - 1 },
-            { x: heroPosition.x + 1, y: heroPosition.y },
-            { x: heroPosition.x, y: heroPosition.y + 1 },
-            { x: heroPosition.x - 1, y: heroPosition.y },
-            { x: heroPosition.x, y: heroPosition.y }
-        ].filter(coordinates => GameState.isPositionWithinMapBounds(coordinates) && this.isPath(coordinates));
-    }
+            { x: position.x, y: position.y - 1 },
+            { x: position.x + 1, y: position.y },
+            { x: position.x, y: position.y + 1 },
+            { x: position.x - 1, y: position.y }]
+            .filter(position => this.isOnMap(position));
+    };
 
-    isPath(coordinates) {
-        return this.map[coordinates.x][coordinates.y] === dataRepresentation.PATH;
+    isOnMap(position) {
+        return (position.x >= 0 && position.y >= 0 && position.x < this.map.length && position.y < this.map[0].length);
     }
 }
 

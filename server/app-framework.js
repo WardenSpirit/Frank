@@ -2,9 +2,8 @@ const { readFile } = require('fs');
 const express = require('express');
 const app = express();
 
-console.log(__dirname + '/client...');
-const path = __dirname.slice(0, __dirname.lastIndexOf('\\')) + '\\client';
-console.log(path);
+const pathLevelSign = process.platform == 'linux' ? '/' : '\\' 
+const path = __dirname.slice(0, __dirname.lastIndexOf(pathLevelSign)) + pathLevelSign + 'client';
 app.use(express.static(path));
 
 app.get('/', (_request, response) => {

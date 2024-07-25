@@ -1,8 +1,7 @@
-const GameFactory = require('./gameFactory');
 const params = require('./params.json');
 const dataRepresentation = require('./dataRepresentation');
 
-class GameState {
+class Game {
     constructor(map, treasurePosition, heroPosition) {
         this.map = map;
         this.treasurePosition = treasurePosition;
@@ -44,7 +43,7 @@ class GameState {
                 break;
         }
 
-        if (GameState.isPositionWithinMapBounds(potentialNewHeroPosition)) {
+        if (Game.isPositionWithinMapBounds(potentialNewHeroPosition)) {
             this.heroPosition = potentialNewHeroPosition;
         }
     }
@@ -70,4 +69,4 @@ class GameState {
     }
 }
 
-module.exports = GameState;
+module.exports = Game;
