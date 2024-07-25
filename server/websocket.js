@@ -12,7 +12,6 @@ let alreadySentMove = [];
 
 function onConnect(webSocket) {
     console.log("+ connection");
-    console.log("+ connection");
 
     webSockets.push(webSocket);
     if (webSockets.length == 1) {
@@ -36,9 +35,11 @@ function onConnect(webSocket) {
 
         function isValidMove(webSocket, direction) {
             return !hasAlreadySentMove(webSocket) && isValidDirection(direction);
+
             function hasAlreadySentMove(webSocket) {
                 return alreadySentMove.includes(webSocket);
             }
+            
             function isValidDirection(direction) {
                 return direction === "UP" ||
                     direction === "RIGHT" ||
