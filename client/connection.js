@@ -1,15 +1,15 @@
 import * as model from './model.js';
+import * as params from './params.json';
 
 /**
  * Type of message the client expects the server sends to him next. Can be either "GAME" or "MOVES".
  */
-let expectedMessageType;
+let expectedMessageType = "NONE!";
 
 /**
  * WebSocket via which the client connects to the server.
  */
-const serverAddress = 'wss://frank-thecat.glitch.me/';
-//const gameWebSocket = new WebSocket("ws://localhost:3000");
+const serverAddress = params.websiteGlitch;
 const gameWebSocket = new WebSocket(serverAddress);
 
 /**

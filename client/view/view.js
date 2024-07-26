@@ -1,5 +1,3 @@
-import * as utils from './utils.js';
-
 /**
  * Array that holds all the images returned by the promises.
  */
