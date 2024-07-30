@@ -1,5 +1,5 @@
 import * as model from './model.js';
-import * as params from './params.json';
+import params from './params.json' with { type: 'json' };
 
 /**
  * Type of message the client expects the server sends to him next. Can be either "GAME" or "MOVES".
@@ -9,7 +9,7 @@ let expectedMessageType = "NONE!";
 /**
  * WebSocket via which the client connects to the server.
  */
-const serverAddress = params.websiteGlitch;
+const serverAddress = params.websiteLocal; //params.websiteGlitch;
 const gameWebSocket = new WebSocket(serverAddress);
 
 /**
@@ -30,9 +30,6 @@ gameWebSocket.addEventListener("error", e => {
 });
 
 gameWebSocket.addEventListener("message", message => {
-    console.log("message: ");
-    console.log(message);
-    console.log(": message");
     let data = JSON.parse(message.data);
     if (expectedMessageType === "GAME") {
         model.updateGame(data);

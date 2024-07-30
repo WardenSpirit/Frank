@@ -1,4 +1,4 @@
-import * as view from './view.js';
+import * as view from './view/view.js';
 
 const HOLE = 1;
 

@@ -1,57 +1,10 @@
-/**
- * Array that holds all the images returned by the promises.
- */
-let images = [];
-let imagePromises = [makeImagePromise("./assets/Terrain.png"), makeImagePromise("./assets/Hero2.png"), makeImagePromise("./assets/Dust.png"), makeImagePromise("./assets/Treasure.png")];
+import * as terrainParser from './terrainParser.js';
+import * as heroParser from './heroParser.js';
+import * as dustParser from './dustParser.js';
+import viewParams from './viewParams.json' with { type: 'json' };
+import * as images from './images.js';
 
-/**
- * Makes and returns a promise for loading the picture with the specified path.
- * @param imageSource Path of the picture which should be loaded.
- * @returns Promise of the picture.
- */
-function makeImagePromise(imageSource) {
-    return new Promise(function (resolve, reject) {
-        const image = new Image();
-        image.onload = resolve;
-        image.onerror = reject;
-        image.src = imageSource;
-        images[images.length] = image;
-    });
-}
-const terrainImage = images[0];
-const heroImage = images[1];
-const dustImage = images[2];
-const treasureImage = images[3];
-
-/**
- * Constant that represents holes on the game map. Numbers are used to shorten strings sent between the server and clients.
- */
-const GRASS_CODE = 0;
-
-/**
- * Size (both vertical and horizontal sizes are the same) of the square in the used pictures.
- */
-const sourceSquareSize = 16;
-
-/**
- * Parameters which are used when calculating the correct part of picture source. That part is then drew on the canvases.
- */
-const grassLine = 0;
-const maskForWaterLine = 1;
-const waterLine = 2;
-const standingHeroLine = 0;
-const walkUpHeroLine = 1;
-const walkRightHeroLine = 2;
-const walkDownHeroLine = 3;
-const walkLeftHeroLine = 4;
-const dustLine = 0;
-
-const grassCount = 8;
-const maskForWaterCount = 4;
-const waterCount = 4;
-const heroCount = 4;
 const dustCount = 4;
-
 /**
  * Sizes of one square on the canvases.
  */
@@ -60,14 +13,10 @@ let squareSize = {};
 /**
  * Parameters, which are used for drawing the hero.
  */
-const heroAnimationInterval = 300;
+let heroTargetOrigin;
 const dustAnimationInterval = 150;
 let heroState = "STANDING";
 let lastHeroUpdateTime = 0;
-let lastHeroSourceOriginChangeTime = 0;
-let heroSourceOrigin;
-let heroTargetOrigin;
-let lastHeroTargetOrigin;
 
 /**
  * Coordinations of animation "dusts", that use to be displayed behind the hero after he/she moves.
@@ -93,7 +42,7 @@ export async function renderGame(renderedGame) {
     squareSize.width = gameCanvas.width / renderedGame.map.length;
     squareSize.height = gameCanvas.height / renderedGame.map[0].length;
 
-    await Promise.allSettled(imagePromises);
+    await images.isReady();
     renderMap(renderedGame.map);
     startRenderingHero(renderedGame.heroPosition);
     startRenderingDust();
@@ -103,133 +52,61 @@ export async function renderGame(renderedGame) {
         gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height)
         for (let x = 0; x < map.length; x++) {
             for (let y = 0; y < map[x].length; y++) {
-                renderTerrain(map[x][y], { x: x, y: y });
+                renderTerrain(map, { x: x, y: y });
             }
         }
 
-        function renderTerrain(terrainCode, position) {
-            if (terrainCode === GRASS_CODE) {
-                renderGrass(position);
-            } else {
-                renderWater(position);
-            }
-
-            function renderGrass(position) {
-                const sourceOrigin = {
-                    x: Math.floor(Math.random() * grassCount) * sourceSquareSize,
-                    y: grassLine * sourceSquareSize
-                };
-                renderTerrainSquare(sourceOrigin, position);
-            }
-
-            function renderWater(position) {
-                renderWaterBase(position);
-                renderMaskForWater(position);
-
-                function renderWaterBase(position) {
-                    const sourceOrigin = {
-                        x: Math.floor(Math.random() * waterCount) * sourceSquareSize,
-                        y: waterLine * sourceSquareSize
-                    };
-                    renderTerrainSquare(sourceOrigin, position);
-                }
-
-                function renderMaskForWater(position) {
-                    const sourceOrigin = {
-                        x: Math.floor(Math.random() * maskForWaterCount) * sourceSquareSize,
-                        y: maskForWaterLine * sourceSquareSize
-                    };
-                    renderTerrainSquare(sourceOrigin, position);
-                }
-            }
-
-            function renderTerrainSquare(sourceOrigin, position) {
-                const targetOrigin = calculateTargetOriginFromPosition(position);
-                gameContext.drawImage(terrainImage, sourceOrigin.x, sourceOrigin.y, sourceSquareSize, sourceSquareSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
-            }
+        function renderTerrain(map, position) {
+            const sourceOrigin = terrainParser.getTerrainSource(map, position);
+            const targetOrigin = calculateTargetOriginFromPosition(position);
+            gameContext.drawImage(images.terrainImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
         }
     }
 
     function startRenderingHero(position) {
-
-        heroSourceOrigin = { x: 0, y: standingHeroLine };
+        let heroSourceOrigin;
         heroTargetOrigin = calculateTargetOriginFromPosition(position);
 
-        requestAnimationFrame(function animateHero(documentAge) {
-            updateHeroAnimationOrigins(documentAge);
-            if (lastHeroTargetOrigin != undefined) {
-                clearHero();
-            }
-            drawHero();
+        requestAnimationFrame(function animateHero(currentTime) {
+            clearHero();
+            heroSourceOrigin = heroParser.calculateHeroSourceOrigin(currentTime);
+            heroTargetOrigin = updateHeroTargetOrigin(currentTime);
+            drawHero(heroSourceOrigin);
             requestAnimationFrame(animateHero);
         });
 
-        function updateHeroAnimationOrigins(currentTime) {
+        function updateHeroTargetOrigin(currentTime) {
             const deltaTime = currentTime - lastHeroUpdateTime;
             lastHeroUpdateTime = currentTime;
-
-            heroSourceOrigin = calculateHeroSourceOrigin(currentTime);
-            heroTargetOrigin = calculateHeroTargetOrigin(deltaTime);
-
-            function calculateHeroSourceOrigin(currentTime) {
-                if (currentTime - lastHeroSourceOriginChangeTime > heroAnimationInterval) {
-                    lastHeroSourceOriginChangeTime = currentTime - currentTime % heroAnimationInterval;
-                    const x = (heroSourceOrigin.x + sourceSquareSize) % (heroCount * sourceSquareSize);
-                    let y;
-                    switch (heroState) {
-                        case "UP":
-                            y = walkUpHeroLine;
-                            break;
-                        case "RIGHT":
-                            y = walkRightHeroLine;
-                            break;
-                        case "DOWN":
-                            y = walkDownHeroLine;
-                            break;
-                        case "LEFT":
-                            y = walkLeftHeroLine;
-                            break;
-                        default:        //case "STANDING":
-                            y = standingHeroLine;
-                            break;
-                    }
-                    return { x: x, y: y };
-                }
-                return heroSourceOrigin;
-            }
-
-            function calculateHeroTargetOrigin(deltaTime) {
-                let speed = getHeroSpeed();
-                return {
-                    x: heroTargetOrigin.x + speed.x * deltaTime,
-                    y: heroTargetOrigin.y + speed.y * deltaTime
-                };
+            let speed = getHeroSpeed();
+            return {
+                x: heroTargetOrigin.x + speed.x * deltaTime,
+                y: heroTargetOrigin.y + speed.y * deltaTime
+            };
 
 
-                function getHeroSpeed() {
-                    switch (heroState) {
-                        case ("UP"):
-                            return { x: 0, y: -0.1 };
-                        case ("RIGHT"):
-                            return { x: 0.1, y: 0 };
-                        case ("DOWN"):
-                            return { x: 0, y: 0.1 };
-                        case ("LEFT"):
-                            return { x: -0.1, y: 0 };
-                        default:        //case ("STANDING")
-                            return { x: 0, y: 0 };
-                    }
+            function getHeroSpeed() {
+                switch (heroState) {
+                    case ("UP"):
+                        return { x: 0, y: -0.1 };
+                    case ("RIGHT"):
+                        return { x: 0.1, y: 0 };
+                    case ("DOWN"):
+                        return { x: 0, y: 0.1 };
+                    case ("LEFT"):
+                        return { x: -0.1, y: 0 };
+                    default:        //case ("STANDING")
+                        return { x: 0, y: 0 };
                 }
             }
         }
 
         function clearHero() {
-            objectContext.clearRect(lastHeroTargetOrigin.x, lastHeroTargetOrigin.y, squareSize.width, squareSize.height);
+            objectContext.clearRect(heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
         }
 
-        function drawHero() {
-            objectContext.drawImage(heroImage, heroSourceOrigin.x, heroSourceOrigin.y, sourceSquareSize, sourceSquareSize, heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
-            lastHeroTargetOrigin = heroTargetOrigin;
+        function drawHero(heroSourceOrigin) {
+            objectContext.drawImage(images.heroImage, heroSourceOrigin.x, heroSourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
         }
     }
 
@@ -261,12 +138,9 @@ export async function renderGame(renderedGame) {
                 }
 
                 function drawDust(dust) {
-                    const sourceOrigin = {
-                        x: dust.phase * sourceSquareSize,
-                        y: dustLine * sourceSquareSize
-                    };
+                    const sourceOrigin = dustParser.calculateDustSourceOrigin(dust.phase);
                     const targetOrigin = calculateTargetOriginFromPosition(dust.position);
-                    objectContext.drawImage(dustImage, sourceOrigin.x, sourceOrigin.y, sourceSquareSize, sourceSquareSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+                    objectContext.drawImage(images.dustImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
                 }
             }
         });
@@ -274,7 +148,7 @@ export async function renderGame(renderedGame) {
 
     function renderTreasure(position) {
         const targetOrigin = calculateTargetOriginFromPosition(position);
-        gameContext.drawImage(treasureImage, 0, 0, sourceSquareSize, sourceSquareSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+        gameContext.drawImage(images.treasureImage, 0, 0, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
     }
 }
 
@@ -302,6 +176,7 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
             const dust = dusts[i];
             if (arePositionsSame(dust.position, stompedPosition)) {
                 dusts.splice(i, 1);
+                break;
             }
         }
     }

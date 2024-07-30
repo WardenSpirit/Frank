@@ -1,4 +1,5 @@
 {
-    "websiteLocal": "ws://localhost:3000",
-    "websiteGlitch": "wss://frank-the-cat.glitch.me/"
+    "websiteLocal": "ws://localhost:5000",
+    "websiteGlitch": "wss://frank-the-cat.glitch.me/",
+    "GRASS_CODE": "0"
 }

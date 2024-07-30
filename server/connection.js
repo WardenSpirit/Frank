@@ -5,10 +5,8 @@ const webSocket = require('./websocket');
 
 const PORT = process.env.PORT || 5000
 
-server.listen(PORT, () => console.log('Now access. Port:' + PORT));
+server.listen(PORT, () => console.log(`${new Date()}... The server is listening on port ${PORT}`));
 
 const websocketServer = new WebSocket.Server({ server: server });
 
 websocketServer.on("connection", websocket => webSocket.onConnect(websocket));
-
-console.log( (new Date()) + " Server is listening on port " + PORT);
