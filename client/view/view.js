@@ -69,7 +69,7 @@ export async function renderGame(renderedGame) {
 
         requestAnimationFrame(function animateHero(currentTime) {
             clearHero();
-            heroSourceOrigin = heroParser.calculateHeroSourceOrigin(currentTime);
+            heroSourceOrigin = heroParser.calculateHeroSourceOrigin(heroState, currentTime);
             heroTargetOrigin = updateHeroTargetOrigin(currentTime);
             drawHero(heroSourceOrigin);
             requestAnimationFrame(animateHero);
