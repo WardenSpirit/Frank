@@ -1,7 +1,7 @@
 const ASSETS_PATH = "../assets/";
 
 const TERRAIN_IMAGE_PATH = ASSETS_PATH + "Terrain.png";
-const HERO_IMAGE_PATH = ASSETS_PATH + "Hero2.png";
+const HERO_IMAGE_PATH = ASSETS_PATH + "Hero_Snake.png";
 const DUST_IMAGE_PATH = ASSETS_PATH + "Dust.png";
 const TREASURE_IMAGE_PATH = ASSETS_PATH + "Treasure.png";
 
