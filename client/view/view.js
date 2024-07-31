@@ -1,6 +1,6 @@
-import * as terrainParser from './terrainParser.js';
-import * as heroParser from './heroParser.js';
-import * as dustParser from './dustParser.js';
+import * as terrainParser from './parsing/terrainParser.js';
+import * as heroParser from './parsing/heroParser.js';
+import * as dustParser from './parsing/dustParser.js';
 import viewParams from './viewParams.json' with { type: 'json' };
 import * as images from './images.js';
 

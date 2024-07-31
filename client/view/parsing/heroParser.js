@@ -1,4 +1,4 @@
-import viewParams from './viewParams.json' with { type: 'json' };
+import viewParams from '../viewParams.json' with { type: 'json' };
 
 const standingHeroLine = 0;
 const walkUpHeroLine = 1;

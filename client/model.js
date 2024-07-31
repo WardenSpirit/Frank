@@ -9,7 +9,6 @@ let game;
  * @param newGame The stringified game state to hold on the client side.
  */
 export function updateGame(newGame) {
-    console.log("updateGame(" + newGame + ") called");
     game = newGame;
     view.renderGame(game);
 }

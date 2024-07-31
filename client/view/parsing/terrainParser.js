@@ -1,5 +1,4 @@
-import viewParams from './viewParams.json' with { type: 'json' };
-import params from '../params.json' with {type: 'json'};
+import params from '../../params.json' with {type: 'json'};
 import * as parserUtils from './parserUtils.js';
 
 /**
