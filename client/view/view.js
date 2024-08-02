@@ -1,10 +1,9 @@
-import * as terrainParser from './parsing/terrainParser.js';
-import * as heroParser from './parsing/heroParser.js';
-import * as dustParser from './parsing/dustParser.js';
+import * as terrainParser from './parser/terrainParser.js';
+import * as heroParser from './parser/heroParser.js';
+import * as dustParser from './parser/dustParser.js';
 import viewParams from './viewParams.json' with { type: 'json' };
 import * as images from './images.js';
 
-const dustCount = 4;
 /**
  * Sizes of one square on the canvases.
  */
@@ -124,11 +123,7 @@ export async function renderGame(renderedGame) {
 
                     if (oldPhase != dust.phase) {
                         clearDust(dust);
-                        if (dust.phase >= dustCount) {
-                            dusts.splice(i, 1);
-                        } else {
-                            drawDust(dust)
-                        }
+                        drawDust(i);
                     }
                 }
 
@@ -137,8 +132,13 @@ export async function renderGame(renderedGame) {
                     objectContext.clearRect(targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
                 }
 
-                function drawDust(dust) {
-                    const sourceOrigin = dustParser.calculateDustSourceOrigin(dust.phase);
+                function drawDust(i) {
+                    const dust = dusts[i];
+                    const sourceOrigin = dustParser.calculateDustSourceOrigin(dust);
+                    if (!sourceOrigin) {
+                        dusts.splice(i, 1);
+                        return;
+                    }
                     const targetOrigin = calculateTargetOriginFromPosition(dust.position);
                     objectContext.drawImage(images.dustImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
                 }
@@ -158,9 +158,9 @@ export async function renderGame(renderedGame) {
  * @param newHeroPosition The position which the hero moves to.
  */
 export function displayMove(oldHeroPosition, newHeroPosition) {
-    dusts[dusts.length] = { position: oldHeroPosition, spawnTime: calculateSpawnTime() };
+    dusts[dusts.length] = { position: oldHeroPosition, spawnTime: calculateSpawnTime(), phase: "-1" };
     heroTargetOrigin = calculateTargetOriginFromPosition(newHeroPosition);
-    removeStompedDusts(newHeroPosition);
+    removeStompedDust(newHeroPosition);
 
     function calculateSpawnTime() {
         const currentTime = Date.now();
@@ -171,7 +171,7 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
         }
     }
 
-    function removeStompedDusts(stompedPosition) {
+    function removeStompedDust(stompedPosition) {
         for (let i = dusts.length - 1; i >= 0; i--) {
             const dust = dusts[i];
             if (arePositionsSame(dust.position, stompedPosition)) {
