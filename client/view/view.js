@@ -1,13 +1,9 @@
-import * as terrainParser from './parser/terrainParser.js';
-import * as heroParser from './parser/heroParser.js';
-import * as dustParser from './parser/dustParser.js';
 import viewParams from './viewParams.json' with { type: 'json' };
 import * as images from './images.js';
-
-/**
- * Sizes of one square on the canvases.
- */
-let squareSize = {};
+import * as heroParser from './parser/heroParser.js';
+import * as dustParser from './parser/dustParser.js';
+import * as terrainRenderer from './renderer/terrainRenderer.js';
+import * as drawingContext from './renderer/drawingContext.js'
 
 /**
  * Parameters, which are used for drawing the hero.
@@ -23,48 +19,21 @@ let lastHeroUpdateTime = 0;
 let dusts = [];
 
 /**
- * Canvases and context configuration settings.
- */
-const gameCanvas = document.querySelector("#game");
-const heroCanvas = document.querySelector("#hero");
-const gameContext = gameCanvas.getContext("2d");
-const objectContext = heroCanvas.getContext("2d");
-gameContext.imageSmoothingEnabled = false;
-objectContext.imageSmoothingEnabled = false;
-
-/**
  * Displays the specified game on the screen.
  * @param renderedGame The game to be rendered.
  */
 export async function renderGame(renderedGame) {
 
-    squareSize.width = gameCanvas.width / renderedGame.map.length;
-    squareSize.height = gameCanvas.height / renderedGame.map[0].length;
-
+    drawingContext.initSquareProportions(renderedGame.map.length, renderedGame.map[0].length);
     await images.isReady();
-    renderMap(renderedGame.map);
+    terrainRenderer.renderMap(renderedGame.map);
     startRenderingHero(renderedGame.heroPosition);
     startRenderingDust();
     renderTreasure(renderedGame.treasurePosition);
 
-    function renderMap(map) {
-        gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height)
-        for (let x = 0; x < map.length; x++) {
-            for (let y = 0; y < map[x].length; y++) {
-                renderTerrain(map, { x: x, y: y });
-            }
-        }
-
-        function renderTerrain(map, position) {
-            const sourceOrigin = terrainParser.getTerrainSource(map, position);
-            const targetOrigin = calculateTargetOriginFromPosition(position);
-            gameContext.drawImage(images.terrainImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
-        }
-    }
-
     function startRenderingHero(position) {
         let heroSourceOrigin;
-        heroTargetOrigin = calculateTargetOriginFromPosition(position);
+        heroTargetOrigin = drawingContext.calculateTargetOrigin(position);
 
         requestAnimationFrame(function animateHero(currentTime) {
             clearHero();
@@ -101,11 +70,11 @@ export async function renderGame(renderedGame) {
         }
 
         function clearHero() {
-            objectContext.clearRect(heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
+            drawingContext.objectContext.clearRect(heroTargetOrigin.x, heroTargetOrigin.y, drawingContext.square.width, drawingContext.square.height);
         }
 
         function drawHero(heroSourceOrigin) {
-            objectContext.drawImage(images.heroImage, heroSourceOrigin.x, heroSourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, heroTargetOrigin.x, heroTargetOrigin.y, squareSize.width, squareSize.height);
+            drawingContext.objectContext.drawImage(images.heroImage, heroSourceOrigin.x, heroSourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, heroTargetOrigin.x, heroTargetOrigin.y, drawingContext.square.width, drawingContext.square.height);
         }
     }
 
@@ -128,8 +97,8 @@ export async function renderGame(renderedGame) {
                 }
 
                 function clearDust(dust) {
-                    const targetOrigin = calculateTargetOriginFromPosition(dust.position);
-                    objectContext.clearRect(targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+                    const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
+                    drawingContext.objectContext.clearRect(targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
                 }
 
                 function drawDust(i) {
@@ -139,16 +108,16 @@ export async function renderGame(renderedGame) {
                         dusts.splice(i, 1);
                         return;
                     }
-                    const targetOrigin = calculateTargetOriginFromPosition(dust.position);
-                    objectContext.drawImage(images.dustImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+                    const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
+                    drawingContext.objectContext.drawImage(images.dustImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
                 }
             }
         });
     }
 
     function renderTreasure(position) {
-        const targetOrigin = calculateTargetOriginFromPosition(position);
-        gameContext.drawImage(images.treasureImage, 0, 0, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, squareSize.width, squareSize.height);
+        const targetOrigin = drawingContext.calculateTargetOrigin(position);
+        drawingContext.gameContext.drawImage(images.treasureImage, 0, 0, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
     }
 }
 
@@ -159,7 +128,7 @@ export async function renderGame(renderedGame) {
  */
 export function displayMove(oldHeroPosition, newHeroPosition) {
     dusts[dusts.length] = { position: oldHeroPosition, spawnTime: calculateSpawnTime(), phase: "-1" };
-    heroTargetOrigin = calculateTargetOriginFromPosition(newHeroPosition);
+    heroTargetOrigin = drawingContext.calculateTargetOrigin(newHeroPosition);
     removeStompedDust(newHeroPosition);
 
     function calculateSpawnTime() {
@@ -180,16 +149,6 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
             }
         }
     }
-}
-
-/**
- * Calculates and returns the position on the canvas, where an image should be drew
- * (the coordinations of the top-left corner of the image).
- * @param position The game position of the drew image, in other words, the position on the map.
- * @returns The coordinations of the top-left corner of the image
- */
-function calculateTargetOriginFromPosition(position) {
-    return { x: position.x * squareSize.width, y: position.y * squareSize.height };
 }
 
 /**

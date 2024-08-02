@@ -1,11 +1,12 @@
 import viewParams from '../viewParams.json' with { type: 'json' };
+import * as images from '../images.js';
 
 const standingHeroLine = 0;
 const walkUpHeroLine = 1;
 const walkRightHeroLine = 2;
 const walkDownHeroLine = 3;
 const walkLeftHeroLine = 4;
-const heroCount = 4;
+const heroCount = images.heroImage.width / viewParams.sourceTileSize;
 
 const heroAnimationInterval = 300;
 let lastChangeTime = - heroAnimationInterval;
