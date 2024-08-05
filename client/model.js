@@ -1,14 +1,15 @@
 import * as view from './view/view.js';
-
-const HOLE = 1;
+import params from './params.json' with {type: 'json'};
 
 let game;
+let points = 0;
 
 /**
  * Updates the game model based on the argument. Calls view to start displaying the new game state.
  * @param newGame The stringified game state to hold on the client side.
  */
 export function updateGame(newGame) {
+    newGame.points = points;
     game = newGame;
     view.renderGame(game);
 }
@@ -24,7 +25,16 @@ export function applyMoves(moves) {
         moveHero(move);
         view.displayMove(oldHeroPosition, game.heroPosition, move);
 
-        if (isGameFinished()) {
+        if (isTreasureReached()) {
+            points++;
+            view.renderScore(points);
+            break;
+        }
+        if (isHeroInHole()) {
+            if (points > 0) { 
+                points--;
+             }
+            view.renderScore(points);
             break;
         }
     }
@@ -62,7 +72,13 @@ export function applyMoves(moves) {
  * @returns True if the hero position means the end of the game, false otherwise.
  */
 export function isGameFinished() {
-    return game.map[game.heroPosition.x][game.heroPosition.y] === HOLE ||
-        (game.heroPosition.x === game.treasurePosition.x &&
-            game.heroPosition.y === game.treasurePosition.y);
+    return isTreasureReached() || isHeroInHole();
+}
+
+function isTreasureReached() {
+    return game.heroPosition.x === game.treasurePosition.x && game.heroPosition.y === game.treasurePosition.y;
+}
+
+function isHeroInHole() {
+    return game.map[game.heroPosition.x][game.heroPosition.y] != params.GRASS_CODE
 }

@@ -8,19 +8,13 @@
 </head>
 
 <body>
-    <div id="page">
-        <div id="gamespace">
-            <canvas id="game" width="800" height="800"></canvas>
-            <canvas id="hero" width="800" height="800"></canvas>
-        </div>
 
-        <div id="table">
-            <img src="./view/assets/Table.png" alt="scoretable"> <!-- width="800" height="167.857" -->
-            <canvas id="treasures"></canvas>
-            <canvas id="holes"></canvas>
-            <canvas id="time"></canvas>
-            <canvas id="timePerTreasure"></canvas>
-        </div>
+    <div id="page">
+        <canvas id="game" class="main" width="800" height="800"></canvas>
+        <canvas id="hero" class="main" width="800" height="800"></canvas>
+
+        <canvas id="table" class="table" width="800" height="200"></canvas>
+        <canvas id="stats" class="table" width="800" height="200"></canvas>
     </div>
     <script type="module" src="./controls.js">
     </script>

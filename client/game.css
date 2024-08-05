@@ -4,22 +4,25 @@
     padding: 0;
 }
 
-div#gamespace>canvas {
-    width: 100%;
-    max-width: 100vh;
-    max-height: 81.4vh;
+div.page {
+    max-height: 100vh;
 }
 
-div#gamespace>canvas#hero {
-    position: absolute;
+div>canvas.main {
+    width: 100vw;
+    height: 100vw;
+    max-width: 100vh;
+    max-height: 80vh;
+    position: fixed;
     top: 0;
     left: 0;
 }
 
-div#table>img {
-    position: absolute;
-    top: 81.4vh;
-    left: 0;
-    width: 100%;
+div>canvas.table {
+    width: 100vw;
     max-width: 100vh;
+    max-height: 20vh;
+    position: fixed;
+    top: 80vh;
+    left: 0;
 }

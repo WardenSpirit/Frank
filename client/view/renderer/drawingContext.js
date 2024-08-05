@@ -3,13 +3,18 @@
  */
 const gameCanvas = document.querySelector("#game");
 const heroCanvas = document.querySelector("#hero");
+const tableCanvas = document.querySelector("#table");
+const stateCanvas = document.querySelector("#stats");
 
 const gameContext = gameCanvas.getContext("2d");
-console.log("gameContext initialized");
 const objectContext = heroCanvas.getContext("2d");
+const tableContext = tableCanvas.getContext("2d");
+const stateContext = stateCanvas.getContext("2d");
 
 gameContext.imageSmoothingEnabled = false;
 objectContext.imageSmoothingEnabled = false;
+tableContext.imageSmoothingEnabled = false;
+stateContext.imageSmoothingEnabled = false;
 
 let square;
 
@@ -30,5 +35,8 @@ function calculateTargetOrigin(position) {
     return { x: position.x * square.width, y: position.y * square.height };
 }
 
+function calculateStatsTargetOrigin(characterIndex) {
+    return { x: 54 + 54 * characterIndex, y: 72 };
+}
 
-export {initSquareProportions, gameCanvas, heroCanvas, gameContext, objectContext, square, calculateTargetOrigin}
+export {initSquareProportions, gameCanvas, heroCanvas, gameContext, objectContext, tableContext, stateContext, square, calculateTargetOrigin, calculateStatsTargetOrigin}

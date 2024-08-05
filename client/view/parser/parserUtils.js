@@ -11,4 +11,4 @@ function getOriginInLine(line, tile) {
     };
 }
 
-export { getRandomOriginInLine };
+export { getRandomOriginInLine, getOriginInLine };

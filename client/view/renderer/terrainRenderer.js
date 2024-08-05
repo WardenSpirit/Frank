@@ -1,3 +1,4 @@
+import params from '../../params.json' with {type: 'json'};
 import viewParams from '../viewParams.json' with { type: 'json' };
 import * as terrainParser from '../parser/terrainParser.js';
 import * as drawingContext from './drawingContext.js'
@@ -5,7 +6,6 @@ import * as images from '../images.js';
 
 
 export function renderMap(map) {
-    console.log(drawingContext.gameCanvas);
     drawingContext.gameContext.clearRect(0, 0, drawingContext.gameCanvas.width, drawingContext.gameCanvas.height);
 
     for (let x = 0; x < map.length; x++) {
@@ -16,9 +16,17 @@ export function renderMap(map) {
 }
 
 function renderTerrain(map, position) {
-    const sourceOrigin = terrainParser.getTerrainSource(map, position);
+    let sourceOrigin;
+    let image;
+    if (map[position.x][position.y] == params.GRASS_CODE) {
+        image = images.pathImage;
+        sourceOrigin = terrainParser.getPathSource(map, position);
+    } else {
+        image = images.holeImage;
+        sourceOrigin = terrainParser.getHoleSource(map, position);
+    }
     const targetOrigin = drawingContext.calculateTargetOrigin(position);
-    drawingContext.gameContext.drawImage(images.terrainImage,
+    drawingContext.gameContext.drawImage(image,
         sourceOrigin.x,
         sourceOrigin.y,
         viewParams.sourceTileSize,
