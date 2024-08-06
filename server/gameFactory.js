@@ -1,6 +1,5 @@
 const params = require('./params.json');
 const getRandomIndex = require('./array').getRandomIndex;
-const getRandomElement = require('./array').getRandomElement;
 const Game = require('./game')
 const dataRepresentation = require('./dataRepresentation');
 
@@ -48,6 +47,7 @@ class GameFactory {
     generateTwoSameLandPositions() {
         let origin;
         let positionsOnTheSameLand;
+        
         do {
             origin = {
                 x: getRandomIndex(this.map),
@@ -56,10 +56,15 @@ class GameFactory {
             positionsOnTheSameLand = this.findSameLand(origin);
         } while (positionsOnTheSameLand.length <= 1);
         
-        positionsOnTheSameLand.slice(positionsOnTheSameLand.indexOf(origin), 1);
-        let secondPosition = getRandomElement(positionsOnTheSameLand);
+        let otherI = getRandomIndex(positionsOnTheSameLand);
+        let otherPosition = positionsOnTheSameLand[otherI];
+        if (otherPosition.x == origin.x && otherPosition.y == origin.y) {
+            positionsOnTheSameLand.splice(otherI, 1);
+            otherI = getRandomIndex(positionsOnTheSameLand);
+            otherPosition = positionsOnTheSameLand[otherI];
+        }
 
-        return [origin, secondPosition];
+        return [origin, otherPosition];
     }
 
     findSameLand(currentPosition) {
