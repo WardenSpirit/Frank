@@ -18,7 +18,7 @@ export function renderMap(map) {
 function renderTerrain(map, position) {
     let sourceOrigin;
     let image;
-    if (map[position.x][position.y] == params.GRASS_CODE) {
+    if (map[position.x][position.y] == params.PATH_CODE) {
         image = images.pathImage;
         sourceOrigin = terrainParser.getPathSource(map, position);
     } else {

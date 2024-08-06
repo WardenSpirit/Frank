@@ -80,5 +80,5 @@ function isTreasureReached() {
 }
 
 function isHeroInHole() {
-    return game.map[game.heroPosition.x][game.heroPosition.y] != params.GRASS_CODE
+    return game.map[game.heroPosition.x][game.heroPosition.y] != params.PATH_CODE
 }
