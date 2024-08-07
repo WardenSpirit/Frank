@@ -35,8 +35,14 @@ function calculateTargetOrigin(position) {
     return { x: position.x * square.width, y: position.y * square.height };
 }
 
-function calculateStatsTargetOrigin(characterIndex) {
+function calculatePointsTargetOrigin(characterIndex) {
     return { x: 54 + 54 * characterIndex, y: 72 };
 }
 
-export {initSquareProportions, gameCanvas, heroCanvas, gameContext, objectContext, tableContext, stateContext, square, calculateTargetOrigin, calculateStatsTargetOrigin}
+function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
+    console.log("stateCanvas.width + 54 * (-1 - digitsNumber + characterIndex):", stateCanvas.width + 54 * (-1 - digitsNumber + characterIndex));
+    return { x: stateCanvas.width + 54 * (-1 - digitsNumber + characterIndex), y: 72 };
+}
+
+export {initSquareProportions, gameCanvas, heroCanvas, gameContext, objectContext, tableContext, stateContext, square,
+    calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin}

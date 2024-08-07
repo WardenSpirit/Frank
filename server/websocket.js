@@ -17,8 +17,9 @@ function onConnect(webSocket) {
     if (webSockets.length == 1) {
         startANewGame();
     } else {
-        webSocket.send(JSON.stringify(game));
+        webSocket.send(JSON.stringify({type: "GAME", clearData: game}));
     }
+    sendToAll("PLAYERS", webSockets.length);
 
     webSocket.addEventListener("message", ({ data }) => {
         if (isValidMove(webSocket, data)) {
@@ -55,6 +56,7 @@ function onConnect(webSocket) {
 
         function eliminateWebSocket(webSocket) {
             webSockets.splice(webSockets.indexOf(webSocket), 1);
+            sendToAll("PLAYERS", webSockets.length);
             if (allMovesGathered()) {
                 realizeTurn();
             }
@@ -70,7 +72,7 @@ function allMovesGathered() {
  * Realizes a turn with the moves that have come.
  */
 function realizeTurn() {
-    sendToAll(moves);
+    sendToAll("MOVES", moves);
     game.makeMoves(moves);
 
     moves = [];
@@ -86,16 +88,17 @@ function realizeTurn() {
  */
 function startANewGame() {
     game = gameFactory.createGame();
-    sendToAll(game);
+    sendToAll("GAME", game);
 }
 
 /**
  * Sends JSON-stringified data to every connected web socket.
  * @param data 
  */
-function sendToAll(data) {
+function sendToAll(type, data) {
+    let text = JSON.stringify({type: type, clearData: data})
     for (let i = 0; i < webSockets.length; i++) {
-        webSockets[i].send(JSON.stringify(data));
+        webSockets[i].send(text);
     }
 }
 

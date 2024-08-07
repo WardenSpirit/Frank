@@ -22,7 +22,7 @@ export async function renderGame(renderedGame) {
     dustRenderer.startRenderingDust();
     treasureRenderer.renderTreasure(renderedGame.treasurePosition);
     tableRenderer.renderTable();
-    statsRenderer.renderScore(renderedGame.points);
+    statsRenderer.renderPoints(renderedGame.points);
 }
 
 /**
@@ -36,6 +36,11 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
     heroRenderer.setNewPosition(newHeroPosition);
 }
 
-export function renderScore(points) {
-    statsRenderer.renderScore(points);
+export function displayPoints(points) {
+    statsRenderer.renderPoints(points);
+}
+
+export async function displayPlayers(players) {
+    await images.isReady();
+    statsRenderer.renderPlayers(players);
 }

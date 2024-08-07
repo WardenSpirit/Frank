@@ -3,6 +3,7 @@ import params from './params.json' with {type: 'json'};
 
 let game;
 let points = 0;
+let players = 0;
 
 /**
  * Updates the game model based on the argument. Calls view to start displaying the new game state.
@@ -27,14 +28,14 @@ export function applyMoves(moves) {
 
         if (isTreasureReached()) {
             points++;
-            view.renderScore(points);
+            view.displayPoints(points);
             break;
         }
         if (isHeroInHole()) {
             if (points > 0) { 
                 points--;
              }
-            view.renderScore(points);
+            view.displayPoints(points);
             break;
         }
     }
@@ -66,19 +67,15 @@ export function applyMoves(moves) {
     }
 }
 
-/**
- * Compares the coordinations of the hero, the treasure and the terrain on the map on the hero's coordinations
- * to tell whether the game is ended.
- * @returns True if the hero position means the end of the game, false otherwise.
- */
-export function isGameFinished() {
-    return isTreasureReached() || isHeroInHole();
-}
-
 function isTreasureReached() {
     return game.heroPosition.x === game.treasurePosition.x && game.heroPosition.y === game.treasurePosition.y;
 }
 
 function isHeroInHole() {
     return game.map[game.heroPosition.x][game.heroPosition.y] != params.PATH_CODE
+}
+
+export function setPlayers(number) {
+    players = number;
+    view.displayPlayers(number);
 }

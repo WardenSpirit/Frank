@@ -2,6 +2,7 @@ const params = require('./params.json');
 const getRandomIndex = require('./array').getRandomIndex;
 const Game = require('./game')
 const dataRepresentation = require('./dataRepresentation');
+const { getRandomElement } = require('./array');
 
 class GameFactory {
 
@@ -54,30 +55,25 @@ class GameFactory {
                 y: getRandomIndex(this.map[0])
             };
             positionsOnTheSameLand = this.findSameLand(origin);
-        } while (positionsOnTheSameLand.length <= 1);
+        } while (positionsOnTheSameLand.length == 0);
         
-        let otherI = getRandomIndex(positionsOnTheSameLand);
-        let otherPosition = positionsOnTheSameLand[otherI];
-        if (otherPosition.x == origin.x && otherPosition.y == origin.y) {
-            positionsOnTheSameLand.splice(otherI, 1);
-            otherI = getRandomIndex(positionsOnTheSameLand);
-            otherPosition = positionsOnTheSameLand[otherI];
-        }
+        let otherPosition = getRandomElement(positionsOnTheSameLand);
 
         return [origin, otherPosition];
     }
 
-    findSameLand(currentPosition) {
-        let isLandMap = Array.from({ length: this.map.length },
+    findSameLand(origin) {
+        let isSameLandMap = Array.from({ length: this.map.length },
             () => Array.from({ length: this.map[0].length },
                 () => false));
 
-        this.noteSameLandsDown(currentPosition, isLandMap);
+        this.noteSameLandDown(origin, isSameLandMap);
+        isSameLandMap[origin.x][origin.y] = false;
 
         const sameLand = [];
-        for (let x = 0; x < isLandMap.length; x++) {
-            for (let y = 0; y < isLandMap[x].length; y++) {
-                if (isLandMap[x][y]) {
+        for (let x = 0; x < isSameLandMap.length; x++) {
+            for (let y = 0; y < isSameLandMap[x].length; y++) {
+                if (isSameLandMap[x][y]) {
                     sameLand.push({ x: x, y: y });
                 }
             }
@@ -85,12 +81,12 @@ class GameFactory {
         return sameLand;
     }
 
-    noteSameLandsDown(current, foundPositionsMap) {
+    noteSameLandDown(current, foundPositionsMap) {
         if (this.map[current.x][current.y] !== dataRepresentation.HOLE) {
             foundPositionsMap[current.x][current.y] = true;
             this.positionsAround(current).forEach(neighbour => {
                 if (!foundPositionsMap[neighbour.x][neighbour.y]) {
-                    this.noteSameLandsDown(neighbour, foundPositionsMap)
+                    this.noteSameLandDown(neighbour, foundPositionsMap)
                 }
             });
         }

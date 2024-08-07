@@ -2,11 +2,6 @@ import * as model from './model.js';
 import params from './params.json' with { type: 'json' };
 
 /**
- * Type of message the client expects the server sends to him next. Can be either "GAME" or "MOVES".
- */
-let expectedMessageType = "NONE!";
-
-/**
  * WebSocket via which the client connects to the server.
  */
 const serverAddress = params.websiteLocal; //params.websiteGlitch;
@@ -18,11 +13,9 @@ const gameWebSocket = new WebSocket(serverAddress);
  */
 function sendMove(direction) {
     gameWebSocket.send(direction);
-    expectedMessageType = "MOVES";
 }
 
 gameWebSocket.addEventListener("open", () => {
-    expectedMessageType = "GAME";
 });
 
 gameWebSocket.addEventListener("error", e => {
@@ -30,15 +23,14 @@ gameWebSocket.addEventListener("error", e => {
 });
 
 gameWebSocket.addEventListener("message", message => {
-    let data = JSON.parse(message.data);
-    if (expectedMessageType === "GAME") {
-        model.updateGame(data);
-
-    } else {        //expectedMessageType === "MOVES"
-        model.applyMoves(data);
-        if (model.isGameFinished()) {
-            expectedMessageType = "GAME";
-        }
+    let messageType = JSON.parse(message.data).type;
+    let clearData = JSON.parse(message.data).clearData;
+    if (messageType === "GAME") {
+        model.updateGame(clearData);
+    } else if (messageType === "MOVES") {
+        model.applyMoves(clearData);
+    } else if (messageType === "PLAYERS") {
+        model.setPlayers(clearData);
     }
 });
 
