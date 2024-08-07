@@ -1,5 +1,4 @@
 import viewParams from '../viewParams.json' with { type: 'json' };
-import params from '../../params.json' with {type: 'json'};
 import * as parserUtils from './parserUtils.js';
 import * as images from '../images.js';
 
@@ -7,7 +6,6 @@ import * as images from '../images.js';
  * Parameters which are used when calculating the correct part of picture source. That part is then drew on the canvases.
  */
 const PATH_COUNT = images.pathImage.width / viewParams.sourceTileSize;
-const HOLE_COUNT = images.holeImage.width / viewParams.sourceTileSize;
 
 /**
  * Returns an Image object for the tile regarding to the passed surrounding terrain.

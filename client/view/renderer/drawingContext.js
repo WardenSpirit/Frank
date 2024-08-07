@@ -36,12 +36,11 @@ function calculateTargetOrigin(position) {
 }
 
 function calculatePointsTargetOrigin(characterIndex) {
-    return { x: 54 + 54 * characterIndex, y: 72 };
+    return { x: square.width * (1 + characterIndex), y: square.width * 5 / 4 };
 }
 
 function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
-    console.log("stateCanvas.width + 54 * (-1 - digitsNumber + characterIndex):", stateCanvas.width + 54 * (-1 - digitsNumber + characterIndex));
-    return { x: stateCanvas.width + 54 * (-1 - digitsNumber + characterIndex), y: 72 };
+    return { x: stateCanvas.width + square.width * (-1 - digitsNumber + characterIndex), y: square.width * 5 / 4 };
 }
 
 export {initSquareProportions, gameCanvas, heroCanvas, gameContext, objectContext, tableContext, stateContext, square,

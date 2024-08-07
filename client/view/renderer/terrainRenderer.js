@@ -26,6 +26,7 @@ function renderTerrain(map, position) {
         sourceOrigin = terrainParser.getHoleSource(map, position);
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(position);
+
     drawingContext.gameContext.drawImage(image,
         sourceOrigin.x,
         sourceOrigin.y,
@@ -35,4 +36,13 @@ function renderTerrain(map, position) {
         targetOrigin.y,
         drawingContext.square.width,
         drawingContext.square.height);
+    /*drawingContext.gameContext.drawImage(image,
+        sourceOrigin.x,
+        sourceOrigin.y,
+        viewParams.sourceTileSize,
+        viewParams.sourceTileSize,
+        targetOrigin.x,
+        targetOrigin.y,
+        drawingContext.square.width,
+        drawingContext.square.height);*/
 }
