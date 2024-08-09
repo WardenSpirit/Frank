@@ -1,65 +1,91 @@
-#  Semestrální práce z předmětu KAJ: Hra Frank
-## Instrukce pro hodnotitele
-1. instalace Node.js, pokud chybí (funguje s verzí 16.11.0, ostatní nemám vyzkoušené)
-2.	clone tohoto repozitáře
-3. otevření 2 terminálů
-4.	napsání následujícího (ze složky Frank):
-	- v jednom terminálu: "npx serve"
-	- v druhém: "node .\server\index.js"
-5. otevření prohlížeče na stránce http://localhost:3000/client/
-6. otevření dalších n karet na téže stránce
+Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 
-### Dobré vědět
-- Cílem je dostat se co nejrychleji k truhle pomocí šipek, na mobilech pomocí gest jedním ze 4 směrů.
-- Tahy se mají vždy provést až poté, co jsou odeslány tahy ode všech připojených klientů.
-- Odeslání tahu bohužel není vidět (když jsem to testoval sám, vůbec mě nenapadlo, že by to chtělo nějak uvést).
-- V tabulce pod mapou jsem nestihl implementovat ukazatele času a skóre, ale to není v zadání (dostupném níže).
-- Animace obláčků prachu za hrdinou (kočkou) mají ten účel, aby hráč znal pořadí tahů (a neměl motivaci dívat se do dev tools na příchozí zprávy). Je to jediná možnost, jak se s ostatními hráči dorozumět. Komunikace nabyde významu při počítání skóre a měření času.
+# Frank the Game :gb::us:
 
-### Nepovinné kategorie
-|Položka         |Splněno?                       |
-|----------------|-------------------------------|
-|Validita |nevím, zda funguje pro všechny prohlížeče |
-|Grafika - SVG / Canvas |ANO |
-|Média - Audio/Video |NE, hra je bohužel bez zvuku |
-|Formulářové prvky |NE, hráč se nechce zdržovat s vyplňováním |
-|Offline aplikace |NE, běh zajišťuje server |
-|Pokročilé selektory |ANO |
-|Vendor prefixy |NE |
-|CSS3 transformace 2D/3D |NE |
-|Media queries |ANO |
-|Použití JS frameworku či knihovny |Node.js |
-|Funkční historie |NE |
-|Ovládání medií |NE |
-|Offline aplikace |NE |
-|JS práce se SVG |NE, používám canvasy |
+## Technical Details
+- Communication with the server via WebSockets.
+- Built on the Node.js framework.
+- Utilizes the Express JS framework.
+- Graphics:
+  - Custom implementation of parsing spritesheets, rendering, and animations.
+  - Uses 2 canvases (HTMLCanvasElements) layered on top of each other.
 
+## Running publicly
+- Visit [Frank's Game](https://frank-the-cat.glitch.me/).
+  - Please be patient; it may take a moment for the app to start (10-90 seconds).
 
-## Zadání
-Jedná se o tahovou hru pro 2 a více hráčů.
-Herní prostor je náhodně vygenerovaná mřížka se 4 typy políček:
-- políčko, kde je figurka (tuto jedinou figurku ve hře ovládají všichni hráči současně)
-- políčko, kde je překážka (např. oheň; na toto políčko figurku hráči nesmí dostat)
-- volné políčko
-- cílové políčko
+## Running Locally
+1. Install Node.js if not already installed (works from version 16.11.0 onwards).
+2. Clone this repository.
+3. Make any necessary adjustments.
+4. Open a terminal in the root directory of this repository.
+5. Run the command `node .`.
+6. Open your browser and navigate to [http://localhost:5000/client/](http://localhost:5000/client/).
+7. For simulating additional players: open additional tabs on the same page.
+   - It may appear that the game stops working, but please follow the instructions below.
 
-Cílem hry je společnými silami dostat figurku do cílového políčka.
-V jednom tahu musí každý hráč dát figurce jeden z příkazů např. pomocí tlačítka (na počítači možnost použití klávesnice), příkazy jsou:
-- vzhůru,
-- vpravo,
-- dolů,
-- vlevo
+## Instructions
+### Basics
+- The goal is to guide the character to the destination using arrow keys.
+  - the character (cat, snake, etc.) and destination (chests, mouses, etc.) image depends on the current version
+- The number of points increases when reaching chests and decreases when stepping off the path.
+- The score is displayed on the left in the bottom table, along with the number of connected players on the right.
 
-Pořadí hráčů není nijak dáno a pořadí je určeno časy, v jakých je hráči odeslali.
-Příkazy ostatních hráčů nikdo nevidí až do chvíle, kdy ten svůj vloží poslední hráč.
-Figurka se poté pohybuje z políčka na políčko podle příkazů od hráčů v takovém pořadí, v jakém přišly.
-Po příchodu nového hráče do hry se tento hráč může okamžitě přidat k ostatním a ovládat s nimi figurku začínaje probíhajícím tahem.
+### Multiplayer Mode
+- Players collaborate, controlling characters on the same map.
+- For serious play, players should avoid seeing each other's keyboards and communicate effectively.
+- The character waits for instructions (movement direction) from all players before moving.
+  - This may give the impression that the game stops working when additional players join.
+- The character executes all received instructions.
+- Instructions are processed in the order they were given by players (based on when they arrived at the server).
+- Players must anticipate when and how to move the character to avoid obstacles and reach the goal.
+- Successful cooperation with other players involves observing the character's movements and predicting their behavior.
+- You can join an ongoing game.
+  - The incoming player's score is set to 0, and each player maintains their own score.
 
-## Postup
-Práci jsem si rozdělil na server a klient, server bude zdrojem pravdy a bude zpracovávat tahy sesbírané od klientů. Výsledky jejich tahů jim pak rozešle.
+***A big thanks to my friend Sheydy for creating the assets!***
 
-## Hlavní problémy
-- Web Sockets - nebyly k nalezení zdroje pro moji strukturu aplikace
-- Moduly - odlišná syntaxe na serverovém JS
-- Asset packs - asset pack bylo těžké vybrat
-- Animations - náročné časování a překreslování
+#  Hra Frank :czech_republic:
+
+## Technologické detaily
+- komunikace se serverem skrz WebSockety
+- framework Node.js
+- na frameworku Express JS
+- grafika:
+  - vlastní implementace parsování spritesheetů, renderování a animací
+  - využívá 2 pláten (HTMLCanvasElements) přes sebe
+
+## Spuštění
+- https://frank-the-cat.glitch.me/
+	- Prosím o strpení, zapnutí apky na serveru chvilku trvá (10-90 sekund)
+
+## Spuštění lokálně
+1. instalace Node.js, pokud chybí (funguje přinejmenším od verze 16.11.0)
+2. clone tohoto repozitáře
+3. úprava 
+4. otevření terminálu v kořenové složce tohoto repozitáře
+5. příkaz "node ."
+6. otevření prohlížeče na stránce http://localhost:5000/client/
+7. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
+	- jen zdánlivě přestane fungovat (viz instrukce níže)
+
+## Instrukce
+### Základ
+- Cílem je dostat postavu k cíli pomocí šipek,
+  - přesná podoba postavy (kočka, had apod.) a cíle (truhla, myš apod.) závisí na verze
+- S truhlami skóre roste, při kroku mimo cestu klesá,
+- Skóre je ve spodní tabulce vlevo, počet připojených hráčů tamtéž, ale vpravo.
+
+### Více hráčů
+- Hráči spolupracují, ovládají též postavu na též mapě.
+- Pokud je hra brána vážně, hráči by měli hrát tak, aby si vzájemně neviděli na klávesnici a nedorozumívali se.
+- Postava čeká na instrukci (tj. směr pohybu) od všech hráčů, než se pohne.
+	- Proto se zdá, že hra přestává fungovat, když se připojí další hráč(i).
+- Poté postava provede všechny obdržené instrukce.
+- Postava provádí instrukce v takovém pořadí, ve kterém je hráči zadali (přesněji ve kterém přišly na server).
+- Je na jednotlivých hráčích, aby odhadli, kdy a jak mají hrát, aby se postava úspěšně vyhýbala překážkám a došla k cíli.
+- Jediný způsob, jak s ostatními hráči dojít ke zdárné spolupracovat, je sledovat pohyb postavy a odhadovat z něj jejich budoucí chování.
+- Lze se připojit i do již probíhající hry.
+  - Skóre přicházejícího hráče je nastaveno na 0, každý hráč má své skóre.
+
+***Moc děkuji Sheydy za vytvoření obrázků do hry!***
