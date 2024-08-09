@@ -1,38 +1,43 @@
 import viewParams from '../viewParams.json' with { type: 'json' };
 import * as images from '../images.js';
 
-const standingHeroLine = 0;
-const walkUpHeroLine = 1;
-const walkRightHeroLine = 2;
-const walkDownHeroLine = 3;
-const walkLeftHeroLine = 4;
-const heroCount = images.heroImage.width / viewParams.sourceTileSize;
+const STANDING_LINE = 0;
+const WALK_UP_LINE = 1;
+const WALK_RIGHT_LINE = 2;
+const WALK_DOWN_LINE = 3;
+const WALK_LEFT_LINE = 4;
 
-const heroAnimationInterval = 300;
+const IMAGE = await images.getImage("HERO");
+const HERO_COUNT = IMAGE.width / viewParams.sourceTileSize;
+
+const heroAnimationInterval = 3000//300;
 let lastChangeTime = - heroAnimationInterval;
-let lastSourceOrigin = {x: 0, y: 0};
+let lastSourceOrigin = { x: 0, y: 0 };
 
 export function calculateHeroSourceOrigin(heroState, currentTime) {
     if (currentTime - lastChangeTime > heroAnimationInterval) {
         lastChangeTime = currentTime - currentTime % heroAnimationInterval;
-        lastSourceOrigin.x = (lastSourceOrigin.x + viewParams.sourceTileSize) % (heroCount * viewParams.sourceTileSize);
+        lastSourceOrigin.x = (lastSourceOrigin.x + viewParams.sourceTileSize) % (HERO_COUNT * viewParams.sourceTileSize);
+        if (HERO_COUNT != 4) {
+            console.log("HERO_COUNT: " + HERO_COUNT);
+        }
     }
     let y;
     switch (heroState) {
         case "UP":
-            y = walkUpHeroLine;
+            y = WALK_UP_LINE;
             break;
         case "RIGHT":
-            y = walkRightHeroLine;
+            y = WALK_RIGHT_LINE;
             break;
         case "DOWN":
-            y = walkDownHeroLine;
+            y = WALK_DOWN_LINE;
             break;
         case "LEFT":
-            y = walkLeftHeroLine;
+            y = WALK_LEFT_LINE;
             break;
         default:        //case "STANDING":
-            y = standingHeroLine;
+            y = STANDING_LINE;
             break;
     }
     lastSourceOrigin.y = y;

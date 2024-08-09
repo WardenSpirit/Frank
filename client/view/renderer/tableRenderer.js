@@ -2,6 +2,7 @@ import * as drawingContext from './drawingContext.js';
 import * as images from '../images.js';
 
 
-export function renderTable() {
-    drawingContext.tableContext.drawImage(images.tableImage, 0, 0, 800, 200);
+export async function renderTable() {
+    const IMAGE = await images.getImage("TABLE");
+    drawingContext.tableContext.drawImage(IMAGE, 0, 0, 800, 200);
 }

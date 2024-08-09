@@ -2,7 +2,8 @@ import * as images from '../images.js';
 import * as parserUtils from './parserUtils.js';
 import viewParams from '../viewParams.json' with { type: 'json' };
 
-const treasureCount = images.treasureImage.width / viewParams.sourceTileSize;
+const IMAGE = await images.getImage("TREASURE");
+const treasureCount = IMAGE.width / viewParams.sourceTileSize;
 
 
 export function getTreasureSource() {

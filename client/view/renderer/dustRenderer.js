@@ -15,7 +15,7 @@ const dustAnimationInterval = 150;
 let dusts = [];
 
 export function addDust(dustyPosition) {
-    dusts[dusts.length] = { position: dustyPosition, spawnTime: calculateSpawnTime(), phase: "-1" };
+    dusts[dusts.length] = { position: dustyPosition, spawnTime: calculateSpawnTime(), phase: 0, toBeDrawn: true };
 }
 
 function calculateSpawnTime() {
@@ -63,21 +63,25 @@ function updateDusts(currentTime) {
         const dust = dusts[i];
 
         const oldPhase = dust.phase;
-        dust.phase = Math.floor((currentTime - dust.spawnTime) / dustAnimationInterval);
+        dust.phase = Math.max(0, Math.floor((currentTime - dust.spawnTime) / dustAnimationInterval));
 
         if (oldPhase != dust.phase) {
             clearDust(dust);
+        }
+        if (dust.toBeDrawn) {
             drawDust(i);
         }
     }
 }
 
 function clearDust(dust) {
+    console.log("clear dust called");
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
     drawingContext.objectContext.clearRect(targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
 }
 
-function drawDust(i) {
+async function drawDust(i) {
+    console.log("draw dust called, i: " + i);
     const dust = dusts[i];
     const sourceOrigin = dustParser.calculateDustSourceOrigin(dust);
     if (!sourceOrigin) {
@@ -85,5 +89,6 @@ function drawDust(i) {
         return;
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
-    drawingContext.objectContext.drawImage(images.dustImage, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
+    const IMAGE = await images.getImage("DUST");
+    drawingContext.objectContext.drawImage(IMAGE, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
 }

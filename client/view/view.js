@@ -11,14 +11,12 @@ import * as drawingContext from './renderer/drawingContext.js'
  * Displays the specified game on the screen.
  * @param renderedGame The game to be rendered.
  */
-export async function renderGame(renderedGame) {
-
+export function renderGame(renderedGame) {
     drawingContext.initSquareProportions(renderedGame.map.length, renderedGame.map[0].length);
-    heroRenderer.setNewPosition(renderedGame.heroPosition);
-    await images.isReady();
 
     terrainRenderer.renderMap(renderedGame.map);
-    heroRenderer.startRenderingHero(renderedGame.heroPosition);
+    heroRenderer.setNewPosition(renderedGame.heroPosition);
+    heroRenderer.startRenderingHero();
     dustRenderer.startRenderingDust();
     treasureRenderer.renderTreasure(renderedGame.treasurePosition);
     tableRenderer.renderTable();
@@ -41,6 +39,5 @@ export function displayPoints(points) {
 }
 
 export async function displayPlayers(players) {
-    await images.isReady();
     statsRenderer.renderPlayers(players);
 }

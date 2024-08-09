@@ -5,7 +5,7 @@ import * as drawingContext from './drawingContext.js'
 import * as images from '../images.js';
 
 
-export function renderMap(map) {
+export async function renderMap(map) {
     drawingContext.gameContext.clearRect(0, 0, drawingContext.gameCanvas.width, drawingContext.gameCanvas.height);
 
     for (let x = 0; x < map.length; x++) {
@@ -15,18 +15,17 @@ export function renderMap(map) {
     }
 }
 
-function renderTerrain(map, position) {
+async function renderTerrain(map, position) {
     let sourceOrigin;
     let image;
     if (map[position.x][position.y] == params.PATH_CODE) {
-        image = images.pathImage;
+        image = await images.getImage("PATH");
         sourceOrigin = terrainParser.getPathSource(map, position);
     } else {
-        image = images.holeImage;
+        image = await images.getImage("HOLE");
         sourceOrigin = terrainParser.getHoleSource(map, position);
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(position);
-
     drawingContext.gameContext.drawImage(image,
         sourceOrigin.x,
         sourceOrigin.y,
@@ -36,13 +35,4 @@ function renderTerrain(map, position) {
         targetOrigin.y,
         drawingContext.square.width,
         drawingContext.square.height);
-    /*drawingContext.gameContext.drawImage(image,
-        sourceOrigin.x,
-        sourceOrigin.y,
-        viewParams.sourceTileSize,
-        viewParams.sourceTileSize,
-        targetOrigin.x,
-        targetOrigin.y,
-        drawingContext.square.width,
-        drawingContext.square.height);*/
 }

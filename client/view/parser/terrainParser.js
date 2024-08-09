@@ -5,7 +5,8 @@ import * as images from '../images.js';
 /**
  * Parameters which are used when calculating the correct part of picture source. That part is then drew on the canvases.
  */
-const PATH_COUNT = images.pathImage.width / viewParams.sourceTileSize;
+const IMAGE = await images.getImage("PATH");
+const PATH_COUNT = IMAGE.width / viewParams.sourceTileSize;
 
 /**
  * Returns an Image object for the tile regarding to the passed surrounding terrain.

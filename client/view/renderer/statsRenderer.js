@@ -28,12 +28,13 @@ function clearScore() {
     }
 }
 
-function drawDigits(sourceOrigins, targetOrigins) {
+async function drawDigits(sourceOrigins, targetOrigins) {
     for (let i = 0; i < sourceOrigins.length; i++) {
         const sourceOrigin = sourceOrigins[i];
         const targetOrigin = targetOrigins[i];
+        const IMAGE = await images.getImage("DIGITS");
 
-        drawingContext.stateContext.drawImage(images.digitsImage,
+        drawingContext.stateContext.drawImage(IMAGE,
             sourceOrigin.x,
             sourceOrigin.y,
             viewParams.sourceTileSize,
