@@ -3,7 +3,7 @@ const ASSETS_PATH = "../view/assets/";
 const IMAGE_PATHS = new Map();
 IMAGE_PATHS.set("PATH", ASSETS_PATH + "Path.png");
 IMAGE_PATHS.set("HOLE", ASSETS_PATH + "Hole.png");
-IMAGE_PATHS.set("HERO", ASSETS_PATH + "Hero_Snake.png");
+IMAGE_PATHS.set("HERO", ASSETS_PATH + "Hero.png");
 IMAGE_PATHS.set("DUST", ASSETS_PATH + "Dust.png");
 IMAGE_PATHS.set("TREASURE", ASSETS_PATH + "Treasure.png");
 IMAGE_PATHS.set("TABLE", ASSETS_PATH + "Table.png");
