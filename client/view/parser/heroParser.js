@@ -10,19 +10,17 @@ const WALK_LEFT_LINE = 4;
 const IMAGE = await images.getImage("HERO");
 const HERO_COUNT = IMAGE.width / viewParams.sourceTileSize;
 
-const heroAnimationInterval = 3000//300;
+const heroAnimationInterval = 300;
 let lastChangeTime = - heroAnimationInterval;
 let lastSourceOrigin = { x: 0, y: 0 };
 
 export function calculateHeroSourceOrigin(heroState, currentTime) {
+    let x = 0;
+    let y;
     if (currentTime - lastChangeTime > heroAnimationInterval) {
         lastChangeTime = currentTime - currentTime % heroAnimationInterval;
-        lastSourceOrigin.x = (lastSourceOrigin.x + viewParams.sourceTileSize) % (HERO_COUNT * viewParams.sourceTileSize);
-        if (HERO_COUNT != 4) {
-            console.log("HERO_COUNT: " + HERO_COUNT);
-        }
+        x = (lastSourceOrigin.x + 1) % (HERO_COUNT);
     }
-    let y;
     switch (heroState) {
         case "UP":
             y = WALK_UP_LINE;
@@ -41,5 +39,6 @@ export function calculateHeroSourceOrigin(heroState, currentTime) {
             break;
     }
     lastSourceOrigin.y = y;
+    lastSourceOrigin = (x, y);
     return lastSourceOrigin;
 }

@@ -1,5 +1,5 @@
 import * as images from '../images.js';
-import * as parserUtils from './parserUtils.js';
+import * as generalParser from './generalParser.js';
 import viewParams from '../viewParams.json' with { type: 'json' };
 
 const IMAGE = await images.getImage("TREASURE");
@@ -7,5 +7,5 @@ const treasureCount = IMAGE.width / viewParams.sourceTileSize;
 
 
 export function getTreasureSource() {
-    return parserUtils.getRandomOriginInLine(0, treasureCount);
+    return (0, generalParser.getTileSourceOrigin(0, treasureCount - 1));
 }
