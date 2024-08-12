@@ -1,11 +1,14 @@
-import * as images from './images.js';
 import * as terrainRenderer from './renderer/terrainRenderer.js';
 import * as heroRenderer from './renderer/heroRenderer.js';
 import * as dustRenderer from './renderer/dustRenderer.js';
 import * as treasureRenderer from './renderer/treasureRenderer.js';
 import * as tableRenderer from './renderer/tableRenderer.js';
 import * as statsRenderer from './renderer/statsRenderer.js';
+import * as infoTextRenderer from './renderer/infoTextRenderer.js';
 import * as drawingContext from './renderer/drawingContext.js'
+
+let infoTextID;
+const INFO_TEXT_DELAY = 3000;
 
 /**
  * Displays the specified game on the screen.

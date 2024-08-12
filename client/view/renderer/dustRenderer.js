@@ -75,13 +75,11 @@ function updateDusts(currentTime) {
 }
 
 function clearDust(dust) {
-    console.log("clear dust called");
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
     drawingContext.objectContext.clearRect(targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
 }
 
 async function drawDust(i) {
-    console.log("draw dust called, i: " + i);
     const dust = dusts[i];
     const sourceOrigin = dustParser.calculateDustSourceOrigin(dust);
     if (!sourceOrigin) {
