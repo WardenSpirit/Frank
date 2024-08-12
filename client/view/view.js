@@ -44,3 +44,8 @@ export function displayPoints(points) {
 export async function displayPlayers(players) {
     statsRenderer.renderPlayers(players);
 }
+
+export function setInfoText(text) {
+    clearTimeout(infoTextID);
+    infoTextID = setTimeout(infoTextRenderer.renderInfoText(text), INFO_TEXT_DELAY);
+}

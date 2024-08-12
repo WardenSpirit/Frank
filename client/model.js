@@ -1,9 +1,10 @@
 import * as view from './view/view.js';
 import params from './params.json' with {type: 'json'};
 
+let isConnected;
 let game;
 let points = 0;
-let players = 0;
+let players;
 
 /**
  * Updates the game model based on the argument. Calls view to start displaying the new game state.
@@ -78,4 +79,14 @@ function isHeroInHole() {
 export function setPlayers(number) {
     players = number;
     view.displayPlayers(number);
+}
+
+export function openConnection() {
+    isConnected = true;
+    view.setInfoText("Use arrow keys to move.");
+}
+
+export function closeConnection() {
+    isConnected = false;
+    view.setInfoText("Use arrow keys to move.");
 }
