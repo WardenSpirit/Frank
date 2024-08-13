@@ -76,7 +76,7 @@ function updateDusts(currentTime) {
 
 function clearDust(dust) {
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
-    drawingContext.objectContext.clearRect(targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
+    drawingContext.objectContext.clearRect(targetOrigin.x, targetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
 }
 
 async function drawDust(i) {
@@ -88,5 +88,5 @@ async function drawDust(i) {
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
     const IMAGE = await images.getImage("DUST");
-    drawingContext.objectContext.drawImage(IMAGE, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
+    drawingContext.objectContext.drawImage(IMAGE, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
 }

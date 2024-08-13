@@ -33,6 +33,6 @@ async function renderTerrain(map, position) {
         viewParams.sourceTileSize,
         targetOrigin.x,
         targetOrigin.y,
-        drawingContext.square.width,
-        drawingContext.square.height);
+        drawingContext.SQUARE.width,
+        drawingContext.SQUARE.height);
 }

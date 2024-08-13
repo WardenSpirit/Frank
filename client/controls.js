@@ -1,6 +1,7 @@
 import * as connection from './connection.js';
+import * as view from './view/view.js';
 
-let notTurnedYet = true;
+let hasTurned = false;
 
 document.body.addEventListener("touchstart", e => handleTouchStart(e));
 document.body.addEventListener("touchstart", e => handleTouchEnd(e));
@@ -66,8 +67,15 @@ function handleKeyDown(e) {
  * @param direction String with the intended direction of movement.
  */
 function tryMove(direction) {
-    if (notTurnedYet) {
+    console.log("dir detected");
+    if (!hasTurned) {
+        console.log("it was an OK dir");
         connection.sendMove(direction);
-        notTurnedYet = true;
+        hasTurned = true;
+        view.setInfoText("wait for the others", 500);
     }
+}
+
+export function allowTurn() {
+    hasTurned = false;
 }

@@ -8,5 +8,5 @@ export async function renderTreasure(position) {
     const targetOrigin = drawingContext.calculateTargetOrigin(position);
     const IMAGE = await images.getImage("TREASURE");
     
-    drawingContext.gameContext.drawImage(IMAGE, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.square.width, drawingContext.square.height);
+    drawingContext.gameContext.drawImage(IMAGE, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
 }

@@ -1,5 +1,5 @@
 import viewParams from '../viewParams.json' with { type: 'json' };
-import * as generalParser from './generalParser.js';
+import * as generalTileParser from './generalTileParser.js';
 import * as images from '../images.js';
 
 /**
@@ -24,12 +24,12 @@ function getHoleSource(map, position) {        // surroundings – a 3×3 array 
 }
 
 function getPathOrigin() {
-    return generalParser.getRandomOriginInLine(0, PATH_COUNT);
+    return generalTileParser.getRandomOriginInLine(0, PATH_COUNT);
 }
 
 function getHoleOrigin(map, position) {
     let surroundings = getSurroundings(map, position);
-    return generalParser.getOriginInLine(getSourceLine(surroundings), getSourceColumn(surroundings));
+    return generalTileParser.getTileSourceOrigin(getSourceLine(surroundings), getSourceColumn(surroundings));
 }
 
 function getSurroundings(map, position) {

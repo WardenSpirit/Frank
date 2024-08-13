@@ -3,11 +3,13 @@ import * as drawingContext from './drawingContext.js';
 import * as numberParser from '../parser/numberParser.js';
 import * as images from '../images.js';
 
+const IMAGE = await images.getImage("DIGITS");
+
 let oldPointsTargetOrigins = [];
 let oldPlayersTargetOrigins = [];
 
 export function renderPoints(points) {
-    clearScore();
+    clearPoints();
 
     let sourceOrigins = numberParser.getDigitsOrigins(points);
     let targetOrigins = Array.from({ length: sourceOrigins.length }, (_v, i) => drawingContext.calculatePointsTargetOrigin(i));
@@ -17,22 +19,21 @@ export function renderPoints(points) {
     oldPointsTargetOrigins = targetOrigins;
 }
 
-function clearScore() {
+function clearPoints() {
     for (let i = 0; i < oldPointsTargetOrigins.length; i++) {
         const oldTargetOrigin = oldPointsTargetOrigins[i];
         drawingContext.stateContext.clearRect(
             oldTargetOrigin.x,
             oldTargetOrigin.y,
-            drawingContext.square.width,
-            drawingContext.square.height);
+            drawingContext.SQUARE.width,
+            drawingContext.SQUARE.height);
     }
 }
 
-async function drawDigits(sourceOrigins, targetOrigins) {
+function drawDigits(sourceOrigins, targetOrigins) {
     for (let i = 0; i < sourceOrigins.length; i++) {
         const sourceOrigin = sourceOrigins[i];
         const targetOrigin = targetOrigins[i];
-        const IMAGE = await images.getImage("DIGITS");
 
         drawingContext.stateContext.drawImage(IMAGE,
             sourceOrigin.x,
@@ -41,8 +42,8 @@ async function drawDigits(sourceOrigins, targetOrigins) {
             viewParams.sourceTileSize,
             targetOrigin.x,
             targetOrigin.y,
-            drawingContext.square.width,
-            drawingContext.square.height);
+            drawingContext.SQUARE.width,
+            drawingContext.SQUARE.height);
     }
 }
 
@@ -63,7 +64,7 @@ function clearPlayers() {
         drawingContext.stateContext.clearRect(
             oldTargetOrigin.x,
             oldTargetOrigin.y,
-            drawingContext.square.width,
-            drawingContext.square.height);
+            drawingContext.SQUARE.width,
+            drawingContext.SQUARE.height);
     }
 }

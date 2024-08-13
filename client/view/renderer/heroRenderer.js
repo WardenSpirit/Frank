@@ -40,11 +40,11 @@ export function startRenderingHero() {
 function clearHero(targetOriginsToClear) {
     while(targetOriginsToClear.length > 0) {
         const targetOriginToClear = targetOriginsToClear.shift(0, 1);
-        drawingContext.objectContext.clearRect(targetOriginToClear.x, targetOriginToClear.y, drawingContext.square.width, drawingContext.square.height);
+        drawingContext.objectContext.clearRect(targetOriginToClear.x, targetOriginToClear.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
     }
 }
 
 async function drawHero(heroSourceOrigin, heroTargetOrigin) {
     const IMAGE = await images.getImage("HERO");
-    drawingContext.objectContext.drawImage(IMAGE, heroSourceOrigin.x, heroSourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, heroTargetOrigin.x, heroTargetOrigin.y, drawingContext.square.width, drawingContext.square.height);
+    drawingContext.objectContext.drawImage(IMAGE, heroSourceOrigin.x, heroSourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, heroTargetOrigin.x, heroTargetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
 }

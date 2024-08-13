@@ -17,12 +17,11 @@ function sendMove(direction) {
 
 gameWebSocket.addEventListener("open", () => {
     model.openConnection();
-    console.log("Connection open, welcome!");
 });
 
 gameWebSocket.addEventListener("close", () => {
     model.closeConnection();
-    console.log("Connection closed, bye!");
+    gameWebSocket = new WebSocket(serverAddress);
 });
 
 gameWebSocket.addEventListener("error", e => {

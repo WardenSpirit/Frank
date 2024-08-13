@@ -8,7 +8,6 @@ import * as infoTextRenderer from './renderer/infoTextRenderer.js';
 import * as drawingContext from './renderer/drawingContext.js'
 
 let infoTextID;
-const INFO_TEXT_DELAY = 3000;
 
 /**
  * Displays the specified game on the screen.
@@ -24,6 +23,7 @@ export function renderGame(renderedGame) {
     treasureRenderer.renderTreasure(renderedGame.treasurePosition);
     tableRenderer.renderTable();
     statsRenderer.renderPoints(renderedGame.points);
+    setInfoText("use arrows or drag", 5000);
 }
 
 /**
@@ -45,7 +45,12 @@ export async function displayPlayers(players) {
     statsRenderer.renderPlayers(players);
 }
 
-export function setInfoText(text) {
+export function setInfoText(text, delay) {
     clearTimeout(infoTextID);
-    infoTextID = setTimeout(infoTextRenderer.renderInfoText(text), INFO_TEXT_DELAY);
+    infoTextRenderer.clearInfoText(text);
+    if (delay == 0) {
+        infoTextRenderer.renderInfoText(text)
+    } else {
+        infoTextID = setTimeout(() => { infoTextRenderer.renderInfoText(text) }, delay);
+    }
 }

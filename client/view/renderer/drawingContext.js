@@ -16,13 +16,14 @@ objectContext.imageSmoothingEnabled = false;
 tableContext.imageSmoothingEnabled = false;
 stateContext.imageSmoothingEnabled = false;
 
-let square;
+const SQUARE = {
+        width: 1,
+        height: 1
+}
 
 function initSquareProportions(mapWidth, mapHeight) {
-    square = {
-        width: gameCanvas.width / mapWidth,
-        height: gameCanvas.height / mapHeight
-    }
+    SQUARE.width = gameCanvas.width / mapWidth;
+    SQUARE.height = gameCanvas.height / mapHeight;
 }
 
 /**
@@ -32,16 +33,21 @@ function initSquareProportions(mapWidth, mapHeight) {
  * @returns The coordinations of the top-left corner of the image
  */
 function calculateTargetOrigin(position) {
-    return { x: position.x * square.width, y: position.y * square.height };
+    return { x: position.x * SQUARE.width, y: position.y * SQUARE.height };
 }
 
 function calculatePointsTargetOrigin(characterIndex) {
-    return { x: square.width * (1 + characterIndex), y: square.width * 5 / 4 };
+    return { x: SQUARE.width * (1 + characterIndex), y: SQUARE.width * 5 / 4 };
 }
 
 function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
-    return { x: stateCanvas.width + square.width * (-1 - digitsNumber + characterIndex), y: square.width * 5 / 4 };
+    return { x: stateCanvas.width + SQUARE.width * (-1 - digitsNumber + characterIndex), y: SQUARE.width * 5 / 4 };
 }
 
-export {initSquareProportions, gameCanvas, heroCanvas, gameContext, objectContext, tableContext, stateContext, square,
-    calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin}
+function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
+    return { x: (stateCanvas.width - infoTextWidth) / 2,
+        y: (stateCanvas.height - infoTextHeight) / 2};
+}
+
+export {initSquareProportions, gameCanvas, heroCanvas, stateCanvas, gameContext, objectContext, tableContext, stateContext, SQUARE,
+    calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin, calculateInfoTextTargetOrigin}

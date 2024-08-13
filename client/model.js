@@ -1,5 +1,6 @@
 import * as view from './view/view.js';
 import params from './params.json' with {type: 'json'};
+import * as controls from "./controls.js";
 
 let isConnected;
 let game;
@@ -14,6 +15,7 @@ export function updateGame(newGame) {
     newGame.points = points;
     game = newGame;
     view.renderGame(game);
+    controls.allowTurn();
 }
 
 /**
@@ -40,6 +42,8 @@ export function applyMoves(moves) {
             break;
         }
     }
+    controls.allowTurn();
+    view.setInfoText("move on", 5000);
 
     function moveHero(direction) {
         let potentialNewHeroPosition;
@@ -83,10 +87,10 @@ export function setPlayers(number) {
 
 export function openConnection() {
     isConnected = true;
-    view.setInfoText("Use arrow keys to move.");
+    view.setInfoText("wait for game", 500);
 }
 
 export function closeConnection() {
     isConnected = false;
-    view.setInfoText("Use arrow keys to move.");
+    view.setInfoText("maybe refresh", 0);
 }
