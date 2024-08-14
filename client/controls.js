@@ -33,15 +33,17 @@ function handleTouchEnd(e) {
     if (Math.abs(deltaX) > Math.abs(deltaY) + TOUCH_MOVE_THRESHHOLD) {
         if (deltaX > 0) {
             tryMove('RIGHT');
-        } else if (deltaX < 0) {
+        } else {
             tryMove('LEFT');
         }
     } else if (Math.abs(deltaX) + TOUCH_MOVE_THRESHHOLD < Math.abs(deltaY)) {
         if (deltaY > 0) {
             tryMove('DOWN');
-        } else if (deltaY < 0) {
+        } else {
             tryMove('UP');
         }
+    } else {
+        playMusic();
     }
 }
 
@@ -64,12 +66,7 @@ function handleKeyDown(e) {
             e.preventDefault();
             tryMove('DOWN'); break;     //down
         case "KeyM":
-            console.log("AUDIO_ELEMENT.paused:", AUDIO_ELEMENT.paused);
-            if (AUDIO_ELEMENT.paused) {
-                AUDIO_ELEMENT.play();
-            } else {
-                AUDIO_ELEMENT.pause();
-            }
+            playMusic();
     }
 }
 
@@ -82,6 +79,14 @@ function tryMove(direction) {
         connection.sendMove(direction);
         hasTurned = true;
         view.setInfoText("wait for the others", 500);
+    }
+}
+
+function playMusic() {
+    if (AUDIO_ELEMENT.paused) {
+        AUDIO_ELEMENT.play();
+    } else {
+        AUDIO_ELEMENT.pause();
     }
 }
 
