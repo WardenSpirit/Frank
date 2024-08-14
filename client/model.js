@@ -49,26 +49,19 @@ export function applyMoves(moves) {
         let potentialNewHeroPosition;
         switch (direction) {
             case "UP":
-                potentialNewHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y - 1 };
+                potentialNewHeroPosition = { x: game.heroPosition.x, y: (game.heroPosition.y - 1 + game.map[0].length) % game.map[0].length};
                 break;
             case "RIGHT":
-                potentialNewHeroPosition = { x: game.heroPosition.x + 1, y: game.heroPosition.y };
+                potentialNewHeroPosition = { x: (game.heroPosition.x + 1) % game.map.length, y: game.heroPosition.y };
                 break;
             case "DOWN":
-                potentialNewHeroPosition = { x: game.heroPosition.x, y: game.heroPosition.y + 1 };
+                potentialNewHeroPosition = { x: game.heroPosition.x, y: (game.heroPosition.y + 1) % game.map[0].length };
                 break;
             case "LEFT":
-                potentialNewHeroPosition = { x: game.heroPosition.x - 1, y: game.heroPosition.y };
+                potentialNewHeroPosition = { x: (game.heroPosition.x - 1 + game.map.length) % game.map.length, y: game.heroPosition.y };
                 break;
         }
-        if (isPositionWithinMapBounds(potentialNewHeroPosition)) {
-            game.heroPosition = potentialNewHeroPosition;
-        }
-
-        function isPositionWithinMapBounds(inspectedPosition) {
-            return inspectedPosition.x >= 0 && inspectedPosition.x < game.map.length &&
-                inspectedPosition.y >= 0 && inspectedPosition.y < game.map[0].length;
-        }
+        game.heroPosition = potentialNewHeroPosition;
     }
 }
 

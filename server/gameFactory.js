@@ -94,11 +94,10 @@ class GameFactory {
 
     positionsAround(position) {
         return [
-            { x: position.x, y: position.y - 1 },
-            { x: position.x + 1, y: position.y },
-            { x: position.x, y: position.y + 1 },
-            { x: position.x - 1, y: position.y }]
-            .filter(position => this.isOnMap(position));
+            { x: position.x, y: (position.y - 1 + this.map[0].length) % this.map[0].length},
+            { x: (position.x + 1) % this.map.length, y: position.y },
+            { x: position.x, y: (position.y + 1) % this.map[0].length },
+            { x: (position.x - 1 + this.map.length) % this.map.length, y: position.y }];
     };
 
     isOnMap(position) {

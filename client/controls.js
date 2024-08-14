@@ -69,7 +69,6 @@ function handleKeyDown(e) {
 function tryMove(direction) {
     console.log("dir detected");
     if (!hasTurned) {
-        console.log("it was an OK dir");
         connection.sendMove(direction);
         hasTurned = true;
         view.setInfoText("wait for the others", 500);

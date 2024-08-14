@@ -30,27 +30,21 @@ class Game {
         let potentialNewHeroPosition;
         switch (direction) {
             case "UP":
-                potentialNewHeroPosition = { x: this.heroPosition.x, y: this.heroPosition.y - 1 };
+                potentialNewHeroPosition = { x: this.heroPosition.x, y: (this.heroPosition.y - 1 + params.MAP_HEIGHT) % params.MAP_HEIGHT };
                 break;
             case "RIGHT":
-                potentialNewHeroPosition = { x: this.heroPosition.x + 1, y: this.heroPosition.y };
+                potentialNewHeroPosition = { x: (this.heroPosition.x + 1) % params.MAP_WIDTH, y: this.heroPosition.y };
                 break;
             case "DOWN":
-                potentialNewHeroPosition = { x: this.heroPosition.x, y: this.heroPosition.y + 1 };
+                potentialNewHeroPosition = { x: this.heroPosition.x, y: (this.heroPosition.y + 1) % params.MAP_HEIGHT };
                 break;
             case "LEFT":
-                potentialNewHeroPosition = { x: this.heroPosition.x - 1, y: this.heroPosition.y };
+                potentialNewHeroPosition = { x: (this.heroPosition.x - 1 + params.MAP_WIDTH) % params.MAP_WIDTH, y: this.heroPosition.y };
                 break;
         }
+        console.log("potentialNewHeroPosition:", potentialNewHeroPosition);
 
-        if (Game.isPositionWithinMapBounds(potentialNewHeroPosition)) {
-            this.heroPosition = potentialNewHeroPosition;
-        }
-    }
-
-    static isPositionWithinMapBounds(inspectedPosition) {
-        return inspectedPosition.x >= 0 && inspectedPosition.x < params.MAP_WIDTH &&
-            inspectedPosition.y >= 0 && inspectedPosition.y < params.MAP_HEIGHT;
+        this.heroPosition = potentialNewHeroPosition;
     }
 
     /**
