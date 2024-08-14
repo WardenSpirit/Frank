@@ -31,6 +31,7 @@ export function applyMoves(moves) {
 
         if (isTreasureReached()) {
             points++;
+            view.displayFilter(true);
             view.displayPoints(points);
             break;
         }
@@ -38,6 +39,7 @@ export function applyMoves(moves) {
             if (points > 0) { 
                 points--;
              }
+            view.displayFilter(false);
             view.displayPoints(points);
             break;
         }

@@ -11,6 +11,8 @@ IMAGE_PATHS.set("HOLE", ASSETS_PATH + "Hole.png");
 IMAGE_PATHS.set("HERO", ASSETS_PATH + "Hero.png");
 IMAGE_PATHS.set("DUST", ASSETS_PATH + "Dust.png");
 IMAGE_PATHS.set("TREASURE", ASSETS_PATH + "Treasure.png");
+IMAGE_PATHS.set("GOOD_FILTER", ASSETS_PATH + "Good_filter.png");
+IMAGE_PATHS.set("BAD_FILTER", ASSETS_PATH + "Bad_filter.png");
 IMAGE_PATHS.set("TABLE", ASSETS_PATH + "Table.png");
 IMAGE_PATHS.set("DIGITS", ASSETS_PATH + "Digits.png");
 IMAGE_PATHS.set("CHARACTERS", ASSETS_PATH + "Characters.png");

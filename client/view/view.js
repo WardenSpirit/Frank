@@ -2,6 +2,7 @@ import * as terrainRenderer from './renderer/terrainRenderer.js';
 import * as heroRenderer from './renderer/heroRenderer.js';
 import * as dustRenderer from './renderer/dustRenderer.js';
 import * as treasureRenderer from './renderer/treasureRenderer.js';
+import * as filterRenderer from './renderer/filterRenderer.js';
 import * as tableRenderer from './renderer/tableRenderer.js';
 import * as statsRenderer from './renderer/statsRenderer.js';
 import * as infoTextRenderer from './renderer/infoTextRenderer.js';
@@ -35,6 +36,10 @@ export function displayMove(oldHeroPosition, newHeroPosition) {
     dustRenderer.addDust(oldHeroPosition);
     dustRenderer.removeDust(newHeroPosition);
     heroRenderer.setNewPosition(newHeroPosition);
+}
+
+export function displayFilter(isGood) {
+    filterRenderer.displayFilter(isGood);
 }
 
 export function displayPoints(points) {

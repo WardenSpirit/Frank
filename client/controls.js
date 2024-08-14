@@ -67,7 +67,6 @@ function handleKeyDown(e) {
  * @param direction String with the intended direction of movement.
  */
 function tryMove(direction) {
-    console.log("dir detected");
     if (!hasTurned) {
         connection.sendMove(direction);
         hasTurned = true;

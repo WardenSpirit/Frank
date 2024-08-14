@@ -7,7 +7,7 @@ import * as images from '../images.js';
 /**
  * Parameters, which are used for drawing the hero.
  */
-const dustAnimationInterval = 150;
+const DUST_ANIMATION_INTERVAL = 150;
 
 /**
  * Coordinations of animation "dusts", that use to be displayed behind the hero after he/she moves.
@@ -23,7 +23,7 @@ function calculateSpawnTime() {
     if (dusts.length == 0) {
         return currentTime;
     } else {
-        return Math.max(dusts[dusts.length - 1].spawnTime + dustAnimationInterval / dusts.length, currentTime);
+        return Math.max(dusts[dusts.length - 1].spawnTime + DUST_ANIMATION_INTERVAL / dusts.length, currentTime);
     }
 }
 
@@ -63,7 +63,7 @@ function updateDusts(currentTime) {
         const dust = dusts[i];
 
         const oldPhase = dust.phase;
-        dust.phase = Math.max(0, Math.floor((currentTime - dust.spawnTime) / dustAnimationInterval));
+        dust.phase = Math.max(0, Math.floor((currentTime - dust.spawnTime) / DUST_ANIMATION_INTERVAL));
 
         if (oldPhase != dust.phase) {
             clearDust(dust);
