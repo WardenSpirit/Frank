@@ -1,5 +1,6 @@
 import * as connection from './connection.js';
 import * as view from './view/view.js';
+import * as model from './model.js';
 
 let hasTurned = false;
 
@@ -67,10 +68,10 @@ function handleKeyDown(e) {
  * @param direction String with the intended direction of movement.
  */
 function tryMove(direction) {
-    if (!hasTurned) {
+    if (!hasTurned && model.isConnected()) {
         connection.sendMove(direction);
         hasTurned = true;
-        view.setInfoText("wait for the others", 500);
+            view.setInfoText("wait for the others", 500);
     }
 }
 

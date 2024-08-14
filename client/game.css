@@ -8,6 +8,10 @@ div.page {
     max-height: 100vh;
 }
 
+canvas {
+  image-rendering: pixelated;
+}
+
 div>canvas.main {
     width: 100vw;
     height: 100vw;

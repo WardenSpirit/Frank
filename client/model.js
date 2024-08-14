@@ -2,7 +2,7 @@ import * as view from './view/view.js';
 import params from './params.json' with {type: 'json'};
 import * as controls from "./controls.js";
 
-let isConnected;
+let connected;
 let game;
 let points = 0;
 let players;
@@ -81,11 +81,15 @@ export function setPlayers(number) {
 }
 
 export function openConnection() {
-    isConnected = true;
+    connected = true;
     view.setInfoText("wait for game", 500);
 }
 
 export function closeConnection() {
-    isConnected = false;
+    connected = false;
     view.setInfoText("maybe refresh", 0);
+}
+
+export function isConnected() {
+    return connected;
 }

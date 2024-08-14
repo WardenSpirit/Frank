@@ -42,7 +42,6 @@ class Game {
                 potentialNewHeroPosition = { x: (this.heroPosition.x - 1 + params.MAP_WIDTH) % params.MAP_WIDTH, y: this.heroPosition.y };
                 break;
         }
-        console.log("potentialNewHeroPosition:", potentialNewHeroPosition);
 
         this.heroPosition = potentialNewHeroPosition;
     }

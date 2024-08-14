@@ -5,7 +5,7 @@ import params from './params.json' with { type: 'json' };
  * WebSocket via which the client connects to the server.
  */
 const serverAddress = params.websiteLocal; //params.websiteGlitch;
-const gameWebSocket = new WebSocket(serverAddress);
+let gameWebSocket = new WebSocket(serverAddress);
 
 /**
  * Sends the user's decision to the server via the web socket and sets the expectedMessageType to "MOVES".
@@ -21,7 +21,6 @@ gameWebSocket.addEventListener("open", () => {
 
 gameWebSocket.addEventListener("close", () => {
     model.closeConnection();
-    gameWebSocket = new WebSocket(serverAddress);
 });
 
 gameWebSocket.addEventListener("error", e => {
