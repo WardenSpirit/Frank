@@ -4,11 +4,14 @@ import * as model from './model.js';
 
 let hasTurned = false;
 
-document.body.addEventListener("touchstart", e => handleTouchStart(e));
-document.body.addEventListener("touchstart", e => handleTouchEnd(e));
+document.addEventListener("touchstart", e => handleTouchStart(e));
+document.addEventListener("touchend", e => handleTouchEnd(e));
 document.body.addEventListener("keydown", e => handleKeyDown(e));
 
 let touchStartX, touchStartY;
+const TOUCH_MOVE_THRESHHOLD = 5;
+
+const AUDIO_ELEMENT = document.getElementById("background-audio");
 
 /**
  * Initializes the coordinations of the touch start for later usage (when handling touch end event).
@@ -27,16 +30,16 @@ function handleTouchEnd(e) {
     let deltaX = e.changedTouches[0].clientX - touchStartX;
     let deltaY = e.changedTouches[0].clientY - touchStartY;
 
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) + TOUCH_MOVE_THRESHHOLD) {
         if (deltaX > 0) {
             tryMove('RIGHT');
-        } else {
+        } else if (deltaX < 0) {
             tryMove('LEFT');
         }
-    } else {
+    } else if (Math.abs(deltaX) + TOUCH_MOVE_THRESHHOLD < Math.abs(deltaY)) {
         if (deltaY > 0) {
             tryMove('DOWN');
-        } else {
+        } else if (deltaY < 0) {
             tryMove('UP');
         }
     }
@@ -60,6 +63,13 @@ function handleKeyDown(e) {
         case "ArrowDown":
             e.preventDefault();
             tryMove('DOWN'); break;     //down
+        case "KeyM":
+            console.log("AUDIO_ELEMENT.paused:", AUDIO_ELEMENT.paused);
+            if (AUDIO_ELEMENT.paused) {
+                AUDIO_ELEMENT.play();
+            } else {
+                AUDIO_ELEMENT.pause();
+            }
     }
 }
 
@@ -71,7 +81,7 @@ function tryMove(direction) {
     if (!hasTurned && model.isConnected()) {
         connection.sendMove(direction);
         hasTurned = true;
-            view.setInfoText("wait for the others", 500);
+        view.setInfoText("wait for the others", 500);
     }
 }
 

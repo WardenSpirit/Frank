@@ -30,7 +30,6 @@ async function loadImages() {
 
 export async function getImage(title) {
     if (!imagesReady) {
-        console.log("images loading");
         await (loadImages());
     }
     return IMAGES.get(title);
