@@ -1,6 +1,6 @@
 Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 
-# Frank the Game :gb::us:
+# Frank the Game (:gb: + :us:)
 
 ## Technical Details
 - Communication with the server via WebSockets.
@@ -45,7 +45,7 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 
 ***A big thanks to my friend Sheydy for creating the assets!***
 
-#  Hra Frank :czech_republic:
+#  Hra Frank (:czech_republic:)
 
 ## Technologické detaily
 - komunikace se serverem skrz WebSockety
