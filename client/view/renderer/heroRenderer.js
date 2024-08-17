@@ -37,6 +37,7 @@ export function startRenderingHero() {
     });
 }
 
+//the hero vanishes when spawned because this is called on the last positions visited in the last game
 function clearHero(targetOriginsToClear) {
     while(targetOriginsToClear.length > 0) {
         const targetOriginToClear = targetOriginsToClear.shift(0, 1);
