@@ -37,11 +37,11 @@ function calculateTargetOrigin(position) {
 }
 
 function calculatePointsTargetOrigin(characterIndex) {
-    return { x: SQUARE.width * (1 + characterIndex), y: SQUARE.width};
+    return { x: SQUARE.width * (1 + characterIndex), y: SQUARE.height};
 }
 
 function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
-    return { x: stateCanvas.width + SQUARE.width * (-1 - digitsNumber + characterIndex), y: SQUARE.width};
+    return { x: stateCanvas.width + SQUARE.width * (-1 - digitsNumber + characterIndex), y: SQUARE.height};
 }
 
 function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
@@ -49,6 +49,6 @@ function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
         y: (stateCanvas.height - infoTextHeight) / 2};
 }
 
-export {initSquareProportions, mapCanvas as gameCanvas, objectCanvas as heroCanvas, filterCanvas, stateCanvas,
-    mapContext as gameContext, objectContext, filterContext, tableContext, stateContext, SQUARE,
+export {initSquareProportions, mapCanvas, objectCanvas, filterCanvas, stateCanvas,
+    mapContext, objectContext, filterContext, tableContext, stateContext, SQUARE,
     calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin, calculateInfoTextTargetOrigin}

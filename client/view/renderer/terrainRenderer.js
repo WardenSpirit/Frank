@@ -6,7 +6,7 @@ import * as images from '../images.js';
 
 
 export async function renderMap(map) {
-    drawingContext.gameContext.clearRect(0, 0, drawingContext.gameCanvas.width, drawingContext.gameCanvas.height);
+    drawingContext.mapContext.clearRect(0, 0, drawingContext.mapCanvas.width, drawingContext.mapCanvas.height);
 
     for (let x = 0; x < map.length; x++) {
         for (let y = 0; y < map[x].length; y++) {
@@ -26,7 +26,7 @@ async function renderTerrain(map, position) {
         sourceOrigin = terrainParser.getHoleSource(map, position);
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(position);
-    drawingContext.gameContext.drawImage(image,
+    drawingContext.mapContext.drawImage(image,
         sourceOrigin.x,
         sourceOrigin.y,
         viewParams.sourceTileSize,
