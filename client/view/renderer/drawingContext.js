@@ -19,10 +19,7 @@ filterContext.imageSmoothingEnabled = false;
 tableContext.imageSmoothingEnabled = false;
 stateContext.imageSmoothingEnabled = false;
 
-const SQUARE = {
-        width: 1,
-        height: 1
-}
+const SQUARE = {};
 
 function initSquareProportions(mapWidth, mapHeight) {
     SQUARE.width = mapCanvas.width / mapWidth;
@@ -40,11 +37,11 @@ function calculateTargetOrigin(position) {
 }
 
 function calculatePointsTargetOrigin(characterIndex) {
-    return { x: SQUARE.width * (1 + characterIndex), y: SQUARE.width * 5 / 4 };
+    return { x: SQUARE.width * (1 + characterIndex), y: SQUARE.width};
 }
 
 function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
-    return { x: stateCanvas.width + SQUARE.width * (-1 - digitsNumber + characterIndex), y: SQUARE.width * 5 / 4 };
+    return { x: stateCanvas.width + SQUARE.width * (-1 - digitsNumber + characterIndex), y: SQUARE.width};
 }
 
 function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
