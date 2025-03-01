@@ -2,6 +2,7 @@ import viewParams from '../viewParams.json' with { type: 'json' };
 import * as heroParser from '../parser/heroParser.js';
 import * as drawingContext from './drawingContext.js'
 import * as images from '../images.js';
+const IMAGE = images.HERO_IMAGE;
 
 let heroTargetOrigin = { x: 0, y: 0 };
 

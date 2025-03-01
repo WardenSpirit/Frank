@@ -74,3 +74,14 @@ export function getCharOrigin(char) {
     }
     return { x: distance, y: 0 };
 }
+
+export const PATH_IMAGE = await getImage("HERO");
+export const HOLE_IMAGE = await getImage("HERO");
+export const HERO_IMAGE = await getImage("HERO");
+export const DUST_IMAGE = await getImage("HERO");
+export const TREASURE_IMAGE = await getImage("HERO");
+export const GOOD_FILTER_IMAGE = await getImage("HERO");
+export const BAD_FILTER_IMAGE = await getImage("HERO");
+export const TABLE_IMAGE = await getImage("HERO");
+export const DIGITS_IMAGE = await getImage("HERO");
+export const CHARACTERS_IMAGE = await getImage("HERO");
