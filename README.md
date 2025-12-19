@@ -20,7 +20,7 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 3. Make any necessary adjustments.
 4. Open a terminal in the root directory of this repository.
 5. Run the command `node .`.
-6. Open your browser and navigate to [http://localhost:5000/client/](http://localhost:5000/client/).
+6. Open your browser and navigate to [http://localhost:3000/client/](http://localhost:3000/client/).
 7. For simulating additional players: open additional tabs on the same page.
    - It may appear that the game stops working, but please follow the instructions below.
 
@@ -65,7 +65,7 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 3. úprava 
 4. otevření terminálu v kořenové složce tohoto repozitáře
 5. příkaz "node ."
-6. otevření prohlížeče na stránce http://localhost:5000/client/
+6. otevření prohlížeče na stránce http://localhost:3000/client/
 7. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
 	- jen zdánlivě přestane fungovat (viz instrukce níže)
 

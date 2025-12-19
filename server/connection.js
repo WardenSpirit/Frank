@@ -3,7 +3,7 @@ const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const webSocket = require('./websocket');
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 
 server.listen(PORT, () => console.log(`${new Date()}... The server is listening on port ${PORT}`));
 
