@@ -1,18 +1,14 @@
-const { readFile } = require('fs');
 const express = require('express');
+const path = require('path');
 const app = express();
 
-const pathLevelSign = process.platform == 'linux' ? '/' : '\\' 
-const path = __dirname.slice(0, __dirname.lastIndexOf(pathLevelSign)) + pathLevelSign + 'client';
-app.use(express.static(path));
 
-app.get('/', (_request, response) => {
-    readFile('./index.html', 'utf8', (err, html) => {
-        if (err) {
-            response.status(500).send('Sorry, I\'m not working. Better luck somewhere else.');
-        }
-        response.send(html);
-    });
+const clientPath = path.join(__dirname, '..', 'client');
+app.use(express.static(clientPath));
+
+app.get('*', (_request, response) => {
+    response.sendFile(path.join(clientPath, 'index.html'));
 });
+
 
 module.exports = app;
