@@ -4,7 +4,8 @@ import params from './params.json' with { type: 'json' };
 /**
  * WebSocket via which the client connects to the server.
  */
-const serverAddress = params.websiteLocal; //params.websiteGlitch;
+const serverAddress = params.websiteServer;
+// const serverAddress = params.websiteLocal;
 let gameWebSocket = new WebSocket(serverAddress);
 
 /**
