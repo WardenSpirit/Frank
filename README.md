@@ -16,11 +16,13 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 
 ## Running Locally
 1. Install Node.js if not already installed (works from version 16.11.0 onwards).
+   - Or locally into `.node/` (git-ignored), then use `.node/bin/node` and `.node/bin/npm`:
+     `mkdir .node && curl -fsSL https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz | tar -xJ -C .node --strip-components=1`
 2. Clone this repository.
 3. Make any necessary adjustments.
 4. Open a terminal in the root directory of this repository.
-5. Run the command `node .`.
-6. Open your browser and navigate to [http://localhost:3000/client/](http://localhost:3000/client/).
+5. Run the commands `npm install` and `node .`.
+6. Open your browser and navigate to [http://localhost:3000/](http://localhost:3000/).
 7. For simulating additional players: open additional tabs on the same page.
    - It may appear that the game stops working, but please follow the instructions below.
 
@@ -61,11 +63,13 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 
 ## Spuštění lokálně
 1. instalace Node.js, pokud chybí (funguje přinejmenším od verze 16.11.0)
+	- nebo lokálně do `.node/` (ignorováno gitem), pak `.node/bin/node` a `.node/bin/npm`:
+	  `mkdir .node && curl -fsSL https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz | tar -xJ -C .node --strip-components=1`
 2. clone tohoto repozitáře
 3. úprava 
 4. otevření terminálu v kořenové složce tohoto repozitáře
-5. příkaz "node ."
-6. otevření prohlížeče na stránce http://localhost:3000/client/
+5. příkazy "npm install" a "node ."
+6. otevření prohlížeče na stránce http://localhost:3000/
 7. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
 	- jen zdánlivě přestane fungovat (viz instrukce níže)
 
