@@ -15,15 +15,14 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
   - Please be patient; it may take a moment for the app to start (10-90 seconds).
 
 ## Running Locally
-1. Install Node.js if not already installed (works from version 16.11.0 onwards).
-   - Or locally into `.node/` (git-ignored), then use `.node/bin/node` and `.node/bin/npm`:
-     `mkdir .node && curl -fsSL https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz | tar -xJ -C .node --strip-components=1`
-2. Clone this repository.
+1. Clone this repository and open a terminal in its root directory.
+2. Run `./setup.sh` (Linux/macOS). It uses the system Node.js if it is 16.11.0 or newer,
+   otherwise it downloads Node.js v24.21.0 into `.node/` (git-ignored), and then installs dependencies.
+   - Manually: install Node.js ≥ 16.11.0 and run `npm ci`.
 3. Make any necessary adjustments.
-4. Open a terminal in the root directory of this repository.
-5. Run the commands `npm install` and `node .`.
-6. Open your browser and navigate to [http://localhost:3000/](http://localhost:3000/).
-7. For simulating additional players: open additional tabs on the same page.
+4. Start the server with the command printed by the script: `node .`, or `.node/bin/node .` with the local Node.js.
+5. Open your browser and navigate to [http://localhost:3000/](http://localhost:3000/).
+6. For simulating additional players: open additional tabs on the same page.
    - It may appear that the game stops working, but please follow the instructions below.
 
 ## Instructions
@@ -62,15 +61,14 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 	- Prosím o strpení, zapnutí apky na serveru chvilku trvá (10-90 sekund)
 
 ## Spuštění lokálně
-1. instalace Node.js, pokud chybí (funguje přinejmenším od verze 16.11.0)
-	- nebo lokálně do `.node/` (ignorováno gitem), pak `.node/bin/node` a `.node/bin/npm`:
-	  `mkdir .node && curl -fsSL https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz | tar -xJ -C .node --strip-components=1`
-2. clone tohoto repozitáře
-3. úprava 
-4. otevření terminálu v kořenové složce tohoto repozitáře
-5. příkazy "npm install" a "node ."
-6. otevření prohlížeče na stránce http://localhost:3000/
-7. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
+1. clone tohoto repozitáře a otevření terminálu v jeho kořenové složce
+2. příkaz `./setup.sh` (Linux/macOS): použije systémový Node.js, je-li verze aspoň 16.11.0,
+	jinak stáhne Node.js v24.21.0 do `.node/` (ignorováno gitem), a nainstaluje závislosti
+	- ručně: instalace Node.js ≥ 16.11.0 a příkaz `npm ci`
+3. úprava
+4. spuštění serveru příkazem vypsaným skriptem: `node .`, s lokálním Node.js `.node/bin/node .`
+5. otevření prohlížeče na stránce http://localhost:3000/
+6. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
 	- jen zdánlivě přestane fungovat (viz instrukce níže)
 
 ## Instrukce
