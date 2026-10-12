@@ -1,11 +1,10 @@
 import * as model from './model.js';
-import params from './params.json' with { type: 'json' };
 
 /**
  * WebSocket via which the client connects to the server.
  */
-// const serverAddress = params.websiteServer;
-const serverAddress = params.websiteLocal;
+// The server serves this client too, so it lives at the same host (wss when the page is on https).
+const serverAddress = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 let gameWebSocket = new WebSocket(serverAddress);
 
 /**
