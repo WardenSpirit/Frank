@@ -25,6 +25,9 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 6. For simulating additional players: open additional tabs on the same page.
    - It may appear that the game stops working, but please follow the instructions below.
 
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merge request guidelines.
+
 ## Instructions
 ### Basics
 - The goal is to guide the character to the destination using arrow keys.
@@ -70,6 +73,9 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 5. otevření prohlížeče na stránce http://localhost:3000/
 6. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
 	- jen zdánlivě přestane fungovat (viz instrukce níže)
+
+## Přispívání
+Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Instrukce
 ### Základ
