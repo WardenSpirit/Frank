@@ -1,12 +1,9 @@
 import * as model from './model.js';
-import params from './params.json' with { type: 'json' };
 
 /**
- * WebSocket via which the client connects to the server.
+ * WebSocket to the server that served this page; the browser resolves '/' against the page origin (http → ws, https → wss).
  */
-// const serverAddress = params.websiteServer;
-const serverAddress = params.websiteLocal;
-let gameWebSocket = new WebSocket(serverAddress);
+let gameWebSocket = new WebSocket('/');
 
 /**
  * Sends the user's decision to the server via the web socket and sets the expectedMessageType to "MOVES".
