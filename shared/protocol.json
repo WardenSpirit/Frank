@@ -1,0 +1,17 @@
+{
+    "TERRAIN": {
+        "PATH": 0,
+        "HOLE": 1
+    },
+    "DIRECTION": {
+        "UP": "UP",
+        "RIGHT": "RIGHT",
+        "DOWN": "DOWN",
+        "LEFT": "LEFT"
+    },
+    "MESSAGE_TYPE": {
+        "GAME": "GAME",
+        "MOVES": "MOVES",
+        "PLAYERS": "PLAYERS"
+    }
+}

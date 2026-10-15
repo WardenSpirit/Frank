@@ -1,5 +1,5 @@
 const params = require('./params.json');
-const dataRepresentation = require('./dataRepresentation');
+const { TERRAIN, DIRECTION } = require('../shared/protocol.json');
 
 class Game {
     constructor(map, treasurePosition, heroPosition) {
@@ -29,16 +29,16 @@ class Game {
 
         let potentialNewHeroPosition;
         switch (direction) {
-            case "UP":
+            case DIRECTION.UP:
                 potentialNewHeroPosition = { x: this.heroPosition.x, y: (this.heroPosition.y - 1 + params.MAP_HEIGHT) % params.MAP_HEIGHT };
                 break;
-            case "RIGHT":
+            case DIRECTION.RIGHT:
                 potentialNewHeroPosition = { x: (this.heroPosition.x + 1) % params.MAP_WIDTH, y: this.heroPosition.y };
                 break;
-            case "DOWN":
+            case DIRECTION.DOWN:
                 potentialNewHeroPosition = { x: this.heroPosition.x, y: (this.heroPosition.y + 1) % params.MAP_HEIGHT };
                 break;
-            case "LEFT":
+            case DIRECTION.LEFT:
                 potentialNewHeroPosition = { x: (this.heroPosition.x - 1 + params.MAP_WIDTH) % params.MAP_WIDTH, y: this.heroPosition.y };
                 break;
         }
@@ -57,7 +57,7 @@ class Game {
             return this.heroPosition.x == this.treasurePosition.x && this.heroPosition.y == this.treasurePosition.y;
         }
         function didHeroStepInHole() {
-            return this.map[this.heroPosition.x][this.heroPosition.y] == dataRepresentation.HOLE;
+            return this.map[this.heroPosition.x][this.heroPosition.y] === TERRAIN.HOLE;
         }
     }
 }

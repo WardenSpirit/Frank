@@ -1,6 +1,9 @@
+import protocol from '../../../shared/protocol.json' with { type: 'json' };
 import viewParams from '../viewParams.json' with { type: 'json' };
 import * as generalTileParser from './generalTileParser.js';
 import * as images from '../images.js';
+
+const { TERRAIN } = protocol;
 
 /**
  * Parameters which are used when calculating the correct part of picture source. That part is then drew on the canvases.
@@ -50,17 +53,18 @@ function getSurroundings(map, position) {
 function getSurrounding(position, shiftX, shiftY, map) {
     if (position.x + shiftX < 0 || position.x + shiftX >= map.length ||
         position.y + shiftY < 0 || position.y + shiftY >= map[0].length) {
-        return 0;
+        return false;
     }
-    return map[position.x + shiftX][position.y + shiftY];
+    return map[position.x + shiftX][position.y + shiftY] === TERRAIN.HOLE;
 }
 
 function getSourceColumn(surroundings) {
     let column = 0;
     for (let i = 3; i >= 0; i--) {
-        const surrounding = surroundings[i];
         column *= 2;
-        column += surrounding;
+        if (surroundings[i]) {
+            column++;
+        }
     }
     return column;
 }
@@ -69,7 +73,7 @@ function getSourceLine(surroundings) {
     let line = 0;
     for (let i = 3; i >= 0; i--) {
         line *= 2;
-        if (surroundings[i + 4] && (surroundings[i] == 1 || surroundings[(i + 1) % 4] == 1)) {
+        if (surroundings[i + 4] && (surroundings[i] || surroundings[(i + 1) % 4])) {
             line++;
         }
     }

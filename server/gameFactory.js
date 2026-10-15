@@ -1,7 +1,7 @@
 const params = require('./params.json');
 const getRandomIndex = require('./array').getRandomIndex;
 const Game = require('./game')
-const dataRepresentation = require('./dataRepresentation');
+const { TERRAIN } = require('../shared/protocol.json');
 const { getRandomElement } = require('./array');
 
 class GameFactory {
@@ -36,9 +36,9 @@ class GameFactory {
 
         while (squaresToMake > 0) {
             if (Math.random() * squaresToMake > holesToMake) {
-                yield dataRepresentation.PATH;
+                yield TERRAIN.PATH;
             } else {
-                yield dataRepresentation.HOLE;
+                yield TERRAIN.HOLE;
                 holesToMake--;
             }
             squaresToMake--;
@@ -82,7 +82,7 @@ class GameFactory {
     }
 
     noteSameLandDown(current, foundPositionsMap) {
-        if (this.map[current.x][current.y] !== dataRepresentation.HOLE) {
+        if (this.map[current.x][current.y] !== TERRAIN.HOLE) {
             foundPositionsMap[current.x][current.y] = true;
             this.positionsAround(current).forEach(neighbour => {
                 if (!foundPositionsMap[neighbour.x][neighbour.y]) {

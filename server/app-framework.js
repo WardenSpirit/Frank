@@ -4,7 +4,9 @@ const app = express();
 
 
 const clientPath = path.join(__dirname, '..', 'client');
-app.use(express.static(clientPath));
+const sharedPath = path.join(__dirname, '..', 'shared');
+app.use('/', express.static(clientPath));
+app.use('/shared', express.static(sharedPath));
 
 app.get('*', (_request, response) => {
     response.sendFile(path.join(clientPath, 'index.html'));

@@ -1,4 +1,7 @@
 import * as model from './model.js';
+import protocol from '../shared/protocol.json' with { type: 'json' };
+
+const { MESSAGE_TYPE } = protocol;
 
 /**
  * WebSocket to the server that served this page; the browser resolves '/' against the page origin (http → ws, https → wss).
@@ -28,11 +31,11 @@ gameWebSocket.addEventListener("error", e => {
 gameWebSocket.addEventListener("message", message => {
     let messageType = JSON.parse(message.data).type;
     let clearData = JSON.parse(message.data).clearData;
-    if (messageType === "GAME") {
+    if (messageType === MESSAGE_TYPE.GAME) {
         model.updateGame(clearData);
-    } else if (messageType === "MOVES") {
+    } else if (messageType === MESSAGE_TYPE.MOVES) {
         model.applyMoves(clearData);
-    } else if (messageType === "PLAYERS") {
+    } else if (messageType === MESSAGE_TYPE.PLAYERS) {
         model.setPlayers(clearData);
     }
 });

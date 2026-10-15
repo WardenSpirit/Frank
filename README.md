@@ -11,8 +11,8 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
   - Uses 2 canvases (HTMLCanvasElements) layered on top of each other.
 
 ## Running publicly
-- Visit [Frank's Game](https://frank-the-cat.glitch.me/).
-  - Please be patient; it may take a moment for the app to start (10-90 seconds).
+- Visit [Frank's Game](https://frank-kps0.onrender.com/).
+  - It may take a minute for the server to launch.
 
 ## Running Locally
 1. Clone this repository and open a terminal in its root directory.
@@ -60,8 +60,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
   - využívá 2 pláten (HTMLCanvasElements) přes sebe
 
 ## Spuštění
-- https://frank-the-cat.glitch.me/
-	- Prosím o strpení, zapnutí apky na serveru chvilku trvá (10-90 sekund)
+- https://frank-kps0.onrender.com/
+	- Zapnutí serveru může minutu trvat.
 
 ## Spuštění lokálně
 1. clone tohoto repozitáře a otevření terminálu v jeho kořenové složce

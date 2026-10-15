@@ -1,6 +1,8 @@
 import * as view from './view/view.js';
-import params from './params.json' with {type: 'json'};
+import protocol from '../shared/protocol.json' with { type: 'json' };
 import * as controls from "./controls.js";
+
+const { TERRAIN, DIRECTION } = protocol;
 
 let connected;
 let game;
@@ -50,16 +52,16 @@ export function applyMoves(moves) {
     function moveHero(direction) {
         let potentialNewHeroPosition;
         switch (direction) {
-            case "UP":
+            case DIRECTION.UP:
                 potentialNewHeroPosition = { x: game.heroPosition.x, y: (game.heroPosition.y - 1 + game.map[0].length) % game.map[0].length};
                 break;
-            case "RIGHT":
+            case DIRECTION.RIGHT:
                 potentialNewHeroPosition = { x: (game.heroPosition.x + 1) % game.map.length, y: game.heroPosition.y };
                 break;
-            case "DOWN":
+            case DIRECTION.DOWN:
                 potentialNewHeroPosition = { x: game.heroPosition.x, y: (game.heroPosition.y + 1) % game.map[0].length };
                 break;
-            case "LEFT":
+            case DIRECTION.LEFT:
                 potentialNewHeroPosition = { x: (game.heroPosition.x - 1 + game.map.length) % game.map.length, y: game.heroPosition.y };
                 break;
         }
@@ -72,7 +74,7 @@ function isTreasureReached() {
 }
 
 function isHeroInHole() {
-    return game.map[game.heroPosition.x][game.heroPosition.y] != params.PATH_CODE
+    return game.map[game.heroPosition.x][game.heroPosition.y] === TERRAIN.HOLE
 }
 
 export function setPlayers(number) {
