@@ -1,9 +1,10 @@
-import params from '../../params.json' with {type: 'json'};
+import protocol from '../../../shared/protocol.json' with { type: 'json' };
 import viewParams from '../viewParams.json' with { type: 'json' };
 import * as terrainParser from '../parser/terrainParser.js';
 import * as drawingContext from './drawingContext.js'
 import * as images from '../images.js';
 
+const { TERRAIN } = protocol;
 
 export async function renderMap(map) {
     drawingContext.mapContext.clearRect(0, 0, drawingContext.mapCanvas.width, drawingContext.mapCanvas.height);
@@ -18,7 +19,7 @@ export async function renderMap(map) {
 async function renderTerrain(map, position) {
     let sourceOrigin;
     let image;
-    if (map[position.x][position.y] == params.PATH_CODE) {
+    if (map[position.x][position.y] === TERRAIN.PATH) {
         image = await images.getImage("PATH");
         sourceOrigin = terrainParser.getPathSource(map, position);
     } else {

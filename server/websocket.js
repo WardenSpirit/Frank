@@ -1,4 +1,5 @@
 const GameFactory = require('./gameFactory.js');
+const { DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
 
 let gameFactory = new GameFactory();
 let game = null;
@@ -17,9 +18,9 @@ function onConnect(webSocket) {
     if (webSockets.length == 1) {
         startANewGame();
     } else {
-        webSocket.send(JSON.stringify({type: "GAME", clearData: game}));
+        webSocket.send(JSON.stringify({type: MESSAGE_TYPE.GAME, clearData: game}));
     }
-    sendToAll("PLAYERS", webSockets.length);
+    sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
 
     webSocket.addEventListener("message", ({ data }) => {
         if (isValidMove(webSocket, data)) {
@@ -42,10 +43,7 @@ function onConnect(webSocket) {
             }
             
             function isValidDirection(direction) {
-                return direction === "UP" ||
-                    direction === "RIGHT" ||
-                    direction === "DOWN" ||
-                    direction === "LEFT";
+                return Object.values(DIRECTION).includes(direction);
             }
         }
     });
@@ -56,7 +54,7 @@ function onConnect(webSocket) {
 
         function eliminateWebSocket(webSocket) {
             webSockets.splice(webSockets.indexOf(webSocket), 1);
-            sendToAll("PLAYERS", webSockets.length);
+            sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
             if (allMovesGathered()) {
                 realizeTurn();
             }
@@ -72,7 +70,7 @@ function allMovesGathered() {
  * Realizes a turn with the moves that have come.
  */
 function realizeTurn() {
-    sendToAll("MOVES", moves);
+    sendToAll(MESSAGE_TYPE.MOVES, moves);
     game.makeMoves(moves);
 
     moves = [];
@@ -88,7 +86,7 @@ function realizeTurn() {
  */
 function startANewGame() {
     game = gameFactory.createGame();
-    sendToAll("GAME", game);
+    sendToAll(MESSAGE_TYPE.GAME, game);
 }
 
 /**

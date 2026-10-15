@@ -1,5 +1,8 @@
+import protocol from '../../../shared/protocol.json' with { type: 'json' };
 import viewParams from '../viewParams.json' with { type: 'json' };
 import * as images from '../images.js';
+
+const { DIRECTION } = protocol;
 
 const STANDING_LINE = 0;
 const WALK_UP_LINE = 1;
@@ -22,16 +25,16 @@ export function calculateHeroSourceOrigin(heroState, currentTime) {
         x = (x + viewParams.sourceTileSize) % (HERO_COUNT * viewParams.sourceTileSize);
     }
     switch (heroState) {
-        case "UP":
+        case DIRECTION.UP:
             y = WALK_UP_LINE;
             break;
-        case "RIGHT":
+        case DIRECTION.RIGHT:
             y = WALK_RIGHT_LINE;
             break;
-        case "DOWN":
+        case DIRECTION.DOWN:
             y = WALK_DOWN_LINE;
             break;
-        case "LEFT":
+        case DIRECTION.LEFT:
             y = WALK_LEFT_LINE;
             break;
         default:        //case "STANDING":

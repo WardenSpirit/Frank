@@ -1,6 +1,9 @@
 import * as connection from './connection.js';
 import * as view from './view/view.js';
 import * as model from './model.js';
+import protocol from '../shared/protocol.json' with { type: 'json' };
+
+const { DIRECTION } = protocol;
 
 let hasTurned = false;
 
@@ -32,15 +35,15 @@ function handleTouchEnd(e) {
 
     if (Math.abs(deltaX) > Math.abs(deltaY) + TOUCH_MOVE_THRESHHOLD) {
         if (deltaX > 0) {
-            tryMove('RIGHT');
+            tryMove(DIRECTION.RIGHT);
         } else {
-            tryMove('LEFT');
+            tryMove(DIRECTION.LEFT);
         }
     } else if (Math.abs(deltaX) + TOUCH_MOVE_THRESHHOLD < Math.abs(deltaY)) {
         if (deltaY > 0) {
-            tryMove('DOWN');
+            tryMove(DIRECTION.DOWN);
         } else {
-            tryMove('UP');
+            tryMove(DIRECTION.UP);
         }
     } else {
         playMusic();
@@ -55,16 +58,16 @@ function handleKeyDown(e) {
     switch (e.code) {
         case "ArrowUp":
             e.preventDefault();
-            tryMove('UP'); break;       //up
+            tryMove(DIRECTION.UP); break;       //up
         case "ArrowLeft":
             e.preventDefault();
-            tryMove('LEFT'); break;     //left
+            tryMove(DIRECTION.LEFT); break;     //left
         case "ArrowRight":
             e.preventDefault();
-            tryMove('RIGHT'); break;    //right
+            tryMove(DIRECTION.RIGHT); break;    //right
         case "ArrowDown":
             e.preventDefault();
-            tryMove('DOWN'); break;     //down
+            tryMove(DIRECTION.DOWN); break;     //down
         case "KeyM":
             playMusic();
     }
