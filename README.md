@@ -15,15 +15,17 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
   - It may take a minute for the server to launch.
 
 ## Running Locally
-1. Clone this repository and open a terminal in its root directory.
-2. Run `./setup.sh` (Linux/macOS). It uses the system Node.js if it is 16.11.0 or newer,
-   otherwise it downloads Node.js v24.21.0 into `.node/` (git-ignored), and then installs dependencies.
-   - Manually: install Node.js ≥ 16.11.0 and run `npm ci`.
-3. Make any necessary adjustments.
-4. Start the server with the command printed by the script: `node .`, or `.node/bin/node .` with the local Node.js.
-5. Open your browser and navigate to [http://localhost:3000/](http://localhost:3000/).
-6. For simulating additional players: open additional tabs on the same page.
-   - It may appear that the game stops working, but please follow the instructions below.
+Requires [Node.js](https://nodejs.org/) 16.11+ with npm ([installation guide](https://nodejs.org/en/download)).
+
+```sh
+git clone git@gitlab.fel.cvut.cz:muchaja3/frank.git
+cd frank
+npm ci      # install dependencies pinned in package-lock.json
+npm start   # start the server on port 3000
+```
+
+Then open [http://localhost:3000/](http://localhost:3000/). To simulate additional players, open more tabs on the same page.
+It may appear that the game stops working, but please follow the instructions below.
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merge request guidelines.
@@ -64,15 +66,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 	- Zapnutí serveru může minutu trvat.
 
 ## Spuštění lokálně
-1. clone tohoto repozitáře a otevření terminálu v jeho kořenové složce
-2. příkaz `./setup.sh` (Linux/macOS): použije systémový Node.js, je-li verze aspoň 16.11.0,
-	jinak stáhne Node.js v24.21.0 do `.node/` (ignorováno gitem), a nainstaluje závislosti
-	- ručně: instalace Node.js ≥ 16.11.0 a příkaz `npm ci`
-3. úprava
-4. spuštění serveru příkazem vypsaným skriptem: `node .`, s lokálním Node.js `.node/bin/node .`
-5. otevření prohlížeče na stránce http://localhost:3000/
-6. pro simulaci dalších hráčů: otevření dalších n karet na téže stránce
-	- jen zdánlivě přestane fungovat (viz instrukce níže)
+Vyžaduje [Node.js](https://nodejs.org/) 16.11+ a npm ([návod k instalaci](https://nodejs.org/en/download)).
+
+```sh
+git clone git@gitlab.fel.cvut.cz:muchaja3/frank.git
+cd frank
+npm ci      # instalace závislostí podle package-lock.json
+npm start   # spuštění serveru na portu 3000
+```
+
+Poté otevřít http://localhost:3000/. Pro simulaci dalších hráčů otevřít další karty na téže stránce.
+Hra jen zdánlivě přestane fungovat (viz instrukce níže).
 
 ## Přispívání
 Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [CONTRIBUTING.md](CONTRIBUTING.md).
