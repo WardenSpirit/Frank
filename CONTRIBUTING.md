@@ -114,8 +114,6 @@ npm ci
 npm start
 ```
 
-Linux/macOS users can also install dependencies with `./setup.sh`.
-
 Open [http://localhost:3000/](http://localhost:3000/). Check the changed behavior; for multiplayer changes, also check two tabs, movement, state updates, and disconnecting a player. Record steps and results in the MR.
 
 When adding automated tests:
