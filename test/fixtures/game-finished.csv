@@ -1,0 +1,4 @@
+name,heroX,heroY,treasureX,treasureY,holeAtHero,expectedFinished
+path away from treasure,0,0,5,5,false,false
+hero reaches treasure,5,5,5,5,false,true
+hero stands in a hole,2,4,5,5,true,true

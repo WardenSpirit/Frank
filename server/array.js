@@ -1,7 +1,7 @@
-exports.getRandomIndex = function(array) {
-    return Math.floor(Math.random() * array.length);
+exports.getRandomIndex = function(array, random = Math.random) {
+    return Math.floor(random() * array.length);
 }
 
-exports.getRandomElement = function(array) {
-    return array[exports.getRandomIndex(array)];
+exports.getRandomElement = function(array, random = Math.random) {
+    return array[exports.getRandomIndex(array, random)];
 }

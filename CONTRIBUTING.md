@@ -107,18 +107,22 @@ The author replies to each thread either with the fix or a reason to keep the co
 
 Follow the surrounding style: four-space indentation and semicolons. Avoid reformatting unrelated code.
 
-With Node.js 16.11 or newer:
+With Node.js 22.x (22.12 or newer), 24.x, or 26 or newer:
 
 ```sh
 npm ci
+npm test
 npm start
 ```
 
 Open [http://localhost:3000/](http://localhost:3000/). Check the changed behavior; for multiplayer changes, also check two tabs, movement, state updates, and disconnecting a player. Record steps and results in the MR.
 
+Unit tests use Vitest. Run `npm test` before submitting an MR. Use `npm run test:coverage` for coverage and `npm run test:report` for a JUnit report.
+
 When adding automated tests:
 
-- Use Arrange–Act–Assert: prepare inputs, perform the action, check the expected result.
+- Use `// Arrange`, `// Act`, and `// Assert` sections. Define `expected...` values before the action, store results in `actual...` variables, and compare those variables in assertions.
+- Parametrize repeated cases from CSV files with a header and names describing the tested behavior. See [test/README.md](test/README.md) for the current cases and data format.
 - Cover changed rules with unit tests and bug fixes with regression tests.
 - Test WebSocket behavior against a real server; check key user flows in a browser.
 - Use deterministic data and clean up sockets and timers after each test.

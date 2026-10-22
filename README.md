@@ -15,7 +15,7 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
   - It may take a minute for the server to launch.
 
 ## Running Locally
-Requires [Node.js](https://nodejs.org/) 16.11+ with npm ([installation guide](https://nodejs.org/en/download)).
+Requires [Node.js](https://nodejs.org/) 22.x (22.12 or newer), 24.x, or 26 or newer, with npm ([installation guide](https://nodejs.org/en/download)).
 
 ```sh
 git clone git@gitlab.fel.cvut.cz:muchaja3/frank.git
@@ -66,7 +66,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 	- Zapnutí serveru může minutu trvat.
 
 ## Spuštění lokálně
-Vyžaduje [Node.js](https://nodejs.org/) 16.11+ a npm ([návod k instalaci](https://nodejs.org/en/download)).
+Vyžaduje [Node.js](https://nodejs.org/) řady 22 (od 22.12), řady 24 nebo 26 a novější a npm ([návod k instalaci](https://nodejs.org/en/download)).
 
 ```sh
 git clone git@gitlab.fel.cvut.cz:muchaja3/frank.git
