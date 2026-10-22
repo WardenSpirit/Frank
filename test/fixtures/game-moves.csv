@@ -1,0 +1,9 @@
+name,direction,startX,startY,expectedX,expectedY
+move one up,UP,3,4,3,3
+move one right,RIGHT,3,4,4,4
+move one down,DOWN,3,4,3,5
+move one left,LEFT,3,4,2,4
+wrap at the upper edge,UP,1,0,1,last
+wrap at the right edge,RIGHT,last,1,0,1
+wrap at the lower edge,DOWN,1,last,1,0
+wrap at the left edge,LEFT,0,1,last,1

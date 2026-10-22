@@ -5,6 +5,9 @@ const { TERRAIN } = require('../shared/protocol.json');
 const { getRandomElement } = require('./array');
 
 class GameFactory {
+    constructor(random = Math.random) {
+        this.random = random;
+    }
 
     createGame() {
         //generating function must be called in this order
@@ -35,7 +38,7 @@ class GameFactory {
         let holesToMake = squaresToMake * params.HOLE_RATIO;
 
         while (squaresToMake > 0) {
-            if (Math.random() * squaresToMake > holesToMake) {
+            if (this.random() * squaresToMake > holesToMake) {
                 yield TERRAIN.PATH;
             } else {
                 yield TERRAIN.HOLE;
@@ -51,13 +54,13 @@ class GameFactory {
         
         do {
             origin = {
-                x: getRandomIndex(this.map),
-                y: getRandomIndex(this.map[0])
+                x: getRandomIndex(this.map, this.random),
+                y: getRandomIndex(this.map[0], this.random)
             };
             positionsOnTheSameLand = this.findSameLand(origin);
         } while (positionsOnTheSameLand.length == 0);
         
-        let otherPosition = getRandomElement(positionsOnTheSameLand);
+        let otherPosition = getRandomElement(positionsOnTheSameLand, this.random);
 
         return [origin, otherPosition];
     }

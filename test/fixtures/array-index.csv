@@ -1,0 +1,4 @@
+name,length,random,expectedIndex
+zero selects the first index,3,0,0
+upper random boundary selects the last index,3,0.999999,2
+interior value selects an interior index,4,0.6,2
