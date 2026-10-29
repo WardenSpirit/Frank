@@ -1,0 +1,45 @@
+[
+    { "id": "EC13", "name": "a move up", "message": { "type": "MOVE", "clearData": { "direction": "UP" } }, "expected": { "type": "MOVE", "clearData": { "direction": "UP" } } },
+    { "id": "EC13", "name": "a move right", "message": { "type": "MOVE", "clearData": { "direction": "RIGHT" } }, "expected": { "type": "MOVE", "clearData": { "direction": "RIGHT" } } },
+    { "id": "EC13", "name": "a move down", "message": { "type": "MOVE", "clearData": { "direction": "DOWN" } }, "expected": { "type": "MOVE", "clearData": { "direction": "DOWN" } } },
+    { "id": "EC13", "name": "a move left", "message": { "type": "MOVE", "clearData": { "direction": "LEFT" } }, "expected": { "type": "MOVE", "clearData": { "direction": "LEFT" } } },
+    { "id": "EC18", "name": "a move with an extra top-level field", "message": { "type": "MOVE", "clearData": { "direction": "UP" }, "extra": 7 }, "expected": { "type": "MOVE", "clearData": { "direction": "UP" } } },
+    { "id": "EC19", "name": "a move with an extra field in clearData", "message": { "type": "MOVE", "clearData": { "direction": "UP", "extra": 7 } }, "expected": { "type": "MOVE", "clearData": { "direction": "UP" } } },
+
+    { "id": "EC2", "name": "a raw direction string", "data": "UP", "expected": null },
+    { "id": "EC2", "name": "truncated JSON", "data": "{\"type\":\"MOVE\"", "expected": null },
+    { "id": "BV1", "name": "an empty message", "data": "", "expected": null },
+
+    { "id": "EC4", "name": "JSON null", "message": null, "expected": null },
+    { "id": "EC4", "name": "a JSON number", "message": 1, "expected": null },
+    { "id": "EC4", "name": "a JSON string with a direction", "message": "UP", "expected": null },
+    { "id": "EC4", "name": "a JSON array", "message": ["MOVE", { "direction": "UP" }], "expected": null },
+
+    { "id": "EC6", "name": "a missing type", "message": { "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC7", "name": "the server type GAME", "message": { "type": "GAME", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC7", "name": "the server type MOVES", "message": { "type": "MOVES", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC7", "name": "the server type PLAYERS", "message": { "type": "PLAYERS", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC8", "name": "an unknown type", "message": { "type": "JUMP", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC8", "name": "the inherited property name toString as type", "message": { "type": "toString", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC8", "name": "the inherited property name __proto__ as type", "message": { "type": "__proto__", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "BV2", "name": "a lowercase type", "message": { "type": "move", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "BV3", "name": "a type with a trailing space", "message": { "type": "MOVE ", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "BV4", "name": "an empty type", "message": { "type": "", "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC9", "name": "a numeric type", "message": { "type": 1, "clearData": { "direction": "UP" } }, "expected": null },
+    { "id": "EC9", "name": "a null type", "message": { "type": null, "clearData": { "direction": "UP" } }, "expected": null },
+
+    { "id": "EC11", "name": "a move without clearData", "message": { "type": "MOVE" }, "expected": null },
+    { "id": "EC12", "name": "a move with the direction as clearData", "message": { "type": "MOVE", "clearData": "UP" }, "expected": null },
+    { "id": "EC12", "name": "a move with null clearData", "message": { "type": "MOVE", "clearData": null }, "expected": null },
+    { "id": "EC12", "name": "a move with an array as clearData", "message": { "type": "MOVE", "clearData": ["UP"] }, "expected": null },
+    { "id": "EC12", "name": "a move with a number as clearData", "message": { "type": "MOVE", "clearData": 0 }, "expected": null },
+
+    { "id": "EC14", "name": "a move without a direction", "message": { "type": "MOVE", "clearData": {} }, "expected": null },
+    { "id": "EC15", "name": "a move in an unknown direction", "message": { "type": "MOVE", "clearData": { "direction": "NORTH" } }, "expected": null },
+    { "id": "BV5", "name": "a move in a lowercase direction", "message": { "type": "MOVE", "clearData": { "direction": "up" } }, "expected": null },
+    { "id": "BV6", "name": "a move in a direction with a trailing space", "message": { "type": "MOVE", "clearData": { "direction": "UP " } }, "expected": null },
+    { "id": "BV7", "name": "a move in an empty direction", "message": { "type": "MOVE", "clearData": { "direction": "" } }, "expected": null },
+    { "id": "EC16", "name": "a move in a numeric direction", "message": { "type": "MOVE", "clearData": { "direction": 0 } }, "expected": null },
+    { "id": "EC16", "name": "a move in a null direction", "message": { "type": "MOVE", "clearData": { "direction": null } }, "expected": null },
+    { "id": "EC16", "name": "a move in a direction array", "message": { "type": "MOVE", "clearData": { "direction": ["UP"] } }, "expected": null }
+]

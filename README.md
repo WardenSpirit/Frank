@@ -3,7 +3,7 @@ Czech version follows. :czech_republic::ice_hockey::1st_place_medal:
 # Frank the Game ( :gb: + :us: )
 
 ## Technical Details
-- Communication with the server via WebSockets.
+- Communication with the server via WebSockets, see [the messaging protocol](docs/PROTOCOL.md).
 - Built on the Node.js framework.
 - Utilizes the Express JS framework.
 - Graphics:
@@ -54,7 +54,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 #  Hra Frank ( :czech_republic: )
 
 ## Technologické detaily
-- komunikace se serverem skrz WebSockety
+- komunikace se serverem skrz WebSockety, viz [protokol zpráv](docs/PROTOCOL.md)
 - framework Node.js
 - na frameworku Express JS
 - grafika:

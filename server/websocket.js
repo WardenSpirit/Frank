@@ -1,5 +1,6 @@
 const GameFactory = require('./gameFactory.js');
-const { DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
+const { parseClientMessage } = require('./clientMessage.js');
+const { MESSAGE_TYPE } = require('../shared/protocol.json');
 
 let gameFactory = new GameFactory();
 let game = null;
@@ -23,10 +24,23 @@ function onConnect(webSocket) {
     sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
 
     webSocket.addEventListener("message", ({ data }) => {
-        if (isValidMove(webSocket, data)) {
-            recordMove(webSocket, data);
-            if (allMovesGathered()) {
-                realizeTurn();
+        const message = parseClientMessage(data);
+        if (message === null) {
+            return;
+        }
+
+        switch (message.type) {
+            case MESSAGE_TYPE.MOVE:
+                handleMove(webSocket, message.clearData.direction);
+                break;
+        }
+
+        function handleMove(webSocket, direction) {
+            if (!hasAlreadySentMove(webSocket)) {
+                recordMove(webSocket, direction);
+                if (allMovesGathered()) {
+                    realizeTurn();
+                }
             }
         }
 
@@ -35,16 +49,8 @@ function onConnect(webSocket) {
             alreadySentMove.push(webSocket);
         }
 
-        function isValidMove(webSocket, direction) {
-            return !hasAlreadySentMove(webSocket) && isValidDirection(direction);
-
-            function hasAlreadySentMove(webSocket) {
-                return alreadySentMove.includes(webSocket);
-            }
-            
-            function isValidDirection(direction) {
-                return Object.values(DIRECTION).includes(direction);
-            }
+        function hasAlreadySentMove(webSocket) {
+            return alreadySentMove.includes(webSocket);
         }
     });
 
