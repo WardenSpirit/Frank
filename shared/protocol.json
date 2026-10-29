@@ -12,6 +12,7 @@
     "MESSAGE_TYPE": {
         "GAME": "GAME",
         "MOVES": "MOVES",
-        "PLAYERS": "PLAYERS"
+        "PLAYERS": "PLAYERS",
+        "MOVE": "MOVE"
     }
 }
