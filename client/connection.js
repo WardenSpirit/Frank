@@ -9,11 +9,11 @@ const { MESSAGE_TYPE } = protocol;
 let gameWebSocket = new WebSocket('/');
 
 /**
- * Sends the user's decision to the server via the web socket as a MOVE message.
+ * Sends the user's decision to the server via the web socket as a MOVE message for the current game.
  * @param direction A string saying which direction the user chose to move.
  */
 function sendMove(direction) {
-    gameWebSocket.send(JSON.stringify({type: MESSAGE_TYPE.MOVE, clearData: {direction: direction}}));
+    gameWebSocket.send(JSON.stringify({type: MESSAGE_TYPE.MOVE, clearData: {direction: direction, gameId: model.getGameId()}}));
 }
 
 gameWebSocket.addEventListener("open", () => {

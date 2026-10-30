@@ -24,14 +24,18 @@ function parseClientMessage(data) {
     }
 
     function parseMove(clearData) {
-        if (!isObject(clearData) || !isValidDirection(clearData.direction)) {
+        if (!isObject(clearData) || !isValidDirection(clearData.direction) || !isValidGameId(clearData.gameId)) {
             return null;
         }
-        return { type: MESSAGE_TYPE.MOVE, clearData: { direction: clearData.direction } };
+        return { type: MESSAGE_TYPE.MOVE, clearData: { direction: clearData.direction, gameId: clearData.gameId } };
     }
 
     function isValidDirection(direction) {
         return Object.values(DIRECTION).includes(direction);
+    }
+
+    function isValidGameId(gameId) {
+        return Number.isInteger(gameId);
     }
 }
 

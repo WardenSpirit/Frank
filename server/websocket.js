@@ -31,13 +31,13 @@ function onConnect(webSocket) {
 
         switch (message.type) {
             case MESSAGE_TYPE.MOVE:
-                handleMove(webSocket, message.clearData.direction);
+                handleMove(webSocket, message.clearData);
                 break;
         }
 
-        function handleMove(webSocket, direction) {
-            if (!hasAlreadySentMove(webSocket)) {
-                recordMove(webSocket, direction);
+        function handleMove(webSocket, move) {
+            if (move.gameId === game.gameId && !hasAlreadySentMove(webSocket)) {
+                recordMove(webSocket, move.direction);
                 if (allMovesGathered()) {
                     realizeTurn();
                 }

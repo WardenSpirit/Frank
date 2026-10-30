@@ -7,6 +7,7 @@ const { getRandomElement } = require('./array');
 class GameFactory {
     constructor(random = Math.random) {
         this.random = random;
+        this.lastGameId = 0;
     }
 
     createGame() {
@@ -16,7 +17,7 @@ class GameFactory {
         this.heroPosition = positionsOnTheSameLand[0];
         this.treasurePosition = positionsOnTheSameLand[1];
 
-        return new Game(this.map, this.treasurePosition, this.heroPosition);
+        return new Game(this.map, this.treasurePosition, this.heroPosition, ++this.lastGameId);
     }
 
     generateMap() {

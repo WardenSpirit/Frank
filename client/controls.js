@@ -5,7 +5,7 @@ import protocol from '../shared/protocol.json' with { type: 'json' };
 
 const { DIRECTION } = protocol;
 
-let hasTurned = false;
+let turnAllowed = false;
 
 document.addEventListener("touchstart", e => handleTouchStart(e));
 document.addEventListener("touchend", e => handleTouchEnd(e));
@@ -78,9 +78,9 @@ function handleKeyDown(e) {
  * @param direction String with the intended direction of movement.
  */
 function tryMove(direction) {
-    if (!hasTurned && model.isConnected()) {
+    if (turnAllowed && model.isConnected()) {
         connection.sendMove(direction);
-        hasTurned = true;
+        turnAllowed = false;
         view.setInfoText("wait for the others", 500);
     }
 }
@@ -94,5 +94,5 @@ function playMusic() {
 }
 
 export function allowTurn() {
-    hasTurned = false;
+    turnAllowed = true;
 }
