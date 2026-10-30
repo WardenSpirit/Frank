@@ -1,0 +1,33 @@
+name,field,currentValue,step,expectedValue
+BV3 mapSize increases inside range,mapSize,14,1,15
+BV3 mapSize decreases inside range,mapSize,14,-1,13
+BV2 mapSize steps inwards from lower bound,mapSize,5,1,6
+BV4 mapSize steps inwards from upper bound,mapSize,20,-1,19
+BV1 mapSize wraps from lower bound to upper bound,mapSize,5,-1,20
+BV5 mapSize wraps from upper bound to lower bound,mapSize,20,1,5
+BV8 holeRatio increases inside range,holeRatio,33,1,34
+BV8 holeRatio decreases inside range,holeRatio,33,-1,32
+BV7 holeRatio steps inwards from lower bound,holeRatio,0,1,1
+BV9 holeRatio steps inwards from upper bound,holeRatio,40,-1,39
+BV6 holeRatio wraps from lower bound to upper bound,holeRatio,0,-1,40
+BV10 holeRatio wraps from upper bound to lower bound,holeRatio,40,1,0
+BV11 actors steps inwards from first value to second,actors,snake,1,cat
+BV12 actors steps inwards from second value to first,actors,cat,-1,snake
+BV11 actors wraps from first value to last value,actors,snake,-1,cat
+BV12 actors wraps from last value to first value,actors,cat,1,snake
+BV13 tiles steps inwards from first value to second,tiles,volcano,1,garden
+BV14 tiles steps inwards from second value to first,tiles,garden,-1,volcano
+BV13 tiles wraps from first value to last value,tiles,volcano,-1,garden
+BV14 tiles wraps from last value to first value,tiles,garden,1,volcano
+BV17 maxPlayers increases inside range,maxPlayers,5,1,6
+BV17 maxPlayers decreases inside range,maxPlayers,5,-1,4
+BV16 maxPlayers steps inwards from lower bound,maxPlayers,1,1,2
+BV18 maxPlayers steps inwards from upper bound,maxPlayers,10,-1,9
+BV15 maxPlayers wraps from lower bound to upper bound,maxPlayers,1,-1,10
+BV19 maxPlayers wraps from upper bound to lower bound,maxPlayers,10,1,1
+BV22 timeLimit increases inside range,timeLimit,60,1,61
+BV22 timeLimit decreases inside range,timeLimit,60,-1,59
+BV21 timeLimit steps inwards from lower bound,timeLimit,5,1,6
+BV23 timeLimit steps inwards from upper bound,timeLimit,120,-1,119
+BV20 timeLimit wraps from lower bound to upper bound,timeLimit,5,-1,120
+BV24 timeLimit wraps from upper bound to lower bound,timeLimit,120,1,5

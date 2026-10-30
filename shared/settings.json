@@ -1,0 +1,36 @@
+{
+    "mapSize": {
+        "type": "number",
+        "min": 5,
+        "max": 20,
+        "default": 14
+    },
+    "holeRatio": {
+        "type": "number",
+        "min": 0,
+        "max": 40,
+        "default": 33
+    },
+    "actors": {
+        "type": "string",
+        "values": ["snake", "cat"],
+        "default": "snake"
+    },
+    "tiles": {
+        "type": "string",
+        "values": ["volcano", "garden"],
+        "default": "volcano"
+    },
+    "maxPlayers": {
+        "type": "number",
+        "min": 1,
+        "max": 10,
+        "default": 10
+    },
+    "timeLimit": {
+        "type": "number",
+        "min": 5,
+        "max": 120,
+        "default": 60
+    }
+}
