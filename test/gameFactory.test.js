@@ -174,3 +174,15 @@ test('createGame puts the hero and treasure on distinct paths', () => {
     // Assert
     expect(actual).toEqual(expected);
 });
+
+test('createGame gives each new game the next gameId', () => {
+    // Arrange
+    const factory = new GameFactory(seededRandom(7));
+    const expected = [1, 2, 3];
+
+    // Act
+    const actual = [factory.createGame(), factory.createGame(), factory.createGame()].map(game => game.gameId);
+
+    // Assert
+    expect(actual).toEqual(expected);
+});

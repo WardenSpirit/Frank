@@ -17,7 +17,8 @@ Every message is a JSON object sent as a text frame:
 | Direction | A value of `DIRECTION`: `"UP"`, `"RIGHT"`, `"DOWN"` or `"LEFT"` |
 | Position | `{"x": <column>, "y": <row>}`, zero-based; `UP` decreases `y`. The map wraps around at its edges. |
 | Map | An array of `MAP_WIDTH` columns, each with `MAP_HEIGHT` values of `TERRAIN` (`0` path, `1` hole), indexed as `map[x][y]`. The sizes are in [`server/params.json`](../server/params.json). |
-| Game | `{"map": <map>, "treasurePosition": <position>, "heroPosition": <position>}` |
+| Game ID | An integer that identifies a game. Each new game has one that differs from all previous games since the server started. Clients only send it back in `MOVE`. |
+| Game | `{"map": <map>, "treasurePosition": <position>, "heroPosition": <position>, "gameId": <game ID>}` |
 
 ## Server → client
 
@@ -40,7 +41,8 @@ A game on a 3×3 map; a real map has `MAP_WIDTH` × `MAP_HEIGHT` squares.
     "clearData": {
         "map": [[0, 1, 0], [0, 0, 1], [1, 0, 0]],
         "treasurePosition": {"x": 2, "y": 1},
-        "heroPosition": {"x": 0, "y": 0}
+        "heroPosition": {"x": 0, "y": 0},
+        "gameId": 1
     }
 }
 ```
@@ -65,14 +67,14 @@ Two players are connected.
 
 | `type` | `clearData` | When |
 |---|---|---|
-| `MOVE` | `{"direction": <direction>}` | The player presses an arrow key or swipes. The client sends at most one move per turn. |
+| `MOVE` | `{"direction": <direction>, "gameId": <game ID>}` | The player presses an arrow key or swipes. `gameId` is the one of the last `GAME` the client received. The client sends at most one move per turn. |
 
 ### Example: `MOVE`
 
-The player moves up.
+The player moves up in the game with `gameId` 1.
 
 ```json
-{"type": "MOVE", "clearData": {"direction": "UP"}}
+{"type": "MOVE", "clearData": {"direction": "UP", "gameId": 1}}
 ```
 
 ## Message flow
@@ -95,6 +97,8 @@ The server ignores a client message when:
 - it isn't a JSON object, for example `null`, `"UP"` or an array;
 - its `type` is missing or isn't a client message type; only `MOVE` is, so server types such as `GAME` sent by a client are ignored too;
 - it is a `MOVE` whose `clearData` isn't an object or whose `clearData.direction` isn't a value of `DIRECTION`; values are case-sensitive;
+- it is a `MOVE` whose `clearData.gameId` is missing or isn't an integer;
+- it is a `MOVE` whose `gameId` isn't the one of the current game, for example a move the client sent for a game that has just ended;
 - it is a second `MOVE` from the same player in the current turn.
 
 An ignored message doesn't count as a move and the server doesn't reply to it; the current turn continues and waits for the remaining players. Fields this document doesn't specify, at the top level or inside `clearData`, are ignored.

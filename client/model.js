@@ -20,6 +20,10 @@ export function updateGame(newGame) {
     controls.allowTurn();
 }
 
+export function getGameId() {
+    return game?.gameId;
+}
+
 /**
  * Perform the moves in the argument with the hero on the local game instance. Calls view to display them.
  */
@@ -35,15 +39,15 @@ export function applyMoves(moves) {
             points++;
             view.displayFilter(true);
             view.displayPoints(points);
-            break;
+            return;
         }
         if (isHeroInHole()) {
-            if (points > 0) { 
+            if (points > 0) {
                 points--;
              }
             view.displayFilter(false);
             view.displayPoints(points);
-            break;
+            return;
         }
     }
     controls.allowTurn();

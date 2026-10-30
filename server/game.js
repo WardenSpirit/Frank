@@ -2,10 +2,11 @@ const params = require('./params.json');
 const { TERRAIN, DIRECTION } = require('../shared/protocol.json');
 
 class Game {
-    constructor(map, treasurePosition, heroPosition) {
+    constructor(map, treasurePosition, heroPosition, gameId) {
         this.map = map;
         this.treasurePosition = treasurePosition;
         this.heroPosition = heroPosition;
+        this.gameId = gameId;
     }
 
     /**
