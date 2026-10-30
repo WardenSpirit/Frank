@@ -6,18 +6,21 @@ const objectCanvas = document.querySelector("#hero");
 const filterCanvas = document.querySelector("#filter");
 const tableCanvas = document.querySelector("#table");
 const stateCanvas = document.querySelector("#stats");
+const settingsCanvas = document.querySelector("#settings");
 
 const mapContext = mapCanvas.getContext("2d");
 const objectContext = objectCanvas.getContext("2d");
 const filterContext = filterCanvas.getContext("2d");
 const tableContext = tableCanvas.getContext("2d");
 const stateContext = stateCanvas.getContext("2d");
+const settingsContext = settingsCanvas.getContext("2d");
 
 mapContext.imageSmoothingEnabled = false;
 objectContext.imageSmoothingEnabled = false;
 filterContext.imageSmoothingEnabled = false;
 tableContext.imageSmoothingEnabled = false;
 stateContext.imageSmoothingEnabled = false;
+settingsContext.imageSmoothingEnabled = false;
 
 const SQUARE = {};
 
@@ -49,6 +52,6 @@ function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
         y: (stateCanvas.height - infoTextHeight) / 2};
 }
 
-export {initSquareProportions, mapCanvas, objectCanvas, filterCanvas, stateCanvas,
-    mapContext, objectContext, filterContext, tableContext, stateContext, SQUARE,
+export {initSquareProportions, mapCanvas, objectCanvas, filterCanvas, stateCanvas, settingsCanvas,
+    mapContext, objectContext, filterContext, tableContext, stateContext, settingsContext, SQUARE,
     calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin, calculateInfoTextTargetOrigin}

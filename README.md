@@ -48,6 +48,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 - Successful cooperation with other players involves observing the character's movements and predicting their behavior.
 - You can join an ongoing game.
   - The incoming player's score is set to 0, and each player maintains their own score.
+  
+### Map Settings & Controls
+- **Open / close settings**: Press `S` (or `Escape` to close) on a keyboard, or use a **two-finger tap** (or **long tap** of 400 ms+) on a touchscreen. Opening or closing settings neither sends a move nor toggles music.
+- **Navigate settings**: Use `Up` / `Down` arrow keys or drag vertically (`up` / `down`) to move the highlight between settings and the `APPLY` / `CLOSE` buttons.
+- **Change values**: Use `Left` / `Right` arrow keys or drag horizontally (`left` / `right`) to change the highlighted setting by 1 (or switch textures). Values wrap around at their lower and upper bounds.
+- **Apply / Close**: Press `Enter` when `APPLY` or `CLOSE` is highlighted, or tap `APPLY` / `CLOSE` on a touchscreen.
+- **Music**: Press `M` or single-tap with one finger to pause/resume music (works both inside and outside the settings form).
 
 ***A big thanks to my friend Sheydy for creating the assets!***
 
@@ -99,5 +106,12 @@ Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [
 - Jediný způsob, jak s ostatními hráči dojít ke zdárné spolupracovat, je sledovat pohyb postavy a odhadovat z něj jejich budoucí chování.
 - Lze se připojit i do již probíhající hry.
   - Skóre přicházejícího hráče je nastaveno na 0, každý hráč má své skóre.
+
+### Nastavení mapy a ovládání
+- **Otevření / zavření nastavení**: Zmáčkni `S` (nebo `Escape` pro zavření) na klávesnici nebo poklepej na obrazovku **dvěma prsty** (případně **dlouze podrž jeden prst**, alespoň 400 ms). Otevření ani zavření nastavení nehýbe s postavou ani neovládá hudbu.
+- **Orientace / pohyb v nastavení**: Použij klávesy šipek `Nahoru` / `Dolů` nebo vertikálně přejeď prstem (`nahoru` / `dolů`) pro přesun zvýraznění mezi jednotlivými nastaveními a `APPLY` / `CLOSE` tlačítky (`Potvrdit` / `Zavřít`).
+- **Změna hodnot**: Použij klávesy šipek `Doleva` / `Doprava` nebo horizontálně přejeď prstem (`doleva` / `doprava`) pro změnu zvýrazněného nastavení o 1 (nebo pro změnu designu). Maximální a minimální hodnota (1. a poslední) jdou cyklicky za sebou (z poslední hodnoty se dá opět dostat na tu 1. a naopak bez dlouhého překlikávání mezi ostatními hodnotami). 
+- **Potvrdit / Zavřít**: Zmáčkni `Enter` pokud jsou zvýrazněné `APPLY` nebo `CLOSE` (`Potvrdit` / `Zavřít`), nebo poklepej na `APPLY` / `CLOSE` (`Potvrdit` / `Zavřít`) na dotykové obrazovce.
+- **Hudba**: Zmáčkni `M` nebo poklepej jedním prstem pro nastavení (vypnutí/zapnutí) hudby (funguje uvnitř i mimo obrazovku nastavení).
 
 ***Moc děkuji Sheydy za vytvoření obrázků do hry!***

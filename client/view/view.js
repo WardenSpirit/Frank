@@ -6,7 +6,9 @@ import * as filterRenderer from './renderer/filterRenderer.js';
 import * as tableRenderer from './renderer/tableRenderer.js';
 import * as statsRenderer from './renderer/statsRenderer.js';
 import * as infoTextRenderer from './renderer/infoTextRenderer.js';
-import * as drawingContext from './renderer/drawingContext.js'
+import * as drawingContext from './renderer/drawingContext.js';
+import * as settingsRenderer from './renderer/settingsRenderer.js';
+import * as settings from '../settings.js';
 
 let infoTextID;
 
@@ -25,6 +27,21 @@ export function renderGame(renderedGame) {
     tableRenderer.renderTable();
     statsRenderer.renderPoints(renderedGame.points);
     setInfoText("use arrows or drag", 5000);
+
+    if (settings.isSettingsOpen()) {
+        renderSettings();
+    }
+}
+
+export function renderSettings() {
+    settingsRenderer.renderSettingsForm(
+        settings.getEditedSettings(),
+        settings.getHighlightedIndex()
+    );
+}
+
+export function clearSettings() {
+    settingsRenderer.clearSettingsForm();
 }
 
 /**
@@ -54,8 +71,8 @@ export function setInfoText(text, delay) {
     clearTimeout(infoTextID);
     infoTextRenderer.clearInfoText(text);
     if (delay == 0) {
-        infoTextRenderer.renderInfoText(text)
+        infoTextRenderer.renderInfoText(text);
     } else {
-        infoTextID = setTimeout(() => { infoTextRenderer.renderInfoText(text) }, delay);
+        infoTextID = setTimeout(() => { infoTextRenderer.renderInfoText(text); }, delay);
     }
 }

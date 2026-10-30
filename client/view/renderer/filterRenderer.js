@@ -6,8 +6,6 @@ const GOOD_IMAGE = await images.getImage("GOOD_FILTER");
 const BAD_IMAGE = await images.getImage("BAD_FILTER");
 
 const FILTER_SIZE = viewParams.sourceTileSize * 14;
-const GOOD_FILTER_COUNT = GOOD_IMAGE.width / FILTER_SIZE;
-const BAD_FILTER_COUNT = BAD_IMAGE.width / FILTER_SIZE;
 
 const TARGET_ORIGIN = { x: 0, y: 0 };
 const TARGET_SIZE = { width: drawingContext.filterCanvas.width, height: drawingContext.filterCanvas.height };
@@ -16,6 +14,7 @@ const FILTER_ANIMATION_INTERVAL = 800;
 let drawingTime;
 
 export async function displayFilter(isGood) {
+
     const IMAGE = isGood ? GOOD_IMAGE : BAD_IMAGE;
     const SOURCE_ORIGIN = { x: 0, y: 0 };
     const SOURCE_SIZE = { width: FILTER_SIZE, height: FILTER_SIZE };
@@ -40,5 +39,5 @@ function waitToClear() {
         } else {
             requestAnimationFrame(checkToClear);
         }
-    })
+    });
 }
