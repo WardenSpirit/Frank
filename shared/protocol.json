@@ -14,5 +14,11 @@
         "MOVES": "MOVES",
         "PLAYERS": "PLAYERS",
         "MOVE": "MOVE"
+    },
+    "CLOSE": {
+        "INVALID_MESSAGE": {
+            "CODE": 1008,
+            "REASON": "invalid message"
+        }
     }
 }

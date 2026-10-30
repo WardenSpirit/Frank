@@ -2,13 +2,13 @@ const { DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
 
 /**
  * Parses and validates a message received from a client.
- * @param data The data of the web socket message.
+ * @param text The text of a text frame the client sent.
  * @returns The message with only the fields its type specifies, or null if the message isn't valid.
  */
-function parseClientMessage(data) {
+function parseClientMessage(text) {
     let message;
     try {
-        message = JSON.parse(data);
+        message = JSON.parse(text);
     } catch {
         return null;
     }
