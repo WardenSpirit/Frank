@@ -87,20 +87,27 @@ client                            server
   | -- MOVE -------------------------> |  each player once per turn
   | <-------------------------- MOVES  |  when the turn has a move per connected player
   | <--------------------------- GAME  |  only if the turn ended the game
+  | -- an invalid message -----------> |
+  | <---------------------- close 1008 |  the player leaves the turn
+  | -- an invalid frame -------------> |
+  | <-------------- close 1007 or 1002 |  the player leaves the turn
 ```
 
 ## Validation
 
-The server ignores a client message when:
+The server rejects a client message when:
 
+- it is sent as a binary frame, even if its bytes are valid JSON;
 - it isn't valid JSON, for example a raw direction string `UP`;
 - it isn't a JSON object, for example `null`, `"UP"` or an array;
-- its `type` is missing or isn't a client message type; only `MOVE` is, so server types such as `GAME` sent by a client are ignored too;
+- its `type` is missing or isn't a client message type; only `MOVE` is, so server types such as `GAME` sent by a client are rejected too;
 - it is a `MOVE` whose `clearData` isn't an object or whose `clearData.direction` isn't a value of `DIRECTION`; values are case-sensitive;
-- it is a `MOVE` whose `clearData.gameId` is missing or isn't an integer;
-- it is a `MOVE` whose `gameId` isn't the one of the current game, for example a move the client sent for a game that has just ended;
-- it is a second `MOVE` from the same player in the current turn.
+- it is a `MOVE` whose `clearData.gameId` is missing or isn't an integer.
 
-An ignored message doesn't count as a move and the server doesn't reply to it; the current turn continues and waits for the remaining players. Fields this document doesn't specify, at the top level or inside `clearData`, are ignored.
+The server closes the connection of a client that sent a rejected message with the close code `1008` (policy violation) and the reason `invalid message`, both in `CLOSE.INVALID_MESSAGE`, and handles it as a disconnect (see `MOVES`): the turn no longer waits for the player, so it doesn't wait for a client that considers its move sent, for example an outdated client. A move the player already sent in the current turn stays and counts. Messages that arrive from the client after the rejected one don't count.
+
+Frames that break the WebSocket protocol never reach the game: for example a text frame that isn't valid UTF-8, a frame with reserved bits set or an unknown opcode. The server's WebSocket library closes the connection with its own close code, such as `1007` for invalid UTF-8 or `1002` for a protocol error, and the server handles it as a disconnect, the same as a rejected message.
+
+The server ignores a valid `MOVE` whose `gameId` isn't the one of the current game, for example a move the client sent for a game that has just ended, and a second `MOVE` from the same player in the current turn: it doesn't count as a move, the server doesn't reply to it and the connection stays open. Fields this document doesn't specify, at the top level or inside `clearData`, are ignored.
 
 The equivalence classes and boundary values of client messages and the tests that cover them are listed in [test/README.md](../test/README.md#client-messages).

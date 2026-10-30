@@ -7,7 +7,9 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { onConnect } = require('../server/websocket');
-const { DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
+const { CLOSE, DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
+
+const CLOSE_CODE_INVALID_DATA = 1007;
 
 let server;
 let players = [];
@@ -63,7 +65,7 @@ test('EC23 EC27 BV11 a move of the only player for the current game ends the tur
     expect(actual).toEqual(expected);
 });
 
-// Each case gets the gameId of the running game, so it is ignored only for the class it represents.
+// Each case gets the gameId of the running game, so it is rejected only for the class it represents.
 test.each([
     { id: 'EC2', name: 'a raw direction string', data: () => 'UP' },
     { id: 'EC2', name: 'truncated JSON', data: () => '{"type":"MOVE"' },
@@ -71,15 +73,101 @@ test.each([
     { id: 'EC8', name: 'an unknown type', data: gameId => JSON.stringify({ type: 'JUMP', clearData: { direction: DIRECTION.UP, gameId: gameId } }) },
     { id: 'EC12', name: 'a move with the direction as clearData', data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: DIRECTION.UP }) },
     { id: 'EC15', name: 'a move in an unknown direction', data: gameId => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: 'NORTH', gameId: gameId } }) },
-    { id: 'EC25', name: 'a move without a gameId', data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP } }) }
-])('$id the server ignores $name and the turn continues', async testCase => {
+    { id: 'EC25', name: 'a move without a gameId', data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP } }) },
+    { id: 'EC31', name: 'a valid move in a binary frame', data: gameId => Buffer.from(JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP, gameId: gameId } })) }
+])('$id the server rejects $name and closes the connection', async testCase => {
     // Arrange
+    const player = await connectPlayer();
+    const expected = { code: CLOSE.INVALID_MESSAGE.CODE, reason: CLOSE.INVALID_MESSAGE.REASON };
+
+    // Act
+    const closed = player.nextClose();
+    player.sendRaw(testCase.data(player.game.gameId));
+    const actual = await closed;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test('EC2 EC23 a rejected player doesn\'t block the turn of the others', async () => {
+    // Arrange
+    // An outdated client sends a raw direction and considers its move sent.
+    const outdatedPlayer = await connectPlayer();
     const player = await connectPlayer();
     const expected = [DIRECTION.LEFT];
 
     // Act
     const moves = player.nextMessage(MESSAGE_TYPE.MOVES);
-    player.sendRaw(testCase.data(player.game.gameId));
+    outdatedPlayer.sendRaw(DIRECTION.UP);
+    player.sendMove(DIRECTION.LEFT);
+    const actual = await moves;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test('EC2 EC23 a rejected player that doesn\'t answer the close frame doesn\'t block the turn of the others', async () => {
+    // Arrange
+    const stalledPlayer = await connectPlayer();
+    const player = await connectPlayer();
+    const expected = [DIRECTION.LEFT];
+
+    // Act
+    const moves = player.nextMessage(MESSAGE_TYPE.MOVES);
+    stalledPlayer.sendRaw(DIRECTION.UP);
+    stalledPlayer.stopReading();
+    player.sendMove(DIRECTION.LEFT);
+    const actual = await moves;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test('EC32 the server closes the connection of a player that sends a text frame that isn\'t valid UTF-8', async () => {
+    // Arrange
+    const player = await connectPlayer();
+    const expected = CLOSE_CODE_INVALID_DATA;
+
+    // Act
+    // The reason is the text of ws, which the protocol doesn't specify.
+    const closed = player.nextClose();
+    player.sendInvalidUtf8();
+    const actual = (await closed).code;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test('EC23 EC32 a player that sends an invalid frame and doesn\'t answer the close frame doesn\'t block the turn of the others', async () => {
+    // Arrange
+    const stalledPlayer = await connectPlayer();
+    const player = await connectPlayer();
+    const expected = [DIRECTION.LEFT];
+
+    // Act
+    const moves = player.nextMessage(MESSAGE_TYPE.MOVES);
+    stalledPlayer.sendInvalidUtf8();
+    stalledPlayer.stopReading();
+    player.sendMove(DIRECTION.LEFT);
+    const actual = await moves;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test('EC2 the server doesn\'t record a move sent after a rejected message', async () => {
+    // Arrange
+    const rejectedPlayer = await connectPlayer();
+    const player = await connectPlayer();
+    const expected = [DIRECTION.LEFT];
+
+    // Act
+    // Both messages are on the way before the server closes the connection.
+    const moves = player.nextMessage(MESSAGE_TYPE.MOVES);
+    const closed = rejectedPlayer.nextClose();
+    rejectedPlayer.sendRaw(DIRECTION.UP);
+    rejectedPlayer.sendMove(DIRECTION.UP);
+    await closed;
     player.sendMove(DIRECTION.LEFT);
     const actual = await moves;
 

@@ -51,6 +51,13 @@ export default class GameClient {
     }
 
     /**
+     * Sends a text frame that isn't valid UTF-8, which ws on the server rejects before the game sees the message.
+     */
+    sendInvalidUtf8() {
+        this.socket.send(Buffer.from([0xff]), { binary: false });
+    }
+
+    /**
      * Call before sending the messages that should cause the awaited one.
      * @returns A promise of clearData of the next server message of the given type.
      */
@@ -70,7 +77,31 @@ export default class GameClient {
         });
     }
 
+    /**
+     * Call before sending the messages that should cause the server to close the connection.
+     * @returns A promise of the close code and the reason the server sent.
+     */
+    nextClose() {
+        return new Promise(resolve => this.socket.once('close', (code, reason) => resolve({ code: code, reason: reason.toString() })));
+    }
+
+    /**
+     * Stops reading what the server sends, so the client never answers a close frame, like a stalled network.
+     * Call in the same tick as sending the message the server answers, so the answer isn't read before.
+     */
+    stopReading() {
+        this.socket._socket.pause();
+        this.stalled = true;
+    }
+
+    /**
+     * A stalled client would never complete the closing handshake, so its connection is dropped instead.
+     */
     close() {
-        this.socket.close();
+        if (this.stalled) {
+            this.socket.terminate();
+        } else {
+            this.socket.close();
+        }
     }
 }

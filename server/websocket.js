@@ -1,6 +1,6 @@
 const GameFactory = require('./gameFactory.js');
 const { parseClientMessage } = require('./clientMessage.js');
-const { MESSAGE_TYPE } = require('../shared/protocol.json');
+const { CLOSE, MESSAGE_TYPE } = require('../shared/protocol.json');
 
 let gameFactory = new GameFactory();
 let game = null;
@@ -23,9 +23,16 @@ function onConnect(webSocket) {
     }
     sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
 
-    webSocket.addEventListener("message", ({ data }) => {
-        const message = parseClientMessage(data);
+    webSocket.on("message", (data, isBinary) => {
+        // Messages that were already on the way when the server rejected the client don't count.
+        if (webSocket.readyState !== webSocket.OPEN) {
+            return;
+        }
+
+        // Every client message is JSON in a text frame, so a binary frame is invalid even if its bytes are a valid MOVE.
+        const message = isBinary ? null : parseClientMessage(data.toString());
         if (message === null) {
+            rejectClient(webSocket);
             return;
         }
 
@@ -54,19 +61,44 @@ function onConnect(webSocket) {
         }
     });
 
-    webSocket.addEventListener("close", () => {
+    webSocket.on("close", () => {
         console.log("- connection");
         eliminateWebSocket(webSocket);
+    });
 
-        function eliminateWebSocket(webSocket) {
-            webSockets.splice(webSockets.indexOf(webSocket), 1);
-            sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
-            if (allMovesGathered()) {
-                realizeTurn();
-            }
-        }
+    // ws rejects an invalid frame itself, for example a text frame that isn't valid UTF-8, and starts closing the
+    // connection with its own close code. An error without a listener would crash the server.
+    webSocket.on("error", error => {
+        console.log("- invalid frame: " + error.message);
+        eliminateWebSocket(webSocket);
     });
 };
+
+/**
+ * Closes the connection of a client that sent an invalid message, for example an outdated client. The client may
+ * already consider its move sent, so the turn would otherwise wait for it forever. The client is removed from the turn
+ * right away, because the connection closes only once the client answers the close frame.
+ */
+function rejectClient(webSocket) {
+    eliminateWebSocket(webSocket);
+    webSocket.close(CLOSE.INVALID_MESSAGE.CODE, CLOSE.INVALID_MESSAGE.REASON);
+}
+
+/**
+ * Removes the web socket from the game. A rejected client is removed twice, on rejection or on an invalid frame and
+ * then on close; the second call does nothing.
+ */
+function eliminateWebSocket(webSocket) {
+    const index = webSockets.indexOf(webSocket);
+    if (index === -1) {
+        return;
+    }
+    webSockets.splice(index, 1);
+    sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
+    if (allMovesGathered()) {
+        realizeTurn();
+    }
+}
 
 function allMovesGathered() {
     return moves.length === webSockets.length;
