@@ -117,6 +117,8 @@ npm start
 
 Open [http://localhost:3000/](http://localhost:3000/). Check the changed behavior; for multiplayer changes, also check two tabs, movement, state updates, and disconnecting a player. Record steps and results in the MR.
 
+To test from another device, for example a phone, see [Testing from other devices](README.md#testing-from-other-devices) in the README.
+
 Unit tests use Vitest. Run `npm test` before submitting an MR. Use `npm run test:coverage` for coverage and `npm run test:report` for a JUnit report.
 
 When adding automated tests:

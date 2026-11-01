@@ -21,11 +21,34 @@ Requires [Node.js](https://nodejs.org/) 22.x (22.12 or newer), 24.x, or 26 or ne
 git clone git@gitlab.fel.cvut.cz:muchaja3/frank.git
 cd frank
 npm ci      # install dependencies pinned in package-lock.json
-npm start   # start the server on port 3000
+npm start   # start the server on 127.0.0.1:3000
 ```
 
 Then open [http://localhost:3000/](http://localhost:3000/). To simulate additional players, open more tabs on the same page.
 It may appear that the game stops working, but please follow the instructions below.
+
+### Testing from other devices
+By default, the server listens only on `127.0.0.1`, so other devices on the network can't connect to it. To test the game from another device, for example a phone, set `LISTEN_HOST=0.0.0.0` to listen on all IPv4 addresses of the computer. Use it only on a trusted network: anyone on the same network, for example on café or school Wi-Fi, can then connect to the server and join or disrupt the game.
+
+```sh
+LISTEN_HOST=0.0.0.0 npm start
+```
+
+On Windows, the `VAR=value command` syntax works in Git Bash, but not in PowerShell or cmd. In PowerShell:
+
+```powershell
+$env:LISTEN_HOST="0.0.0.0"; npm start
+```
+
+In cmd, put the quotes around the whole assignment, so the space before `&&` doesn't end up in the value:
+
+```bat
+set "LISTEN_HOST=0.0.0.0" && npm start
+```
+
+Unlike `LISTEN_HOST=0.0.0.0 npm start`, the PowerShell and cmd variants keep the variable for the rest of the terminal session, so every later `npm start` in the same window exposes the server again. Clear it when you are done: `Remove-Item Env:LISTEN_HOST` in PowerShell, `set "LISTEN_HOST="` in cmd (quoted, so a trailing space doesn't end up in the value).
+
+Other devices then open `http://<LAN IPv4 address of the computer>:3000/`. `hostname -I` or `ip -4 addr` shows the address on Linux, `ipconfig` on Windows. The computer's firewall (for example ufw or Windows Defender Firewall) or client isolation on public Wi-Fi may still block the connection.
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merge request guidelines.
@@ -79,11 +102,34 @@ Vyžaduje [Node.js](https://nodejs.org/) řady 22 (od 22.12), řady 24 nebo 26 a
 git clone git@gitlab.fel.cvut.cz:muchaja3/frank.git
 cd frank
 npm ci      # instalace závislostí podle package-lock.json
-npm start   # spuštění serveru na portu 3000
+npm start   # spuštění serveru na 127.0.0.1:3000
 ```
 
 Poté otevřít http://localhost:3000/. Pro simulaci dalších hráčů otevřít další karty na téže stránce.
 Hra jen zdánlivě přestane fungovat (viz instrukce níže).
+
+### Testování z jiných zařízení
+Server ve výchozím stavu naslouchá jen na `127.0.0.1`, takže se k němu jiná zařízení v síti nepřipojí. Pro testování z jiného zařízení, např. z telefonu, nastavit `LISTEN_HOST=0.0.0.0`, aby server naslouchal na všech IPv4 adresách počítače. Jen v důvěryhodné síti: kdokoli ve stejné síti, např. na Wi-Fi v kavárně nebo ve škole, se pak může připojit k serveru a do hry nebo ji narušit.
+
+```sh
+LISTEN_HOST=0.0.0.0 npm start
+```
+
+Ve Windows funguje zápis `PROMĚNNÁ=hodnota příkaz` v Git Bash, ale ne v PowerShellu ani v cmd. V PowerShellu:
+
+```powershell
+$env:LISTEN_HOST="0.0.0.0"; npm start
+```
+
+V cmd uvozovky kolem celého přiřazení, aby mezera před `&&` neskončila v hodnotě:
+
+```bat
+set "LISTEN_HOST=0.0.0.0" && npm start
+```
+
+Na rozdíl od `LISTEN_HOST=0.0.0.0 npm start` zůstane proměnná ve variantě pro PowerShell i pro cmd nastavená po zbytek relace terminálu, takže každé další `npm start` ve stejném okně server opět zpřístupní. Po skončení ji smazat: v PowerShellu `Remove-Item Env:LISTEN_HOST`, v cmd `set "LISTEN_HOST="` (v uvozovkách, aby v hodnotě nezůstala mezera na konci).
+
+Jiná zařízení pak otevřou `http://<IPv4 adresa počítače v LAN>:3000/`. Adresu ukáže `hostname -I` nebo `ip -4 addr` na Linuxu a `ipconfig` ve Windows. Připojení může i tak blokovat firewall počítače (např. ufw nebo Windows Defender Firewall) nebo izolace klientů na veřejné Wi-Fi.
 
 ## Přispívání
 Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [CONTRIBUTING.md](CONTRIBUTING.md).

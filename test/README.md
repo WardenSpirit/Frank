@@ -23,6 +23,7 @@ Movement fixtures use `last` for the final coordinate on each axis. Hole-count f
 | `positionsAround`, `findSameLand`, `generateTwoSameLandPositions`, `createGame` | Wraparound neighbours, connected and disconnected paths, diagonal separation, valid starting positions and the next `gameId` for each new game | `gameFactory.test.js` |
 | `parseClientMessage` | JSON syntax, top-level value, `type`, `clearData`, direction and `gameId` of client messages, fields not in the protocol | `fixtures/client-messages.json`, `clientMessage.test.js` |
 | `onConnect` with client messages | Accepted and rejected messages, a rejected player leaving the turn, a second move in a turn, moves gathered before a turn ends, moves for the previous game after a turn or a disconnect has ended it, for the current and for the next game | `websocket.test.js` |
+| `getListenHost` | `LISTEN_HOST` unset, empty and set to a custom value (`0.0.0.0`), `HOST` set while `LISTEN_HOST` is unset | `listenHost.test.js` |
 | `changeSettingValue` | Valid setting values, increments and decrements, boundary values and wraparound | `fixtures/settings-values.csv`, `settings.test.js` |
 | Settings form state and navigation | Default settings, opening and closing, highlight navigation and wraparound, submitting changed and unchanged settings, discarding unapplied edits, actions while closed | `settings.test.js` |
 
