@@ -1,3 +1,5 @@
+import viewParams from '../viewParams.json' with { type: 'json' };
+
 /**
  * Canvases and context configuration settings.
  */
@@ -23,6 +25,8 @@ stateContext.imageSmoothingEnabled = false;
 settingsContext.imageSmoothingEnabled = false;
 
 const SQUARE = {};
+// The size of a digit of the points and the number of players. Their canvas doesn't change with the size of the map.
+const DIGIT_SIZE = viewParams.sourceTileSize;
 
 function initSquareProportions(mapWidth, mapHeight) {
     SQUARE.width = mapCanvas.width / mapWidth;
@@ -40,11 +44,11 @@ function calculateTargetOrigin(position) {
 }
 
 function calculatePointsTargetOrigin(characterIndex) {
-    return { x: SQUARE.width * (1 + characterIndex), y: SQUARE.height};
+    return { x: DIGIT_SIZE * (1 + characterIndex), y: DIGIT_SIZE};
 }
 
 function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
-    return { x: stateCanvas.width + SQUARE.width * (-1 - digitsNumber + characterIndex), y: SQUARE.height};
+    return { x: stateCanvas.width + DIGIT_SIZE * (-1 - digitsNumber + characterIndex), y: DIGIT_SIZE};
 }
 
 function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
@@ -53,5 +57,5 @@ function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
 }
 
 export {initSquareProportions, mapCanvas, objectCanvas, filterCanvas, stateCanvas, settingsCanvas,
-    mapContext, objectContext, filterContext, tableContext, stateContext, settingsContext, SQUARE,
+    mapContext, objectContext, filterContext, tableContext, stateContext, settingsContext, SQUARE, DIGIT_SIZE,
     calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin, calculateInfoTextTargetOrigin}

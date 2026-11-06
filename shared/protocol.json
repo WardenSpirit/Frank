@@ -13,7 +13,8 @@
         "GAME": "GAME",
         "MOVES": "MOVES",
         "PLAYERS": "PLAYERS",
-        "MOVE": "MOVE"
+        "MOVE": "MOVE",
+        "SETTINGS": "SETTINGS"
     },
     "CLOSE": {
         "INVALID_MESSAGE": {

@@ -26,9 +26,11 @@ export default class GameClient {
         this.socket = socket;
         this.game = null;
         this.waiting = [];
+        this.receivedTypes = [];
         // The game is updated before the promises of nextMessage resolve.
         this.socket.on('message', data => {
             const message = JSON.parse(data);
+            this.receivedTypes.push(message.type);
             if (message.type === MESSAGE_TYPE.GAME) {
                 this.game = message.clearData;
             }
@@ -40,6 +42,17 @@ export default class GameClient {
 
     sendMove(direction, gameId = this.game.gameId) {
         this.sendMessage({ type: MESSAGE_TYPE.MOVE, clearData: { direction: direction, gameId: gameId } });
+    }
+
+    sendSettings(settings) {
+        this.sendMessage({ type: MESSAGE_TYPE.SETTINGS, clearData: settings });
+    }
+
+    /**
+     * @returns The types of the messages received after the last GAME.
+     */
+    typesSinceLastGame() {
+        return this.receivedTypes.slice(this.receivedTypes.lastIndexOf(MESSAGE_TYPE.GAME) + 1);
     }
 
     sendMessage(message) {

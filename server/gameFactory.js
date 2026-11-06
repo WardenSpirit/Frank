@@ -1,4 +1,3 @@
-const params = require('./params.json');
 const getRandomIndex = require('./array').getRandomIndex;
 const Game = require('./game')
 const { TERRAIN } = require('../shared/protocol.json');
@@ -10,23 +9,30 @@ class GameFactory {
         this.lastGameId = 0;
     }
 
-    createGame() {
+    /**
+     * @param settings The settings of the new game; the map uses mapSize and holeRatio.
+     */
+    createGame(settings) {
         //generating function must be called in this order
-        this.map = this.generateMap();
+        this.map = this.generateMap(settings.mapSize, settings.holeRatio);
         let positionsOnTheSameLand = this.generateTwoSameLandPositions();
         this.heroPosition = positionsOnTheSameLand[0];
         this.treasurePosition = positionsOnTheSameLand[1];
 
-        return new Game(this.map, this.treasurePosition, this.heroPosition, ++this.lastGameId);
+        return new Game(this.map, this.treasurePosition, this.heroPosition, ++this.lastGameId, settings);
     }
 
-    generateMap() {
+    /**
+     * @param mapSize The side length of the square map in tiles.
+     * @param holeRatio The percentage of tiles that are holes.
+     */
+    generateMap(mapSize, holeRatio) {
         let map = [];
-        const terrainGenerator = this.terrainGenerator();
+        const terrainGenerator = this.terrainGenerator(mapSize, holeRatio);
 
-        for (let x = 0; x < params.MAP_WIDTH; x++) {
+        for (let x = 0; x < mapSize; x++) {
             map[x] = [];
-            for (let y = 0; y < params.MAP_HEIGHT; y++) {
+            for (let y = 0; y < mapSize; y++) {
                 map[x][y] = terrainGenerator.next().value;
             }
         }
@@ -34,12 +40,17 @@ class GameFactory {
         return map;
     }
 
-    * terrainGenerator() {
-        let squaresToMake = params.MAP_WIDTH * params.MAP_HEIGHT;
-        let holesToMake = squaresToMake * params.HOLE_RATIO;
+    /**
+     * Makes mapSize² · holeRatio / 100 holes rounded down or up. A square is a hole with the probability of the holes
+     * left to make among the squares left, so when no hole is left to make, even the random value 0 makes a path.
+     */
+    * terrainGenerator(mapSize, holeRatio) {
+        let squaresToMake = mapSize * mapSize;
+        // Dividing last keeps a whole number of holes exact.
+        let holesToMake = squaresToMake * holeRatio / 100;
 
         while (squaresToMake > 0) {
-            if (this.random() * squaresToMake > holesToMake) {
+            if (this.random() * squaresToMake >= holesToMake) {
                 yield TERRAIN.PATH;
             } else {
                 yield TERRAIN.HOLE;

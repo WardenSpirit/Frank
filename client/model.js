@@ -1,10 +1,9 @@
 import * as view from './view/view.js';
 import protocol from '../shared/protocol.json' with { type: 'json' };
-import * as controls from "./controls.js";
+import * as settings from "./settings.js";
 
 const { TERRAIN, DIRECTION } = protocol;
 
-let connected;
 let game;
 let points = 0;
 let players;
@@ -16,8 +15,8 @@ let players;
 export function updateGame(newGame) {
     newGame.points = points;
     game = newGame;
+    settings.receiveSettings(game.settings);
     view.renderGame(game);
-    controls.allowTurn();
 }
 
 export function getGameId() {
@@ -26,6 +25,8 @@ export function getGameId() {
 
 /**
  * Perform the moves in the argument with the hero on the local game instance. Calls view to display them.
+ * @param moves Array of directions to move the hero in.
+ * @returns {boolean} Whether the game goes on, so the next turn may start.
  */
 export function applyMoves(moves) {
     for (let i = 0; i < moves.length; i++) {
@@ -39,7 +40,7 @@ export function applyMoves(moves) {
             points++;
             view.displayFilter(true);
             view.displayPoints(points);
-            return;
+            return false;
         }
         if (isHeroInHole()) {
             if (points > 0) {
@@ -47,11 +48,11 @@ export function applyMoves(moves) {
              }
             view.displayFilter(false);
             view.displayPoints(points);
-            return;
+            return false;
         }
     }
-    controls.allowTurn();
     view.setInfoText("move on", 5000);
+    return true;
 
     function moveHero(direction) {
         let potentialNewHeroPosition;
@@ -87,15 +88,10 @@ export function setPlayers(number) {
 }
 
 export function openConnection() {
-    connected = true;
     view.setInfoText("wait for game", 500);
 }
 
 export function closeConnection() {
-    connected = false;
+    settings.dropSettings();
     view.setInfoText("maybe refresh", 0);
-}
-
-export function isConnected() {
-    return connected;
 }

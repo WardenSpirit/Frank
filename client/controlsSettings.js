@@ -1,3 +1,4 @@
+import * as connection from "./connection.js";
 import * as settings from "./settings.js";
 import * as view from "./view/view.js";
 import {
@@ -151,10 +152,18 @@ export function handleEnterKey() {
 }
 
 /**
- * Applies the settings and clears the settings canvas.
+ * Sends the edited settings to the server if they changed and clears the settings canvas. Without an open connection
+ * the settings can't be sent, so the form closes like Close and drops the edits.
  */
 function apply() {
-    settings.submitSettingsForm();
+    if (!connection.isConnected()) {
+        close();
+        return;
+    }
+    const submittedSettings = settings.submitSettingsForm();
+    if (submittedSettings !== null) {
+        connection.sendSettings(submittedSettings);
+    }
     view.clearSettings();
 }
 

@@ -254,7 +254,6 @@ function handleKeyDown(e) {
 
 /**
  * Allows the next game turn.
- * Retains the public interface used by the rest of the application.
  */
 export function allowTurn() {
     controlsGame.allowTurn();

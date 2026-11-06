@@ -1,9 +1,11 @@
 const { DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
+const { parseSettings } = require('../shared/settings.js');
 
 /**
  * Parses and validates a message received from a client.
  * @param text The text of a text frame the client sent.
- * @returns The message with only the fields its type specifies, or null if the message isn't valid.
+ * @returns The message with only the fields its type specifies, or null if the message isn't valid. A MOVE may have
+ *     fields its type doesn't specify, a SETTINGS may not.
  */
 function parseClientMessage(text) {
     let message;
@@ -19,6 +21,8 @@ function parseClientMessage(text) {
     switch (message.type) {
         case MESSAGE_TYPE.MOVE:
             return parseMove(message.clearData);
+        case MESSAGE_TYPE.SETTINGS:
+            return parseSettingsMessage(message);
         default:
             return null;
     }
@@ -28,6 +32,14 @@ function parseClientMessage(text) {
             return null;
         }
         return { type: MESSAGE_TYPE.MOVE, clearData: { direction: clearData.direction, gameId: clearData.gameId } };
+    }
+
+    function parseSettingsMessage(message) {
+        if (!Object.keys(message).every(field => field === 'type' || field === 'clearData')) {
+            return null;
+        }
+        const settings = parseSettings(message.clearData);
+        return settings === null ? null : { type: MESSAGE_TYPE.SETTINGS, clearData: settings };
     }
 
     function isValidDirection(direction) {

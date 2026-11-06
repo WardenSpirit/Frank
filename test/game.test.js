@@ -6,7 +6,10 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Game = require('../server/game');
 const { DIRECTION, TERRAIN } = require('../shared/protocol.json');
-const { MAP_WIDTH, MAP_HEIGHT } = require('../server/params.json');
+const { getDefaultSettings } = require('../shared/settings.js');
+
+const MAP_WIDTH = getDefaultSettings().mapSize;
+const MAP_HEIGHT = getDefaultSettings().mapSize;
 
 function parseCoordinate(value, size) {
     return value === 'last' ? size - 1 : parseNumber(value);

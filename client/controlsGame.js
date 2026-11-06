@@ -24,11 +24,11 @@ const AUDIO_ELEMENT = document.getElementById("background-audio");
 export function handleDirection(direction) {
     const move = directions[direction];
 
-    if (move === undefined || !turnAllowed || !model.isConnected()) {
+    if (move === undefined || !turnAllowed || !connection.isConnected()) {
         return;
     }
 
-    connection.sendMove(move);
+    connection.sendMove(move, model.getGameId());
     turnAllowed = false;
     view.setInfoText("wait for the others", 500);
 }
