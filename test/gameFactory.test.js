@@ -6,8 +6,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Game = require('../server/game');
 const GameFactory = require('../server/gameFactory');
+const { getDefaultSettings } = require('../shared/settings.js');
 const { TERRAIN } = require('../shared/protocol.json');
-const { MAP_WIDTH, MAP_HEIGHT } = require('../server/params.json');
+const SETTINGS_SCHEMA = require('../shared/settings.json');
 
 // LCG parameters from Numerical Recipes in FORTRAN 77, section 7.1 (ranqd1):
 // https://iate.oac.uncor.edu/~mario/materia/nr/numrec/f7-1.pdf#page=9
@@ -31,17 +32,18 @@ function sortPositions(positions) {
     return positions.toSorted((left, right) => left.x - right.x || left.y - right.y);
 }
 
-test('generateMap creates the configured map with valid terrain', () => {
+test('generateMap creates a square map of mapSize with valid terrain', () => {
     // Arrange
     const factory = new GameFactory(seededRandom(11));
+    const { mapSize, holeRatio } = getDefaultSettings();
     const expected = {
-        width: MAP_WIDTH,
-        heights: Array(MAP_WIDTH).fill(MAP_HEIGHT),
+        width: mapSize,
+        heights: Array(mapSize).fill(mapSize),
         validTerrain: true
     };
 
     // Act
-    const map = factory.generateMap();
+    const map = factory.generateMap(mapSize, holeRatio);
     const actual = {
         width: map.length,
         heights: map.map(column => column.length),
@@ -59,7 +61,7 @@ parametrizedTest('generateMap produces the expected hole count', 'map-holes.csv'
     const expected = parseNumber(testCase.expectedHoles);
 
     // Act
-    const map = factory.generateMap();
+    const map = factory.generateMap(parseNumber(testCase.mapSize), parseNumber(testCase.holeRatio));
     const actual = map.flat().filter(tile => tile === TERRAIN.HOLE).length;
 
     // Assert
@@ -162,7 +164,7 @@ test('createGame puts the hero and treasure on distinct paths', () => {
     };
 
     // Act
-    const game = factory.createGame();
+    const game = factory.createGame(getDefaultSettings());
     const actual = {
         isGame: game instanceof Game,
         distinctPositions: game.heroPosition.x !== game.treasurePosition.x ||
@@ -181,7 +183,59 @@ test('createGame gives each new game the next gameId', () => {
     const expected = [1, 2, 3];
 
     // Act
-    const actual = [factory.createGame(), factory.createGame(), factory.createGame()].map(game => game.gameId);
+    const settings = getDefaultSettings();
+    const actual = [factory.createGame(settings), factory.createGame(settings), factory.createGame(settings)].map(game => game.gameId);
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test('createGame keeps the settings it was given', () => {
+    // Arrange
+    const factory = new GameFactory(seededRandom(5));
+    const settings = { ...getDefaultSettings(), mapSize: 9, actors: 'cat' };
+    const expected = { ...settings };
+
+    // Act
+    const actual = factory.createGame(settings).settings;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// Each bound of mapSize with each bound of holeRatio, with several seeds for the random positions.
+test.each([
+    { mapSize: SETTINGS_SCHEMA.mapSize.min, holeRatio: SETTINGS_SCHEMA.holeRatio.min },
+    { mapSize: SETTINGS_SCHEMA.mapSize.min, holeRatio: SETTINGS_SCHEMA.holeRatio.max },
+    { mapSize: SETTINGS_SCHEMA.mapSize.max, holeRatio: SETTINGS_SCHEMA.holeRatio.min },
+    { mapSize: SETTINGS_SCHEMA.mapSize.max, holeRatio: SETTINGS_SCHEMA.holeRatio.max }
+])('createGame generates a game for mapSize $mapSize and holeRatio $holeRatio', ({ mapSize, holeRatio }) => {
+    // Arrange
+    const settings = { ...getDefaultSettings(), mapSize: mapSize, holeRatio: holeRatio };
+    const exactHoles = mapSize * mapSize * holeRatio / 100;
+    const expected = Array(10).fill({
+        width: mapSize,
+        heights: Array(mapSize).fill(mapSize),
+        holesRounded: true,
+        distinctPositions: true,
+        heroTerrain: TERRAIN.PATH,
+        treasureTerrain: TERRAIN.PATH
+    });
+
+    // Act
+    const actual = Array.from({ length: 10 }, (_, seed) => {
+        const game = new GameFactory(seededRandom(seed)).createGame(settings);
+        const holes = game.map.flat().filter(tile => tile === TERRAIN.HOLE).length;
+        return {
+            width: game.map.length,
+            heights: game.map.map(column => column.length),
+            holesRounded: holes === Math.floor(exactHoles) || holes === Math.ceil(exactHoles),
+            distinctPositions: game.heroPosition.x !== game.treasurePosition.x ||
+                game.heroPosition.y !== game.treasurePosition.y,
+            heroTerrain: terrainAt(game.map, game.heroPosition),
+            treasureTerrain: terrainAt(game.map, game.treasurePosition)
+        };
+    });
 
     // Assert
     expect(actual).toEqual(expected);

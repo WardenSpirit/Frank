@@ -25,8 +25,8 @@ function clearPoints() {
         drawingContext.stateContext.clearRect(
             oldTargetOrigin.x,
             oldTargetOrigin.y,
-            drawingContext.SQUARE.width,
-            drawingContext.SQUARE.height);
+            drawingContext.DIGIT_SIZE,
+            drawingContext.DIGIT_SIZE);
     }
 }
 
@@ -42,8 +42,8 @@ function drawDigits(sourceOrigins, targetOrigins) {
             viewParams.sourceTileSize,
             targetOrigin.x,
             targetOrigin.y,
-            drawingContext.SQUARE.width,
-            drawingContext.SQUARE.height);
+            drawingContext.DIGIT_SIZE,
+            drawingContext.DIGIT_SIZE);
     }
 }
 
@@ -64,7 +64,7 @@ function clearPlayers() {
         drawingContext.stateContext.clearRect(
             oldTargetOrigin.x,
             oldTargetOrigin.y,
-            drawingContext.SQUARE.width,
-            drawingContext.SQUARE.height);
+            drawingContext.DIGIT_SIZE,
+            drawingContext.DIGIT_SIZE);
     }
 }
