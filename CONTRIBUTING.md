@@ -130,13 +130,6 @@ When adding automated tests:
 - Use deterministic data and clean up sockets and timers after each test.
 - Add the runner and an `npm test` script so teammates can run the suite.
 
-## Releases
+## Releases and deployment
 
-No release automation is configured. Use `MAJOR.MINOR.PATCH`: breaking changes, new features, fixes.
-
-1. Update the version in `package.json` and keep `package-lock.json` consistent in an MR.
-2. Merge after review and checks.
-3. Tag the checked commit on `master`, for example `v2.1.0`.
-4. Create a GitLab Release with the changes and resolved issues.
-
-Document any deployment procedure separately before using it.
+Maintainers release and deploy as described in [RELEASING.md](RELEASING.md).

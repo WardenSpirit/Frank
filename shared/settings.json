@@ -1,4 +1,14 @@
 {
+    "actors": {
+        "type": "string",
+        "values": ["snake", "cat"],
+        "default": "snake"
+    },
+    "tiles": {
+        "type": "string",
+        "values": ["volcano", "garden"],
+        "default": "volcano"
+    },
     "mapSize": {
         "type": "number",
         "min": 5,
@@ -10,16 +20,6 @@
         "min": 0,
         "max": 40,
         "default": 33
-    },
-    "actors": {
-        "type": "string",
-        "values": ["snake", "cat"],
-        "default": "snake"
-    },
-    "tiles": {
-        "type": "string",
-        "values": ["volcano", "garden"],
-        "default": "volcano"
     },
     "maxPlayers": {
         "type": "number",

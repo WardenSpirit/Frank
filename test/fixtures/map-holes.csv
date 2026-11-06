@@ -1,3 +1,15 @@
-name,randomValue,expectedHoles
-lowest random value,0,65
-random value near upper bound,0.999,64
+name,mapSize,holeRatio,randomValue,expectedHoles
+default settings with the lowest random value round up,14,33,0,65
+default settings with a random value near upper bound round down,14,33,0.999,64
+smallest map with no holes and the lowest random value,5,0,0,0
+smallest map with no holes and a random value near upper bound,5,0,0.999,0
+smallest map with the most holes and the lowest random value,5,40,0,10
+smallest map with the most holes and a random value near upper bound,5,40,0.999,10
+largest map with no holes and the lowest random value,20,0,0,0
+largest map with no holes and a random value near upper bound,20,0,0.999,0
+largest map with the most holes and the lowest random value,20,40,0,160
+largest map with the most holes and a random value near upper bound,20,40,0.999,160
+whole number of holes on the largest map and the lowest random value,20,33,0,132
+whole number of holes on the largest map and a random value near upper bound,20,33,0.999,132
+fractional holes on the smallest map with the lowest random value round up,5,33,0,9
+fractional holes on the smallest map with a random value near upper bound round down,5,33,0.999,8

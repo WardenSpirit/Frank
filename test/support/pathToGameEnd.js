@@ -19,7 +19,7 @@ export default function pathToGameEnd(game) {
     for (let i = 0; i < queue.length; i++) {
         const position = queue[i];
         for (const direction of Object.values(DIRECTION)) {
-            const next = new Game(game.map, game.treasurePosition, { ...position }, game.gameId);
+            const next = new Game(game.map, game.treasurePosition, { ...position }, game.gameId, game.settings);
             next.makeMove(direction);
             if (reachedBy.has(key(next.heroPosition))) {
                 continue;

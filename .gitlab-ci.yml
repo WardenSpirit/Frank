@@ -1,0 +1,22 @@
+deploy:
+  stage: deploy
+  image: node:22                # includes git and curl
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+  variables:
+    GIT_DEPTH: 0                # full history; pushing a shallow clone to GitHub fails
+  resource_group: production    # deploy jobs run one at a time, oldest pipeline first (set via API, see RELEASING.md)
+  environment:
+    name: production
+    url: https://frank-kps0.onrender.com/
+  script:
+    # the tagged commit must be on master
+    - git fetch origin master
+    - git merge-base --is-ancestor "$CI_COMMIT_SHA" FETCH_HEAD
+    # the tag must match the version in package.json
+    - test "${CI_COMMIT_TAG#v}" = "$(node -p "require('./package.json').version")"
+    # the tagged commit must pass the tests
+    - npm ci
+    - npm test
+    - git push --force "https://WardenSpirit:${GITHUB_PUSH_TOKEN}@github.com/WardenSpirit/Frank.git" "$CI_COMMIT_SHA:refs/heads/master"
+    - curl --fail --silent --show-error --request POST "${RENDER_DEPLOY_HOOK_URL}&ref=${CI_COMMIT_SHA}"

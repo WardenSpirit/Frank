@@ -1,9 +1,11 @@
 const GameFactory = require('./gameFactory.js');
 const { parseClientMessage } = require('./clientMessage.js');
+const { getDefaultSettings } = require('../shared/settings.js');
 const { CLOSE, MESSAGE_TYPE } = require('../shared/protocol.json');
 
 let gameFactory = new GameFactory();
 let game = null;
+let settings = getDefaultSettings();
 let webSockets = [];
 let moves = [];
 let alreadySentMove = [];
@@ -40,24 +42,9 @@ function onConnect(webSocket) {
             case MESSAGE_TYPE.MOVE:
                 handleMove(webSocket, message.clearData);
                 break;
-        }
-
-        function handleMove(webSocket, move) {
-            if (move.gameId === game.gameId && !hasAlreadySentMove(webSocket)) {
-                recordMove(webSocket, move.direction);
-                if (allMovesGathered()) {
-                    realizeTurn();
-                }
-            }
-        }
-
-        function recordMove(webSocket, direction) {
-            moves.push(direction);
-            alreadySentMove.push(webSocket);
-        }
-
-        function hasAlreadySentMove(webSocket) {
-            return alreadySentMove.includes(webSocket);
+            case MESSAGE_TYPE.SETTINGS:
+                handleSettings(message.clearData);
+                break;
         }
     });
 
@@ -73,6 +60,34 @@ function onConnect(webSocket) {
         eliminateWebSocket(webSocket);
     });
 };
+
+function handleMove(webSocket, move) {
+    if (move.gameId === game.gameId && !hasAlreadySentMove(webSocket)) {
+        recordMove(webSocket, move.direction);
+        if (allMovesGathered()) {
+            realizeTurn();
+        }
+    }
+}
+
+/**
+ * Valid settings always start a new game, even when they equal the current ones. Moves of the current turn are
+ * discarded, so every player can move in the new game.
+ */
+function handleSettings(appliedSettings) {
+    settings = appliedSettings;
+    discardMoves();
+    startANewGame();
+}
+
+function recordMove(webSocket, direction) {
+    moves.push(direction);
+    alreadySentMove.push(webSocket);
+}
+
+function hasAlreadySentMove(webSocket) {
+    return alreadySentMove.includes(webSocket);
+}
 
 /**
  * Closes the connection of a client that sent an invalid message, for example an outdated client. The client may
@@ -111,8 +126,7 @@ function realizeTurn() {
     sendToAll(MESSAGE_TYPE.MOVES, moves);
     game.makeMoves(moves);
 
-    moves = [];
-    alreadySentMove = [];
+    discardMoves();
 
     if (game.isGameBeingFinished()) {
         startANewGame();
@@ -120,10 +134,18 @@ function realizeTurn() {
 }
 
 /**
+ * Discards the moves of the current turn, so every player can move again.
+ */
+function discardMoves() {
+    moves = [];
+    alreadySentMove = [];
+}
+
+/**
  * Sets up a new game and informs the clients by sending them the information about it's state.
  */
 function startANewGame() {
-    game = gameFactory.createGame();
+    game = gameFactory.createGame(settings);
     sendToAll(MESSAGE_TYPE.GAME, game);
 }
 
