@@ -57,7 +57,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 ### Basics
 - The goal is to guide the character to the destination using arrow keys.
   - the character (cat, snake, etc.) and destination (chests, mouses, etc.) image depends on the current version
-- The number of points increases when reaching chests and decreases when stepping off the path.
+- The number of points increases when reaching chests and decreases when stepping off the path or when the time limit of the game runs out.
 - The score is displayed on the left in the bottom table, along with the number of connected players on the right.
 
 ### Multiplayer Mode
@@ -65,6 +65,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 - For serious play, players should avoid seeing each other's keyboards and communicate effectively.
 - The character waits for instructions (movement direction) from all players before moving.
   - This may give the impression that the game stops working when additional players join.
+  - The wait is limited by the time limit of the game (60 seconds by default, see Map Settings & Controls below). It is counted from the start of the game, not of the turn.
+  - When the time runs out, a new game on a new map starts for all players, even if some of them haven't sent their move yet or nobody has moved at all. The moves already entered in the current turn are discarded, not executed.
+  - Every player loses a point (but never below 0), including players who have already sent their move and players who are idle.
 - The character executes all received instructions.
 - Instructions are processed in the order they were given by players (based on when they arrived at the server).
 - Players must anticipate when and how to move the character to avoid obstacles and reach the goal.
@@ -76,6 +79,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merg
 - **Open / close settings**: Press `S` (or `Escape` to close) on a keyboard, or use a **two-finger tap** (or **long tap** of 400 ms+) on a touchscreen. Opening or closing settings neither sends a move nor toggles music.
 - **Navigate settings**: Use `Up` / `Down` arrow keys or drag vertically (`up` / `down`) to move the highlight between settings and the `APPLY` / `CLOSE` buttons.
 - **Change values**: Use `Left` / `Right` arrow keys or drag horizontally (`left` / `right`) to change the highlighted setting by 1 (or switch textures). Values wrap around at their lower and upper bounds.
+- **Time limit**: The `time limit` setting (hourglass icon) is the length of a game in seconds, from 5 to 120, 60 by default. It is shared by all players. When it runs out, a new game starts and everyone loses a point, see Multiplayer Mode above. The countdown restarts with every new game (reaching a chest, stepping into a hole, applying settings, or a timeout), and a changed value applies from the game that `APPLY` starts.
 - **Apply / Close**: Press `Enter` when `APPLY` or `CLOSE` is highlighted, or tap `APPLY` / `CLOSE` on a touchscreen.
 - **Music**: Press `M` or single-tap with one finger to pause/resume music (works both inside and outside the settings form).
 
@@ -138,7 +142,7 @@ Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [
 ### Základ
 - Cílem je dostat postavu k cíli pomocí šipek,
   - přesná podoba postavy (kočka, had apod.) a cíle (truhla, myš apod.) závisí na verze
-- S truhlami skóre roste, při kroku mimo cestu klesá,
+- S truhlami skóre roste, při kroku mimo cestu nebo po vypršení časového limitu hry klesá,
 - Skóre je ve spodní tabulce vlevo, počet připojených hráčů tamtéž, ale vpravo.
 
 ### Více hráčů
@@ -146,6 +150,9 @@ Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [
 - Pokud je hra brána vážně, hráči by měli hrát tak, aby si vzájemně neviděli na klávesnici a nedorozumívali se.
 - Postava čeká na instrukci (tj. směr pohybu) od všech hráčů, než se pohne.
 	- Proto se zdá, že hra přestává fungovat, když se připojí další hráč(i).
+	- Čekání omezuje časový limit hry (výchozí 60 sekund, viz Nastavení mapy a ovládání níže). Počítá se od začátku hry, ne od začátku tahu.
+	- Po vypršení limitu začne pro všechny hráče nová hra na nové mapě, i když někteří ještě neposlali svůj tah nebo se zatím nikdo nepohnul. Tahy již zadané v aktuálním kole se zahodí, neprovedou se.
+	- Každý hráč přijde o bod (ne však pod 0), i ten, kdo už svůj tah poslal, i ten, kdo nehraje.
 - Poté postava provede všechny obdržené instrukce.
 - Postava provádí instrukce v takovém pořadí, ve kterém je hráči zadali (přesněji ve kterém přišly na server).
 - Je na jednotlivých hráčích, aby odhadli, kdy a jak mají hrát, aby se postava úspěšně vyhýbala překážkám a došla k cíli.
@@ -157,6 +164,7 @@ Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [
 - **Otevření / zavření nastavení**: Zmáčkni `S` (nebo `Escape` pro zavření) na klávesnici nebo poklepej na obrazovku **dvěma prsty** (případně **dlouze podrž jeden prst**, alespoň 400 ms). Otevření ani zavření nastavení nehýbe s postavou ani neovládá hudbu.
 - **Orientace / pohyb v nastavení**: Použij klávesy šipek `Nahoru` / `Dolů` nebo vertikálně přejeď prstem (`nahoru` / `dolů`) pro přesun zvýraznění mezi jednotlivými nastaveními a `APPLY` / `CLOSE` tlačítky (`Potvrdit` / `Zavřít`).
 - **Změna hodnot**: Použij klávesy šipek `Doleva` / `Doprava` nebo horizontálně přejeď prstem (`doleva` / `doprava`) pro změnu zvýrazněného nastavení o 1 (nebo pro změnu designu). Maximální a minimální hodnota (1. a poslední) jdou cyklicky za sebou (z poslední hodnoty se dá opět dostat na tu 1. a naopak bez dlouhého překlikávání mezi ostatními hodnotami). 
+- **Časový limit**: Nastavení `time limit` (ikona přesýpacích hodin) je délka hry v sekundách, od 5 do 120, výchozí 60. Společné je pro všechny hráče. Po jeho vypršení začne nová hra a všichni přijdou o bod, viz Více hráčů výše. Odpočet začíná znovu s každou novou hrou (dosažení truhly, pád do díry, potvrzení nastavení nebo vypršení limitu) a změněná hodnota platí od hry, kterou `APPLY` spustí.
 - **Potvrdit / Zavřít**: Zmáčkni `Enter` pokud jsou zvýrazněné `APPLY` nebo `CLOSE` (`Potvrdit` / `Zavřít`), nebo poklepej na `APPLY` / `CLOSE` (`Potvrdit` / `Zavřít`) na dotykové obrazovce.
 - **Hudba**: Zmáčkni `M` nebo poklepej jedním prstem pro nastavení (vypnutí/zapnutí) hudby (funguje uvnitř i mimo obrazovku nastavení).
 

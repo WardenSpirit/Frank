@@ -1,6 +1,7 @@
 import { test, expect, beforeAll, afterEach, afterAll, vi } from "vitest";
 import { WebSocketServer } from "ws";
 import GameClient from "./support/gameClient.js";
+import gameAfterMove from "./support/gameAfterMove.js";
 import pathToGameEnd from "./support/pathToGameEnd.js";
 
 import { createRequire } from "node:module";
@@ -15,6 +16,8 @@ const DEFAULT_SETTINGS = getDefaultSettings();
 // Every field differs from the default; without holes the hero can only end the game at the treasure.
 const CHANGED_SETTINGS = { mapSize: 5, holeRatio: 0, actors: "cat", tiles: "garden", maxPlayers: 5, timeLimit: 30 };
 const OTHER_SETTINGS = { mapSize: 20, holeRatio: 40, actors: "snake", tiles: "garden", maxPlayers: 1, timeLimit: 120 };
+const DEFAULT_TIME_LIMIT_MS = DEFAULT_SETTINGS.timeLimit * 1000;
+const CHANGED_TIME_LIMIT_MS = CHANGED_SETTINGS.timeLimit * 1000;
 
 let server;
 let players = [];
@@ -26,8 +29,11 @@ beforeAll(async () => {
 });
 
 // The server keeps the players, the turn and the settings in module state, so every test starts once all its players
-// are gone and with the default settings.
+// are gone and with the default settings. The real timers come back first, because vi.waitFor advances faked ones. The
+// countdown of a game from a test that faked them stays faked, which clearTimeout doesn't mind: it does nothing, and
+// the last player leaving still resets the countdown of the server, so no real timer is left.
 afterEach(async () => {
+    vi.useRealTimers();
     players.forEach(player => player.close());
     players = [];
     await vi.waitFor(() => expect(server.clients.size).toBe(0));
@@ -114,6 +120,51 @@ async function walkToLastStep(player) {
         await moves;
     }
     return path.at(-1);
+}
+
+/**
+ * The server sets the countdown of a game with the global setTimeout, so the clock must be faked before the game
+ * exists. Only the timers of the countdown and the clock the server reads the remaining time from are faked; the network and the ping of sync() don't depend on them.
+ */
+function fakeCountdownTimers() {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "performance"] });
+}
+
+/**
+ * Moves the faked clock and waits until the players have received everything the elapsed countdown made the server send.
+ * The server sends before it answers a ping, so waiting for a pong is enough.
+ */
+async function elapse(milliseconds, ...waitingPlayers) {
+    vi.advanceTimersByTime(milliseconds);
+    await Promise.all(waitingPlayers.map(player => player.sync()));
+}
+
+/**
+ * Waits until the server has handled the disconnect of every player. Unlike vi.waitFor, it doesn't advance faked timers.
+ */
+async function untilNoPlayers() {
+    while (server.clients.size > 0) {
+        await new Promise(resolve => setImmediate(resolve));
+    }
+}
+
+/**
+ * Waits until the server has started closing the connection of every player, which it does right after it removes a
+ * player it rejects. Unlike untilNoPlayers, it doesn't wait for a client that never answers the close frame.
+ */
+async function untilNoOpenPlayers() {
+    while ([...server.clients].some(client => client.readyState === client.OPEN)) {
+        await new Promise(resolve => setImmediate(resolve));
+    }
+}
+
+/**
+ * Like pathToGameEnd, it takes the rules of a move from the server's Game via gameAfterMove. On a map without holes, the
+ * treasure is the only end of the game, and the hero has more neighbours than one.
+ * @returns A direction in which the hero doesn't step onto the treasure, so the move doesn't end the game.
+ */
+function directionKeepingTheGameOn(game) {
+    return Object.values(DIRECTION).find(direction => !gameAfterMove(game, direction).isGameBeingFinished());
 }
 
 test("EC23 EC27 BV11 a move of the only player for the current game ends the turn", async () => {
@@ -472,6 +523,7 @@ test("EC49 settings discard the moves of the turn, so a player who has moved can
 
 test("a player who connects receives the running game with the current settings", async () => {
     // Arrange
+    fakeCountdownTimers();
     const applyingPlayer = await connectPlayer();
     const game = await applySettings(applyingPlayer, CHANGED_SETTINGS);
     const expected = { game: game, typesSinceGameOfApplyingPlayer: [MESSAGE_TYPE.PLAYERS] };
@@ -900,6 +952,358 @@ test("EC54 EC60 BV22 BV36 with maxPlayers 1, the server accepts a player while t
         players: actualPlayers,
         turnAfterOneMove: actualTurn,
     };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// The countdown of the time limit runs on a faked clock, so the tests cover the exact millisecond. The IDs are from the
+// section Time limit of test/README.md.
+
+// The first game has the default settings; other settings start a new game with their time limit.
+test.each([
+    { ids: "TL-EC1 TL-EC2 TL-EC3 TL-EC8 TL-BV1 TL-BV2 TL-BV3", timeLimit: 5 },
+    { ids: "TL-EC1 TL-EC2 TL-EC3 TL-EC8 TL-BV1 TL-BV2", timeLimit: DEFAULT_SETTINGS.timeLimit },
+    { ids: "TL-EC1 TL-EC2 TL-EC3 TL-EC8 TL-BV1 TL-BV2 TL-BV4", timeLimit: 120 },
+])("$ids a game with timeLimit $timeLimit lasts $timeLimit s, not a millisecond less", async testCase => {
+    // Arrange
+    fakeCountdownTimers();
+    const player = await connectPlayer();
+    const startedGame =
+        testCase.timeLimit === DEFAULT_SETTINGS.timeLimit
+            ? player.game
+            : await applySettings(player, { ...DEFAULT_SETTINGS, timeLimit: testCase.timeLimit });
+    const expected = {
+        gameBeforeLimit: startedGame,
+        timeoutGame: {
+            gameId: startedGame.gameId + 1,
+            timeout: true,
+            settings: startedGame.settings,
+            map: squareMap(startedGame.settings.mapSize),
+        },
+    };
+
+    // Act
+    await elapse(testCase.timeLimit * 1000 - 1, player);
+    const actualGameBeforeLimit = player.game;
+    await elapse(1, player);
+    const actual = {
+        gameBeforeLimit: actualGameBeforeLimit,
+        timeoutGame: {
+            gameId: player.game.gameId,
+            timeout: player.game.timeout,
+            settings: player.game.settings,
+            map: mapDimensions(player.game),
+        },
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC3 TL-EC8 the timeout sends the same new game with the timeout to all players", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const firstPlayer = await connectPlayer();
+    const secondPlayer = await connectPlayer();
+    const previousGame = firstPlayer.game;
+    const expected = { gameId: previousGame.gameId + 1, timeout: true, sameGameForBoth: true };
+
+    // Act
+    await elapse(DEFAULT_TIME_LIMIT_MS, firstPlayer, secondPlayer);
+    const actual = {
+        gameId: firstPlayer.game.gameId,
+        timeout: firstPlayer.game.timeout,
+        sameGameForBoth: JSON.stringify(secondPlayer.game) === JSON.stringify(firstPlayer.game),
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// Each case starts a new game half way through the time limit of the first game. The countdown then lasts the whole
+// time limit from the new game, so the first countdown doesn't end it sooner.
+test.each([
+    {
+        ids: "TL-EC2 TL-EC3 TL-EC4 TL-BV1 TL-BV2",
+        name: "the end of the game at the treasure or in a hole",
+        timeout: false,
+        startNewGame: async player => {
+            const lastDirection = await walkToLastStep(player);
+            const newGame = player.nextMessage(MESSAGE_TYPE.GAME);
+            player.sendMove(lastDirection);
+            return await newGame;
+        },
+    },
+    {
+        ids: "TL-EC2 TL-EC3 TL-EC4 TL-BV1 TL-BV2",
+        name: "the departure of a player that completes a turn ending the game",
+        timeout: false,
+        startNewGame: async player => {
+            const lastDirection = await walkToLastStep(player);
+            const leavingPlayer = await connectPlayer();
+            // The turn waits only for the leaving player, so the departure ends it and the game.
+            player.sendMove(lastDirection);
+            await player.sync();
+            const newGame = player.nextMessage(MESSAGE_TYPE.GAME);
+            leavingPlayer.close();
+            return await newGame;
+        },
+    },
+    {
+        ids: "TL-EC2 TL-EC3 TL-EC5 TL-BV1 TL-BV2",
+        name: "the settings",
+        timeout: false,
+        startNewGame: player => applySettings(player, DEFAULT_SETTINGS),
+    },
+    {
+        ids: "TL-EC2 TL-EC3 TL-EC6 TL-BV1 TL-BV2",
+        name: "a timeout",
+        timeout: true,
+        startNewGame: async player => {
+            await elapse(DEFAULT_TIME_LIMIT_MS / 2, player);
+            return player.game;
+        },
+    },
+])("$ids the countdown restarts with a new game started by $name", async testCase => {
+    // Arrange
+    fakeCountdownTimers();
+    const player = await connectPlayer();
+    const firstGame = player.game;
+    const expected = {
+        newGame: { gameId: firstGame.gameId + 1, hasTimeoutField: testCase.timeout },
+        gameIdBeforeLimit: firstGame.gameId + 1,
+        timeoutGame: { gameId: firstGame.gameId + 2, timeout: true },
+    };
+
+    // Act
+    await elapse(DEFAULT_TIME_LIMIT_MS / 2, player);
+    const newGame = await testCase.startNewGame(player);
+    await elapse(DEFAULT_TIME_LIMIT_MS - 1, player);
+    const actualGameIdBeforeLimit = player.game.gameId;
+    await elapse(1, player);
+    const actual = {
+        newGame: { gameId: newGame.gameId, hasTimeoutField: "timeout" in newGame },
+        gameIdBeforeLimit: actualGameIdBeforeLimit,
+        timeoutGame: { gameId: player.game.gameId, timeout: player.game.timeout },
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC2 TL-EC7 TL-BV5 a turn finished a millisecond before the time limit passes and doesn't restart the countdown", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const player = await connectPlayer();
+    // The map has no holes, so the move can end the game only at the treasure.
+    const game = await applySettings(player, CHANGED_SETTINGS);
+    const direction = directionKeepingTheGameOn(game);
+    const expected = {
+        turn: [direction],
+        gameIdAfterTurn: game.gameId,
+        timeoutGame: { gameId: game.gameId + 1, timeout: true },
+    };
+
+    // Act
+    await elapse(CHANGED_TIME_LIMIT_MS - 1, player);
+    const turn = player.nextMessage(MESSAGE_TYPE.MOVES);
+    player.sendMove(direction);
+    const actualTurn = await turn;
+    await player.sync();
+    const actualGameIdAfterTurn = player.game.gameId;
+    // The timeout comes a time limit after the start of the game, not after the turn.
+    await elapse(1, player);
+    const actual = {
+        turn: actualTurn,
+        gameIdAfterTurn: actualGameIdAfterTurn,
+        timeoutGame: { gameId: player.game.gameId, timeout: player.game.timeout },
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC10 TL-BV6 a move for the game that the timeout has ended has no effect on the new game", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const player = await connectPlayer();
+    const previousGame = player.game;
+    const expected = {
+        typesAfterMoveOfPreviousGame: [],
+        newGameId: previousGame.gameId + 1,
+        newGameTurn: [DIRECTION.LEFT],
+    };
+
+    // Act
+    // The only player's move for the current game would end the turn and send MOVES.
+    await elapse(DEFAULT_TIME_LIMIT_MS, player);
+    const newGame = player.game;
+    player.sendMove(DIRECTION.UP, previousGame.gameId);
+    await player.sync();
+    const actualTypesAfterMoveOfPreviousGame = player.typesSinceLastGame();
+    const newGameTurn = player.nextMessage(MESSAGE_TYPE.MOVES);
+    player.sendMove(DIRECTION.LEFT, newGame.gameId);
+    const actual = {
+        typesAfterMoveOfPreviousGame: actualTypesAfterMoveOfPreviousGame,
+        newGameId: newGame.gameId,
+        newGameTurn: await newGameTurn,
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC9 the timeout discards the moves of the turn, so a player who has moved can move again in the new game", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const movedPlayer = await connectPlayer();
+    const otherPlayer = await connectPlayer();
+    const expected = { typesAfterMoveOfOtherPlayer: [[], []], newGameTurn: [DIRECTION.DOWN, DIRECTION.LEFT] };
+
+    // Act
+    movedPlayer.sendMove(DIRECTION.UP);
+    await movedPlayer.sync();
+    await elapse(DEFAULT_TIME_LIMIT_MS, movedPlayer, otherPlayer);
+    // The kept move of the previous game would end the turn together with this one and send MOVES.
+    otherPlayer.sendMove(DIRECTION.LEFT);
+    await otherPlayer.sync();
+    await movedPlayer.sync();
+    const actualTypesAfterMoveOfOtherPlayer = [movedPlayer.typesSinceLastGame(), otherPlayer.typesSinceLastGame()];
+    const newGameTurn = movedPlayer.nextMessage(MESSAGE_TYPE.MOVES);
+    movedPlayer.sendMove(DIRECTION.DOWN);
+    const actual = {
+        typesAfterMoveOfOtherPlayer: actualTypesAfterMoveOfOtherPlayer,
+        newGameTurn: (await newGameTurn).toSorted(),
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC11 the countdown goes on when a player leaves and others stay", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const stayingPlayer = await connectPlayer();
+    const leavingPlayer = await connectPlayer();
+    const previousGame = stayingPlayer.game;
+    const expected = { players: 1, gameId: previousGame.gameId + 1, timeout: true };
+
+    // Act
+    // The count of the players after the connection of the leaving player has to arrive first, so it isn't mistaken
+    // for the one after the disconnect.
+    await stayingPlayer.sync();
+    const playersAfterLeaving = stayingPlayer.nextMessage(MESSAGE_TYPE.PLAYERS);
+    leavingPlayer.close();
+    const actualPlayers = await playersAfterLeaving;
+    await elapse(DEFAULT_TIME_LIMIT_MS, stayingPlayer);
+    const actual = { players: actualPlayers, gameId: stayingPlayer.game.gameId, timeout: stayingPlayer.game.timeout };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// The server removes a rejected player and a player with an invalid frame right away, so these players don't answer the
+// close frame, which would otherwise remove them on close.
+test.each([
+    {
+        ids: "TL-EC12",
+        name: "closes the connection",
+        leave: async player => {
+            player.close();
+            await untilNoPlayers();
+        },
+    },
+    {
+        ids: "TL-EC12 EC2",
+        name: "sends a rejected message and doesn't answer the close frame",
+        leave: async player => {
+            player.sendRaw(DIRECTION.UP);
+            player.stopReading();
+            await untilNoOpenPlayers();
+        },
+    },
+    {
+        ids: "TL-EC12 EC32",
+        name: "sends a text frame that isn't valid UTF-8 and doesn't answer the close frame",
+        leave: async player => {
+            player.sendInvalidUtf8();
+            player.stopReading();
+            await untilNoOpenPlayers();
+        },
+    },
+])("$ids no countdown runs after the last player $name, and the next player to connect starts one", async testCase => {
+    // Arrange
+    fakeCountdownTimers();
+    const leavingPlayer = await connectPlayer();
+    const previousGame = leavingPlayer.game;
+    await testCase.leave(leavingPlayer);
+    const expected = {
+        gameId: previousGame.gameId + 1,
+        gameIdBeforeLimit: previousGame.gameId + 1,
+        timeoutGame: { gameId: previousGame.gameId + 2, timeout: true },
+    };
+
+    // Act
+    // Several time limits pass with nobody connected.
+    vi.advanceTimersByTime(3 * DEFAULT_TIME_LIMIT_MS);
+    const player = await connectPlayer();
+    const actualGameId = player.game.gameId;
+    await elapse(DEFAULT_TIME_LIMIT_MS - 1, player);
+    const actualGameIdBeforeLimit = player.game.gameId;
+    await elapse(1, player);
+    const actual = {
+        gameId: actualGameId,
+        gameIdBeforeLimit: actualGameIdBeforeLimit,
+        timeoutGame: { gameId: player.game.gameId, timeout: player.game.timeout },
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC17 a new game carries the whole time limit as the remaining time", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const expected = { first: DEFAULT_TIME_LIMIT_MS, afterTimeout: DEFAULT_TIME_LIMIT_MS };
+
+    // Act
+    const player = await connectPlayer();
+    const first = player.game.remainingMs;
+    await elapse(DEFAULT_TIME_LIMIT_MS, player);
+    const actual = { first: first, afterTimeout: player.game.remainingMs };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC18 a player who connects in the middle of a game receives only the time that is left", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const firstPlayer = await connectPlayer();
+    const expected = { remainingMs: DEFAULT_TIME_LIMIT_MS - 20000 };
+
+    // Act
+    await elapse(20000, firstPlayer);
+    const connectingPlayer = await connectPlayer();
+    const actual = { remainingMs: connectingPlayer.game.remainingMs };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("TL-EC13 a player who connects after a timeout receives the running game without the timeout field", async () => {
+    // Arrange
+    fakeCountdownTimers();
+    const firstPlayer = await connectPlayer();
+    await elapse(DEFAULT_TIME_LIMIT_MS, firstPlayer);
+    const gameWithoutTimeout = { ...firstPlayer.game };
+    delete gameWithoutTimeout.timeout;
+    const expected = { firstPlayerGotTimeout: true, game: gameWithoutTimeout };
+
+    // Act
+    const connectingPlayer = await connectPlayer();
+    const actual = { firstPlayerGotTimeout: firstPlayer.game.timeout, game: connectingPlayer.game };
 
     // Assert
     expect(actual).toEqual(expected);

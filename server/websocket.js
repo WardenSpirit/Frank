@@ -1,4 +1,5 @@
 const GameFactory = require("./gameFactory.js");
+const Countdown = require("./countdown.js");
 const { parseClientMessage } = require("./clientMessage.js");
 const { getDefaultSettings } = require("../shared/settings.js");
 const { CLOSE, MESSAGE_TYPE } = require("../shared/protocol.json");
@@ -9,11 +10,19 @@ let settings = getDefaultSettings();
 let webSockets = [];
 let moves = [];
 let alreadySentMove = [];
+let countdown = new Countdown(onTimeLimit);
 
 /**
- * Sets up a web socket GameFactoryconnection. Starts listening to the events catched by each connected socket.
+ * The time limit of the game ran out. A move for the old game that is still on the way is ignored by its gameId.
  */
+function onTimeLimit() {
+    startANewGame({ timeout: true });
+}
 
+/**
+ * Sets up a web socket connection. Starts listening to the events caught by each connected socket.
+ * @param webSocket The socket of the player who has just connected.
+ */
 function onConnect(webSocket) {
     console.log("+ connection");
 
@@ -41,7 +50,9 @@ function onConnect(webSocket) {
     if (webSockets.length == 1) {
         startANewGame();
     } else {
-        webSocket.send(JSON.stringify({ type: MESSAGE_TYPE.GAME, clearData: game }));
+        webSocket.send(
+            JSON.stringify({ type: MESSAGE_TYPE.GAME, clearData: { ...game, remainingMs: countdown.remainingMs() } }),
+        );
     }
     sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
 
@@ -105,12 +116,10 @@ function handleMove(webSocket, move) {
 }
 
 /**
- * Valid settings always start a new game, even when they equal the current ones. Moves of the current turn are
- * discarded, so every player can move in the new game.
+ * Valid settings always start a new game, even when they equal the current ones.
  */
 function handleSettings(appliedSettings) {
     settings = appliedSettings;
-    discardMoves();
     startANewGame();
 }
 
@@ -123,39 +132,8 @@ function hasAlreadySentMove(webSocket) {
     return alreadySentMove.includes(webSocket);
 }
 
-/**
- * Removes the web socket from the game. A leaving player is removed when the connection starts closing and again when
- * it has closed; the second call does nothing, but it is the only one for a connection that drops without a close
- * frame. A client rejected over the player limit is never added, so calls for it do nothing either.
- */
-function eliminateWebSocket(webSocket) {
-    const index = webSockets.indexOf(webSocket);
-    if (index === -1) {
-        return;
-    }
-    webSockets.splice(index, 1);
-    sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
-    if (allMovesGathered()) {
-        realizeTurn();
-    }
-}
-
 function allMovesGathered() {
     return moves.length === webSockets.length;
-}
-
-/**
- * Realizes a turn with the moves that have come.
- */
-function realizeTurn() {
-    sendToAll(MESSAGE_TYPE.MOVES, moves);
-    game.makeMoves(moves);
-
-    discardMoves();
-
-    if (game.isGameBeingFinished()) {
-        startANewGame();
-    }
 }
 
 /**
@@ -167,11 +145,53 @@ function discardMoves() {
 }
 
 /**
- * Sets up a new game and informs the clients by sending them the information about it's state.
+ * Removes the web socket from the game. A leaving player is removed when the connection starts closing and again when
+ * it has closed; the second call does nothing, but it is the only one for a connection that drops without a close
+ * frame. A client rejected over the player limit is never added, so calls for it do nothing either. When the last
+ * player is gone, the countdown stops, so the server doesn't start new games for nobody; the next player to connect
+ * starts a game and its countdown. Otherwise the departure can complete the turn of the remaining players, which is
+ * then realized.
  */
-function startANewGame() {
+function eliminateWebSocket(webSocket) {
+    const index = webSockets.indexOf(webSocket);
+    if (index === -1) {
+        return;
+    }
+    webSockets.splice(index, 1);
+    sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
+    if (webSockets.length === 0) {
+        countdown.stop();
+    } else if (allMovesGathered()) {
+        realizeTurn();
+    }
+}
+
+/**
+ * Realizes a turn with the moves that have come.
+ */
+function realizeTurn() {
+    sendToAll(MESSAGE_TYPE.MOVES, moves);
+    game.makeMoves(moves);
+
+    if (game.isGameBeingFinished()) {
+        startANewGame();
+    } else {
+        discardMoves();
+    }
+}
+
+/**
+ * Discards the moves of the previous game, sets up a new game and sends it to all players. The countdown is per game,
+ * so every new game restarts it with the time limit of the game's settings, while a turn that doesn't finish the game
+ * doesn't.
+ * @param broadcastFields Fields added only to this broadcast, such as timeout. A player connecting later doesn't get
+ *     them, because onConnect sends the game itself.
+ */
+function startANewGame(broadcastFields = {}) {
+    discardMoves();
     game = gameFactory.createGame(settings);
-    sendToAll(MESSAGE_TYPE.GAME, game);
+    countdown.start(game.settings.timeLimit * 1000);
+    sendToAll(MESSAGE_TYPE.GAME, { ...game, remainingMs: countdown.remainingMs(), ...broadcastFields });
 }
 
 /**

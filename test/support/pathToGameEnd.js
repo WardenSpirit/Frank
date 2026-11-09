@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
+import gameAfterMove from "./gameAfterMove.js";
 
 const require = createRequire(import.meta.url);
-const Game = require("../../server/game");
 const { DIRECTION } = require("../../shared/protocol.json");
 
 /**
@@ -19,8 +19,7 @@ export default function pathToGameEnd(game) {
     for (let i = 0; i < queue.length; i++) {
         const position = queue[i];
         for (const direction of Object.values(DIRECTION)) {
-            const next = new Game(game.map, game.treasurePosition, { ...position }, game.gameId, game.settings);
-            next.makeMove(direction);
+            const next = gameAfterMove(game, direction, position);
             if (reachedBy.has(key(next.heroPosition))) {
                 continue;
             }

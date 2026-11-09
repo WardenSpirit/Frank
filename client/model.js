@@ -9,10 +9,16 @@ let points = 0;
 let rejected = false;
 
 /**
- * Updates the game model based on the argument. Calls view to start displaying the new game state.
+ * Updates the game model based on the argument. Calls view to start displaying the new game state. A game with the
+ * timeout mark (the time limit of the previous game ran out) counts as the hero stepping into a hole: the player loses
+ * a point and the bad filter shows.
  * @param newGame The stringified game state to hold on the client side.
  */
 export function updateGame(newGame) {
+    const isTimeout = newGame.timeout === true;
+    if (isTimeout) {
+        lose();
+    }
     newGame.points = points;
     game = newGame;
     settings.receiveSettings(game.settings);
@@ -37,17 +43,11 @@ export function applyMoves(moves) {
         view.displayMove(oldHeroPosition, game.heroPosition, move);
 
         if (isTreasureReached()) {
-            points++;
-            view.displayFilter(true);
-            view.displayPoints(points);
+            win();
             return false;
         }
         if (isHeroInHole()) {
-            if (points > 0) {
-                points--;
-            }
-            view.displayFilter(false);
-            view.displayPoints(points);
+            lose();
             return false;
         }
     }
@@ -89,6 +89,23 @@ function isTreasureReached() {
 
 function isHeroInHole() {
     return game.map[game.heroPosition.x][game.heroPosition.y] === TERRAIN.HOLE;
+}
+
+function win() {
+    view.displayFilter(true);
+    points++;
+    view.displayPoints(points);
+}
+
+/**
+ * Hole or out of time: shows the bad filter, if player has any points, points-- and redraw.
+ */
+function lose() {
+    view.displayFilter(false);
+    if (points > 0) {
+        points--;
+        view.displayPoints(points);
+    }
 }
 
 export function setPlayers(number) {

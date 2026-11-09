@@ -43,6 +43,27 @@ function createGame() {
     };
 }
 
+/**
+ * Gives the player the points the way the game does: by reaching the treasure. The model starts with 0 points.
+ */
+function gainPoints(count) {
+    for (let i = 0; i < count; i++) {
+        model.updateGame(createGame());
+        model.applyMoves([DIRECTION.RIGHT]);
+    }
+}
+
+/**
+ * Records the calls of displayFilter and displayPoints in the order they happen, as ['filter', isGood] and
+ * ['points', shownPoints]. The returned array fills while the model runs.
+ */
+function recordFilterAndPointsCalls() {
+    const calls = [];
+    view.displayFilter.mockImplementation(isGood => calls.push(["filter", isGood]));
+    view.displayPoints.mockImplementation(shownPoints => calls.push(["points", shownPoints]));
+    return calls;
+}
+
 test.each([
     { name: "a move onto a path", moves: [DIRECTION.DOWN], expected: true, expectedPosition: { x: 1, y: 2 } },
     { name: "a move onto the treasure", moves: [DIRECTION.RIGHT], expected: false, expectedPosition: { x: 2, y: 1 } },
@@ -65,6 +86,123 @@ test.each([
     // Assert
     expect(actual).toBe(expected);
     expect(game.heroPosition).toEqual(expectedPosition);
+});
+
+// Stepping into a hole is the move that a timeout imitates, so its points and filter stay covered. The model shows the
+// filter first and redraws the points only if they changed, so 0 points stay on the screen as they are.
+test.each([
+    {
+        points: 1,
+        expectedPoints: 0,
+        expectedCalls: [
+            ["filter", false],
+            ["points", 0],
+        ],
+    },
+    { points: 0, expectedPoints: 0, expectedCalls: [["filter", false]] },
+])(
+    "applyMoves into a hole from $points to $expectedPoints points shows the bad filter, then the changed points",
+    ({ points, expectedCalls }) => {
+        // Arrange
+        gainPoints(points);
+        model.updateGame(createGame());
+        vi.clearAllMocks(); // the calls of the setup aren't under test
+        const actualCalls = recordFilterAndPointsCalls();
+
+        // Act
+        model.applyMoves([DIRECTION.UP]);
+
+        // Assert
+        expect(actualCalls).toEqual(expectedCalls);
+    },
+);
+
+// A game with the timeout mark counts as the hero stepping into a hole: the player loses a point (never below 0) and the
+// bad filter shows, with the same calls as for a hole. The IDs are from the section Time limit of test/README.md.
+test.each([
+    {
+        ids: "TL-EC14",
+        name: "without the timeout field",
+        timeoutField: {},
+        points: 1,
+        expectedPoints: 1,
+        expectedCalls: [],
+    },
+    {
+        ids: "TL-EC14",
+        name: "with timeout false",
+        timeoutField: { timeout: false },
+        points: 1,
+        expectedPoints: 1,
+        expectedCalls: [],
+    },
+    {
+        ids: "TL-EC15",
+        name: "with timeout true",
+        timeoutField: { timeout: true },
+        points: 2,
+        expectedPoints: 1,
+        expectedCalls: [
+            ["filter", false],
+            ["points", 1],
+        ],
+    },
+    {
+        ids: "TL-EC15 TL-BV7",
+        name: "with timeout true",
+        timeoutField: { timeout: true },
+        points: 1,
+        expectedPoints: 0,
+        expectedCalls: [
+            ["filter", false],
+            ["points", 0],
+        ],
+    },
+    {
+        ids: "TL-EC16 TL-BV8",
+        name: "with timeout true",
+        timeoutField: { timeout: true },
+        points: 0,
+        expectedPoints: 0,
+        expectedCalls: [["filter", false]],
+    },
+])(
+    "$ids updateGame of a game $name moves the points from $points to $expectedPoints",
+    ({ timeoutField, points, expectedPoints, expectedCalls }) => {
+        // Arrange
+        gainPoints(points);
+        const game = { ...createGame(), gameId: 2, ...timeoutField };
+        let actualRenderedPoints;
+        view.renderGame.mockImplementation(renderedGame => {
+            actualRenderedPoints = renderedGame.points;
+        });
+        vi.clearAllMocks(); // the calls of the setup aren't under test
+        const actualCalls = recordFilterAndPointsCalls();
+        const expected = { points: expectedPoints, renderedPoints: expectedPoints, calls: expectedCalls };
+
+        // Act
+        model.updateGame(game);
+        const actual = { points: game.points, renderedPoints: actualRenderedPoints, calls: actualCalls };
+
+        // Assert
+        expect(actual).toEqual(expected);
+    },
+);
+
+test("TL-EC14 TL-EC15 the point lost on a timeout stays lost in the next game", () => {
+    // Arrange
+    gainPoints(2);
+    const timeoutGame = { ...createGame(), gameId: 2, timeout: true };
+    const nextGame = { ...createGame(), gameId: 3 };
+    const expectedPoints = [1, 1];
+
+    // Act
+    model.updateGame(timeoutGame);
+    model.updateGame(nextGame);
+    const actualPoints = [timeoutGame.points, nextGame.points];
+
+    // Assert
+    expect(actualPoints).toEqual(expectedPoints);
 });
 
 test("closeConnection drops the active and pending settings", () => {
