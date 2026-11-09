@@ -1,0 +1,7 @@
+# Documentation is formatted by hand.
+*.md
+
+package-lock.json
+
+# Client message cases are kept one per line, so they can be compared.
+test/fixtures/client-messages.json

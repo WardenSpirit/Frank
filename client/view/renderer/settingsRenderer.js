@@ -1,10 +1,7 @@
 import * as drawingContext from "./drawingContext.js";
 import * as images from "../images.js";
 import { FORM_ITEMS } from "../../settings.js";
-import {
-    drawBitmapText,
-    measureBitmapText
-} from "./bitmapTextRenderer.js";
+import { drawBitmapText, measureBitmapText } from "./bitmapTextRenderer.js";
 
 const ROW_CONFIGS = [
     { field: "actors", label: "goal and hero", icon: "SETTINGS_GOAL_ICON", y: 42 },
@@ -12,15 +9,21 @@ const ROW_CONFIGS = [
     { field: "mapSize", label: "map size", icon: "SETTINGS_SIZE_ICON", y: 83 },
     { field: "holeRatio", label: "hole ratio", icon: "SETTINGS_PERCENTAGE_ICON", y: 103 },
     { field: "maxPlayers", label: "players", icon: "SETTINGS_PLAYER_ICON", y: 123 },
-    { field: "timeLimit", label: "time limit", icon: "SETTINGS_HOURGLASS_ICON", y: 143 }
+    { field: "timeLimit", label: "time limit", icon: "SETTINGS_HOURGLASS_ICON", y: 143 },
 ];
 
 export const APPLY_BUTTON_BOUNDS = {
-    x: 33, y: 173, width: 64, height: 24
+    x: 33,
+    y: 173,
+    width: 64,
+    height: 24,
 };
 
 export const CLOSE_BUTTON_BOUNDS = {
-    x: 110, y: 173, width: 64, height: 24
+    x: 110,
+    y: 173,
+    width: 64,
+    height: 24,
 };
 
 // Load all images once when the module is initialized.
@@ -38,8 +41,8 @@ const CLOSE_BUTTON_DIM = await images.getImage("SETTINGS_CLOSE_DIM");
 const ROW_IMAGES = await Promise.all(
     ROW_CONFIGS.map(async row => ({
         ...row,
-        image: await images.getImage(row.icon)
-    }))
+        image: await images.getImage(row.icon),
+    })),
 );
 
 export function renderSettingsForm(editedSettings, highlightedIndex) {
@@ -52,13 +55,7 @@ export function renderSettingsForm(editedSettings, highlightedIndex) {
     const title = "settings";
     const titleWidth = measureBitmapText(title);
 
-    drawBitmapText(
-        ctx,
-        CHAR_IMAGE,
-        title,
-        Math.floor((224 - titleWidth) / 2),
-        18
-    );
+    drawBitmapText(ctx, CHAR_IMAGE, title, Math.floor((224 - titleWidth) / 2), 18);
 
     for (let i = 0; i < ROW_IMAGES.length; i++) {
         const row = ROW_IMAGES[i];
@@ -71,19 +68,10 @@ export function renderSettingsForm(editedSettings, highlightedIndex) {
 
         ctx.drawImage(row.image, 16, row.y, 16, 16);
 
-        drawBitmapText(
-            ctx,
-            CHAR_IMAGE,
-            row.label,
-            35,
-            row.y + 4
-        );
+        drawBitmapText(ctx, CHAR_IMAGE, row.label, 35, row.y + 4);
 
         ctx.drawImage(LEFT_ARROW, 148, row.y, 16, 16);
-        ctx.drawImage(
-            isHighlighted ? TEXT_BUTTON : TEXT_BUTTON_DIM,
-            162, row.y, 32, 16
-        );
+        ctx.drawImage(isHighlighted ? TEXT_BUTTON : TEXT_BUTTON_DIM, 162, row.y, 32, 16);
         ctx.drawImage(RIGHT_ARROW, 193, row.y, 16, 16);
 
         const rawValue = String(editedSettings[row.field]);
@@ -105,7 +93,7 @@ export function renderSettingsForm(editedSettings, highlightedIndex) {
         APPLY_BUTTON_BOUNDS.x,
         APPLY_BUTTON_BOUNDS.y,
         APPLY_BUTTON_BOUNDS.width,
-        APPLY_BUTTON_BOUNDS.height
+        APPLY_BUTTON_BOUNDS.height,
     );
 
     const applyText = "apply";
@@ -114,9 +102,8 @@ export function renderSettingsForm(editedSettings, highlightedIndex) {
         ctx,
         CHAR_IMAGE,
         applyText,
-        APPLY_BUTTON_BOUNDS.x +
-        Math.floor((APPLY_BUTTON_BOUNDS.width - measureBitmapText(applyText)) / 2),
-        APPLY_BUTTON_BOUNDS.y + 8
+        APPLY_BUTTON_BOUNDS.x + Math.floor((APPLY_BUTTON_BOUNDS.width - measureBitmapText(applyText)) / 2),
+        APPLY_BUTTON_BOUNDS.y + 8,
     );
 
     ctx.drawImage(
@@ -124,7 +111,7 @@ export function renderSettingsForm(editedSettings, highlightedIndex) {
         CLOSE_BUTTON_BOUNDS.x,
         CLOSE_BUTTON_BOUNDS.y,
         CLOSE_BUTTON_BOUNDS.width,
-        CLOSE_BUTTON_BOUNDS.height
+        CLOSE_BUTTON_BOUNDS.height,
     );
 
     const closeText = "close";
@@ -133,9 +120,8 @@ export function renderSettingsForm(editedSettings, highlightedIndex) {
         ctx,
         CHAR_IMAGE,
         closeText,
-        CLOSE_BUTTON_BOUNDS.x +
-        Math.floor((CLOSE_BUTTON_BOUNDS.width - measureBitmapText(closeText)) / 2),
-        CLOSE_BUTTON_BOUNDS.y + 8
+        CLOSE_BUTTON_BOUNDS.x + Math.floor((CLOSE_BUTTON_BOUNDS.width - measureBitmapText(closeText)) / 2),
+        CLOSE_BUTTON_BOUNDS.y + 8,
     );
 }
 
@@ -144,6 +130,6 @@ export function clearSettingsForm() {
         0,
         0,
         drawingContext.settingsCanvas.width,
-        drawingContext.settingsCanvas.height
+        drawingContext.settingsCanvas.height,
     );
 }

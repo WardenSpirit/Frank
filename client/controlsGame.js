@@ -11,7 +11,7 @@ const directions = {
     up: DIRECTION.UP,
     down: DIRECTION.DOWN,
     left: DIRECTION.LEFT,
-    right: DIRECTION.RIGHT
+    right: DIRECTION.RIGHT,
 };
 
 const AUDIO_ELEMENT = document.getElementById("background-audio");

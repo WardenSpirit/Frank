@@ -1,8 +1,8 @@
-import protocol from '../../../shared/protocol.json' with { type: 'json' };
-import viewParams from '../viewParams.json' with { type: 'json' };
-import * as terrainParser from '../parser/terrainParser.js';
-import * as drawingContext from './drawingContext.js'
-import * as images from '../images.js';
+import protocol from "../../../shared/protocol.json" with { type: "json" };
+import viewParams from "../viewParams.json" with { type: "json" };
+import * as terrainParser from "../parser/terrainParser.js";
+import * as drawingContext from "./drawingContext.js";
+import * as images from "../images.js";
 
 const { TERRAIN } = protocol;
 
@@ -21,13 +21,14 @@ async function renderTerrain(map, position) {
     let image;
     if (map[position.x][position.y] === TERRAIN.PATH) {
         image = await images.getImage("PATH");
-        sourceOrigin = terrainParser.getPathSource(map, position);
+        sourceOrigin = terrainParser.getPathSource();
     } else {
         image = await images.getImage("HOLE");
         sourceOrigin = terrainParser.getHoleSource(map, position);
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(position);
-    drawingContext.mapContext.drawImage(image,
+    drawingContext.mapContext.drawImage(
+        image,
         sourceOrigin.x,
         sourceOrigin.y,
         viewParams.sourceTileSize,
@@ -35,5 +36,6 @@ async function renderTerrain(map, position) {
         targetOrigin.x,
         targetOrigin.y,
         drawingContext.SQUARE.width,
-        drawingContext.SQUARE.height);
+        drawingContext.SQUARE.height,
+    );
 }

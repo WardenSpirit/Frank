@@ -1,4 +1,4 @@
-const { TERRAIN, DIRECTION } = require('../shared/protocol.json');
+const { TERRAIN, DIRECTION } = require("../shared/protocol.json");
 
 class Game {
     /**
@@ -30,13 +30,15 @@ class Game {
      * @param direction String indicating the direction of the executed move.
      */
     makeMove(direction) {
-
         const mapWidth = this.map.length;
         const mapHeight = this.map[0].length;
         let potentialNewHeroPosition;
         switch (direction) {
             case DIRECTION.UP:
-                potentialNewHeroPosition = { x: this.heroPosition.x, y: (this.heroPosition.y - 1 + mapHeight) % mapHeight };
+                potentialNewHeroPosition = {
+                    x: this.heroPosition.x,
+                    y: (this.heroPosition.y - 1 + mapHeight) % mapHeight,
+                };
                 break;
             case DIRECTION.RIGHT:
                 potentialNewHeroPosition = { x: (this.heroPosition.x + 1) % mapWidth, y: this.heroPosition.y };
@@ -45,7 +47,10 @@ class Game {
                 potentialNewHeroPosition = { x: this.heroPosition.x, y: (this.heroPosition.y + 1) % mapHeight };
                 break;
             case DIRECTION.LEFT:
-                potentialNewHeroPosition = { x: (this.heroPosition.x - 1 + mapWidth) % mapWidth, y: this.heroPosition.y };
+                potentialNewHeroPosition = {
+                    x: (this.heroPosition.x - 1 + mapWidth) % mapWidth,
+                    y: this.heroPosition.y,
+                };
                 break;
         }
 
@@ -58,7 +63,7 @@ class Game {
      */
     isGameBeingFinished() {
         return didHeroFindTreasure.call(this) || didHeroStepInHole.call(this);
-    
+
         function didHeroFindTreasure() {
             return this.heroPosition.x == this.treasurePosition.x && this.heroPosition.y == this.treasurePosition.y;
         }

@@ -1,7 +1,7 @@
-import viewParams from '../viewParams.json' with { type: 'json' };
-import * as heroParser from '../parser/heroParser.js';
-import * as drawingContext from './drawingContext.js'
-import * as images from '../images.js';
+import viewParams from "../viewParams.json" with { type: "json" };
+import * as heroParser from "../parser/heroParser.js";
+import * as drawingContext from "./drawingContext.js";
+import * as images from "../images.js";
 
 let heroTargetOrigin = { x: 0, y: 0 };
 
@@ -21,7 +21,8 @@ export function setNewPosition(newHeroPosition) {
 export function startRenderingHero() {
     requestAnimationFrame(function animateHero(currentTime) {
         let heroSourceOrigin = heroParser.calculateHeroSourceOrigin(heroState, currentTime);
-        const sourceChanged = heroSourceOrigin.x != oldHeroSourceOrigin.x || heroSourceOrigin.y != oldHeroSourceOrigin.y;
+        const sourceChanged =
+            heroSourceOrigin.x != oldHeroSourceOrigin.x || heroSourceOrigin.y != oldHeroSourceOrigin.y;
         if (sourceChanged) {
             targetOriginsToClear.push({ x: heroTargetOrigin.x, y: heroTargetOrigin.y });
             heroToRedraw = true;
@@ -39,13 +40,28 @@ export function startRenderingHero() {
 
 //the hero vanishes when spawned because this is called on the last positions visited in the last game
 function clearHero(targetOriginsToClear) {
-    while(targetOriginsToClear.length > 0) {
+    while (targetOriginsToClear.length > 0) {
         const targetOriginToClear = targetOriginsToClear.shift(0, 1);
-        drawingContext.objectContext.clearRect(targetOriginToClear.x, targetOriginToClear.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
+        drawingContext.objectContext.clearRect(
+            targetOriginToClear.x,
+            targetOriginToClear.y,
+            drawingContext.SQUARE.width,
+            drawingContext.SQUARE.height,
+        );
     }
 }
 
 async function drawHero(heroSourceOrigin, heroTargetOrigin) {
     const IMAGE = await images.getImage("HERO");
-    drawingContext.objectContext.drawImage(IMAGE, heroSourceOrigin.x, heroSourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, heroTargetOrigin.x, heroTargetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
+    drawingContext.objectContext.drawImage(
+        IMAGE,
+        heroSourceOrigin.x,
+        heroSourceOrigin.y,
+        viewParams.sourceTileSize,
+        viewParams.sourceTileSize,
+        heroTargetOrigin.x,
+        heroTargetOrigin.y,
+        drawingContext.SQUARE.width,
+        drawingContext.SQUARE.height,
+    );
 }

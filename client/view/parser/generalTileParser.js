@@ -1,4 +1,4 @@
-import viewParams from '../viewParams.json' with { type: 'json' };
+import viewParams from "../viewParams.json" with { type: "json" };
 
 function getRandomOriginInLine(line, tileCount) {
     return getTileSourceOrigin(line, Math.floor(Math.random() * tileCount));
@@ -7,7 +7,7 @@ function getRandomOriginInLine(line, tileCount) {
 function getTileSourceOrigin(row, column) {
     return {
         x: column * viewParams.sourceTileSize,
-        y: row * viewParams.sourceTileSize
+        y: row * viewParams.sourceTileSize,
     };
 }
 

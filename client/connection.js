@@ -1,4 +1,4 @@
-import protocol from '../shared/protocol.json' with { type: 'json' };
+import protocol from "../shared/protocol.json" with { type: "json" };
 
 const { MESSAGE_TYPE } = protocol;
 
@@ -11,7 +11,7 @@ let gameWebSocket;
  */
 export function connect({ onOpen, onClose, onGame, onMoves, onPlayers }) {
     // The browser resolves '/' against the page origin (http → ws, https → wss).
-    gameWebSocket = new WebSocket('/');
+    gameWebSocket = new WebSocket("/");
 
     gameWebSocket.addEventListener("open", () => {
         onOpen();
@@ -22,7 +22,9 @@ export function connect({ onOpen, onClose, onGame, onMoves, onPlayers }) {
     });
 
     gameWebSocket.addEventListener("error", e => {
-        console.error(`Sorry, but an error occured while I was trying to connect you to the game server: ${JSON.stringify(e)}`);
+        console.error(
+            `Sorry, but an error occured while I was trying to connect you to the game server: ${JSON.stringify(e)}`,
+        );
     });
 
     gameWebSocket.addEventListener("message", message => {
@@ -52,7 +54,9 @@ export function isConnected() {
  * @param gameId The id of the game the move is for.
  */
 export function sendMove(direction, gameId) {
-    gameWebSocket.send(JSON.stringify({type: MESSAGE_TYPE.MOVE, clearData: {direction: direction, gameId: gameId}}));
+    gameWebSocket.send(
+        JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: direction, gameId: gameId } }),
+    );
 }
 
 /**
@@ -61,5 +65,5 @@ export function sendMove(direction, gameId) {
  * @param settings Object containing all setting fields.
  */
 export function sendSettings(settings) {
-    gameWebSocket.send(JSON.stringify({type: MESSAGE_TYPE.SETTINGS, clearData: settings}));
+    gameWebSocket.send(JSON.stringify({ type: MESSAGE_TYPE.SETTINGS, clearData: settings }));
 }

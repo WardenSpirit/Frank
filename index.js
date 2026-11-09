@@ -1,1 +1,1 @@
-require('./server/connection');
+require("./server/connection");

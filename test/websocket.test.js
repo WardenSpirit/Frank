@@ -1,28 +1,28 @@
-import { test, expect, beforeAll, afterEach, afterAll, vi } from 'vitest';
-import { WebSocketServer } from 'ws';
-import GameClient from './support/gameClient.js';
-import pathToGameEnd from './support/pathToGameEnd.js';
+import { test, expect, beforeAll, afterEach, afterAll, vi } from "vitest";
+import { WebSocketServer } from "ws";
+import GameClient from "./support/gameClient.js";
+import pathToGameEnd from "./support/pathToGameEnd.js";
 
-import { createRequire } from 'node:module';
+import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { onConnect } = require('../server/websocket');
-const { getDefaultSettings } = require('../shared/settings.js');
-const { CLOSE, DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
+const { onConnect } = require("../server/websocket");
+const { getDefaultSettings } = require("../shared/settings.js");
+const { CLOSE, DIRECTION, MESSAGE_TYPE } = require("../shared/protocol.json");
 
 const CLOSE_CODE_INVALID_DATA = 1007;
 const DEFAULT_SETTINGS = getDefaultSettings();
 // Every field differs from the default; without holes the hero can only end the game at the treasure.
-const CHANGED_SETTINGS = { mapSize: 5, holeRatio: 0, actors: 'cat', tiles: 'garden', maxPlayers: 5, timeLimit: 30 };
-const OTHER_SETTINGS = { mapSize: 20, holeRatio: 40, actors: 'snake', tiles: 'garden', maxPlayers: 1, timeLimit: 120 };
+const CHANGED_SETTINGS = { mapSize: 5, holeRatio: 0, actors: "cat", tiles: "garden", maxPlayers: 5, timeLimit: 30 };
+const OTHER_SETTINGS = { mapSize: 20, holeRatio: 40, actors: "snake", tiles: "garden", maxPlayers: 1, timeLimit: 120 };
 
 let server;
 let players = [];
 
 beforeAll(async () => {
     server = new WebSocketServer({ port: 0 });
-    server.on('connection', webSocket => onConnect(webSocket));
-    await new Promise(resolve => server.once('listening', resolve));
+    server.on("connection", webSocket => onConnect(webSocket));
+    await new Promise(resolve => server.once("listening", resolve));
 });
 
 // The server keeps the players, the turn and the settings in module state, so every test starts once all its players
@@ -85,7 +85,7 @@ async function walkToLastStep(player) {
     return path.at(-1);
 }
 
-test('EC23 EC27 BV11 a move of the only player for the current game ends the turn', async () => {
+test("EC23 EC27 BV11 a move of the only player for the current game ends the turn", async () => {
     // Arrange
     const player = await connectPlayer();
     const expected = [DIRECTION.UP];
@@ -101,15 +101,42 @@ test('EC23 EC27 BV11 a move of the only player for the current game ends the tur
 
 // Each case gets the gameId of the running game, so it is rejected only for the class it represents.
 test.each([
-    { id: 'EC2', name: 'a raw direction string', data: () => 'UP' },
-    { id: 'EC2', name: 'truncated JSON', data: () => '{"type":"MOVE"' },
-    { id: 'EC6', name: 'a missing type', data: gameId => JSON.stringify({ clearData: { direction: DIRECTION.UP, gameId: gameId } }) },
-    { id: 'EC8', name: 'an unknown type', data: gameId => JSON.stringify({ type: 'JUMP', clearData: { direction: DIRECTION.UP, gameId: gameId } }) },
-    { id: 'EC12', name: 'a move with the direction as clearData', data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: DIRECTION.UP }) },
-    { id: 'EC15', name: 'a move in an unknown direction', data: gameId => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: 'NORTH', gameId: gameId } }) },
-    { id: 'EC25', name: 'a move without a gameId', data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP } }) },
-    { id: 'EC31', name: 'a valid move in a binary frame', data: gameId => Buffer.from(JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP, gameId: gameId } })) }
-])('$id the server rejects $name and closes the connection', async testCase => {
+    { id: "EC2", name: "a raw direction string", data: () => "UP" },
+    { id: "EC2", name: "truncated JSON", data: () => '{"type":"MOVE"' },
+    {
+        id: "EC6",
+        name: "a missing type",
+        data: gameId => JSON.stringify({ clearData: { direction: DIRECTION.UP, gameId: gameId } }),
+    },
+    {
+        id: "EC8",
+        name: "an unknown type",
+        data: gameId => JSON.stringify({ type: "JUMP", clearData: { direction: DIRECTION.UP, gameId: gameId } }),
+    },
+    {
+        id: "EC12",
+        name: "a move with the direction as clearData",
+        data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: DIRECTION.UP }),
+    },
+    {
+        id: "EC15",
+        name: "a move in an unknown direction",
+        data: gameId => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: "NORTH", gameId: gameId } }),
+    },
+    {
+        id: "EC25",
+        name: "a move without a gameId",
+        data: () => JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP } }),
+    },
+    {
+        id: "EC31",
+        name: "a valid move in a binary frame",
+        data: gameId =>
+            Buffer.from(
+                JSON.stringify({ type: MESSAGE_TYPE.MOVE, clearData: { direction: DIRECTION.UP, gameId: gameId } }),
+            ),
+    },
+])("$id the server rejects $name and closes the connection", async testCase => {
     // Arrange
     const player = await connectPlayer();
     const expected = { code: CLOSE.INVALID_MESSAGE.CODE, reason: CLOSE.INVALID_MESSAGE.REASON };
@@ -123,7 +150,7 @@ test.each([
     expect(actual).toEqual(expected);
 });
 
-test('EC2 EC23 a rejected player doesn\'t block the turn of the others', async () => {
+test("EC2 EC23 a rejected player doesn't block the turn of the others", async () => {
     // Arrange
     // An outdated client sends a raw direction and considers its move sent.
     const outdatedPlayer = await connectPlayer();
@@ -140,7 +167,7 @@ test('EC2 EC23 a rejected player doesn\'t block the turn of the others', async (
     expect(actual).toEqual(expected);
 });
 
-test('EC2 EC23 a rejected player that doesn\'t answer the close frame doesn\'t block the turn of the others', async () => {
+test("EC2 EC23 a rejected player that doesn't answer the close frame doesn't block the turn of the others", async () => {
     // Arrange
     const stalledPlayer = await connectPlayer();
     const player = await connectPlayer();
@@ -157,7 +184,7 @@ test('EC2 EC23 a rejected player that doesn\'t answer the close frame doesn\'t b
     expect(actual).toEqual(expected);
 });
 
-test('EC32 the server closes the connection of a player that sends a text frame that isn\'t valid UTF-8', async () => {
+test("EC32 the server closes the connection of a player that sends a text frame that isn't valid UTF-8", async () => {
     // Arrange
     const player = await connectPlayer();
     const expected = CLOSE_CODE_INVALID_DATA;
@@ -172,7 +199,7 @@ test('EC32 the server closes the connection of a player that sends a text frame 
     expect(actual).toEqual(expected);
 });
 
-test('EC23 EC32 a player that sends an invalid frame and doesn\'t answer the close frame doesn\'t block the turn of the others', async () => {
+test("EC23 EC32 a player that sends an invalid frame and doesn't answer the close frame doesn't block the turn of the others", async () => {
     // Arrange
     const stalledPlayer = await connectPlayer();
     const player = await connectPlayer();
@@ -189,7 +216,7 @@ test('EC23 EC32 a player that sends an invalid frame and doesn\'t answer the clo
     expect(actual).toEqual(expected);
 });
 
-test('EC2 the server doesn\'t record a move sent after a rejected message', async () => {
+test("EC2 the server doesn't record a move sent after a rejected message", async () => {
     // Arrange
     const rejectedPlayer = await connectPlayer();
     const player = await connectPlayer();
@@ -209,7 +236,7 @@ test('EC2 the server doesn\'t record a move sent after a rejected message', asyn
     expect(actual).toEqual(expected);
 });
 
-test('BV8 BV9 the turn waits until every player has moved', async () => {
+test("BV8 BV9 the turn waits until every player has moved", async () => {
     // Arrange
     const firstPlayer = await connectPlayer();
     const secondPlayer = await connectPlayer();
@@ -226,7 +253,7 @@ test('BV8 BV9 the turn waits until every player has moved', async () => {
     expect(actual.toSorted()).toEqual(expected);
 });
 
-test('EC21 the server ignores a second move of a player in the same turn', async () => {
+test("EC21 the server ignores a second move of a player in the same turn", async () => {
     // Arrange
     const movingPlayer = await connectPlayer();
     const waitingPlayer = await connectPlayer();
@@ -244,7 +271,7 @@ test('EC21 the server ignores a second move of a player in the same turn', async
     expect(actual).toEqual(expected);
 });
 
-test('EC28 BV10 a move for the previous game has no effect on the new game', async () => {
+test("EC28 BV10 a move for the previous game has no effect on the new game", async () => {
     // Arrange
     const firstPlayer = await connectPlayer();
     const previousGame = firstPlayer.game;
@@ -254,14 +281,16 @@ test('EC28 BV10 a move for the previous game has no effect on the new game', asy
         turnEndedBeforeSecondMove: false,
         endingTurn: [lastDirection, DIRECTION.RIGHT],
         newGameId: previousGame.gameId + 1,
-        newGameTurn: [DIRECTION.LEFT, DIRECTION.DOWN]
+        newGameTurn: [DIRECTION.LEFT, DIRECTION.DOWN],
     };
 
     // Act
     const endingTurn = firstPlayer.nextMessage(MESSAGE_TYPE.MOVES);
     const newGame = firstPlayer.nextMessage(MESSAGE_TYPE.GAME);
     let turnEndedBeforeSecondMove = false;
-    secondPlayer.nextMessage(MESSAGE_TYPE.MOVES).then(() => { turnEndedBeforeSecondMove = true; });
+    secondPlayer.nextMessage(MESSAGE_TYPE.MOVES).then(() => {
+        turnEndedBeforeSecondMove = true;
+    });
     // The second player's move ends the game, so the server drops the first player's move of the same turn.
     secondPlayer.sendMove(lastDirection, previousGame.gameId);
     await secondPlayer.sync();
@@ -280,14 +309,14 @@ test('EC28 BV10 a move for the previous game has no effect on the new game', asy
         turnEndedBeforeSecondMove: actualTurnEndedBeforeSecondMove,
         endingTurn: actualEndingTurn,
         newGameId: currentGame.gameId,
-        newGameTurn: await newGameTurn
+        newGameTurn: await newGameTurn,
     };
 
     // Assert
     expect(actual).toEqual(expected);
 });
 
-test('EC28 BV10 a move for the previous game has no effect after a disconnect ends the game', async () => {
+test("EC28 BV10 a move for the previous game has no effect after a disconnect ends the game", async () => {
     // Arrange
     const movingPlayer = await connectPlayer();
     const previousGame = movingPlayer.game;
@@ -296,7 +325,7 @@ test('EC28 BV10 a move for the previous game has no effect after a disconnect en
     const expected = {
         endingTurn: [lastDirection],
         newGameId: previousGame.gameId + 1,
-        newGameTurn: [DIRECTION.LEFT]
+        newGameTurn: [DIRECTION.LEFT],
     };
 
     // Act
@@ -316,14 +345,14 @@ test('EC28 BV10 a move for the previous game has no effect after a disconnect en
     const actual = {
         endingTurn: actualEndingTurn,
         newGameId: currentGame.gameId,
-        newGameTurn: await newGameTurn
+        newGameTurn: await newGameTurn,
     };
 
     // Assert
     expect(actual).toEqual(expected);
 });
 
-test('EC29 BV12 the server ignores a move for a game that has not started yet', async () => {
+test("EC29 BV12 the server ignores a move for a game that has not started yet", async () => {
     // Arrange
     const player = await connectPlayer();
     const expected = [DIRECTION.LEFT];
@@ -338,7 +367,7 @@ test('EC29 BV12 the server ignores a move for a game that has not started yet', 
     expect(actual).toEqual(expected);
 });
 
-test('the first game has the default settings and a map of the default mapSize', async () => {
+test("the first game has the default settings and a map of the default mapSize", async () => {
     // Arrange
     const expected = { settings: DEFAULT_SETTINGS, map: squareMap(DEFAULT_SETTINGS.mapSize) };
 
@@ -350,7 +379,7 @@ test('the first game has the default settings and a map of the default mapSize',
     expect(actual).toEqual(expected);
 });
 
-test('EC33 valid settings start a new game with them for all players', async () => {
+test("EC33 valid settings start a new game with them for all players", async () => {
     // Arrange
     const applyingPlayer = await connectPlayer();
     const otherPlayer = await connectPlayer();
@@ -359,7 +388,7 @@ test('EC33 valid settings start a new game with them for all players', async () 
         gameId: previousGame.gameId + 1,
         settings: CHANGED_SETTINGS,
         map: squareMap(CHANGED_SETTINGS.mapSize),
-        sameGameForBoth: true
+        sameGameForBoth: true,
     };
 
     // Act
@@ -369,14 +398,14 @@ test('EC33 valid settings start a new game with them for all players', async () 
         gameId: game.gameId,
         settings: game.settings,
         map: mapDimensions(game),
-        sameGameForBoth: JSON.stringify(await otherPlayersGame) === JSON.stringify(game)
+        sameGameForBoth: JSON.stringify(await otherPlayersGame) === JSON.stringify(game),
     };
 
     // Assert
     expect(actual).toEqual(expected);
 });
 
-test('EC50 settings equal to the current ones start a new game too', async () => {
+test("EC50 settings equal to the current ones start a new game too", async () => {
     // Arrange
     const player = await connectPlayer();
     const previousGame = player.game;
@@ -390,7 +419,7 @@ test('EC50 settings equal to the current ones start a new game too', async () =>
     expect(actual).toEqual(expected);
 });
 
-test('EC49 settings discard the moves of the turn, so a player who has moved can move again in the new game', async () => {
+test("EC49 settings discard the moves of the turn, so a player who has moved can move again in the new game", async () => {
     // Arrange
     const applyingPlayer = await connectPlayer();
     const otherPlayer = await connectPlayer();
@@ -410,7 +439,7 @@ test('EC49 settings discard the moves of the turn, so a player who has moved can
     expect(actual).toEqual(expected);
 });
 
-test('a player who connects receives the running game with the current settings', async () => {
+test("a player who connects receives the running game with the current settings", async () => {
     // Arrange
     const applyingPlayer = await connectPlayer();
     const game = await applySettings(applyingPlayer, CHANGED_SETTINGS);
@@ -425,12 +454,16 @@ test('a player who connects receives the running game with the current settings'
     expect(actual).toEqual(expected);
 });
 
-test('the next game after a finished one keeps the settings', async () => {
+test("the next game after a finished one keeps the settings", async () => {
     // Arrange
     const player = await connectPlayer();
     const previousGame = await applySettings(player, CHANGED_SETTINGS);
     const lastDirection = await walkToLastStep(player);
-    const expected = { gameId: previousGame.gameId + 1, settings: CHANGED_SETTINGS, map: squareMap(CHANGED_SETTINGS.mapSize) };
+    const expected = {
+        gameId: previousGame.gameId + 1,
+        settings: CHANGED_SETTINGS,
+        map: squareMap(CHANGED_SETTINGS.mapSize),
+    };
 
     // Act
     const newGame = player.nextMessage(MESSAGE_TYPE.GAME);
@@ -442,13 +475,17 @@ test('the next game after a finished one keeps the settings', async () => {
     expect(actual).toEqual(expected);
 });
 
-test('a new game after all players disconnect and one connects keeps the settings', async () => {
+test("a new game after all players disconnect and one connects keeps the settings", async () => {
     // Arrange
     const leavingPlayer = await connectPlayer();
     const previousGame = await applySettings(leavingPlayer, CHANGED_SETTINGS);
     leavingPlayer.close();
     await vi.waitFor(() => expect(server.clients.size).toBe(0));
-    const expected = { gameId: previousGame.gameId + 1, settings: CHANGED_SETTINGS, map: squareMap(CHANGED_SETTINGS.mapSize) };
+    const expected = {
+        gameId: previousGame.gameId + 1,
+        settings: CHANGED_SETTINGS,
+        map: squareMap(CHANGED_SETTINGS.mapSize),
+    };
 
     // Act
     const player = await connectPlayer();
@@ -461,88 +498,122 @@ test('a new game after all players disconnect and one connects keeps the setting
 // Each case changes one representative of a rejected class in otherwise valid settings. JSON leaves out a field whose
 // value is undefined.
 test.each([
-    { id: 'EC35', name: 'an extra top-level field', message: { type: MESSAGE_TYPE.SETTINGS, clearData: CHANGED_SETTINGS, extra: 7 } },
-    { id: 'EC37', name: 'no clearData', message: { type: MESSAGE_TYPE.SETTINGS } },
-    { id: 'EC40', name: 'a missing field', message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, timeLimit: undefined } } },
-    { id: 'EC41', name: 'an unknown field', message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, extra: 7 } } },
-    { id: 'EC44', name: 'a fractional number', message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, mapSize: 5.5 } } },
-    { id: 'EC45', name: 'a number as a string', message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, mapSize: '5' } } },
-    { id: 'EC47', name: 'an unknown string', message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, actors: 'dog' } } },
-    { id: 'BV16', name: 'mapSize above the maximum', message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, mapSize: 21 } } }
-])('$id the server rejects settings with $name, closes the connection and the game continues for the others', async testCase => {
-    // Arrange
-    const player = await connectPlayer();
-    const rejectedPlayer = await connectPlayer();
-    const game = player.game;
-    const expected = {
-        close: { code: CLOSE.INVALID_MESSAGE.CODE, reason: CLOSE.INVALID_MESSAGE.REASON },
-        game: game,
-        turn: [DIRECTION.UP]
-    };
+    {
+        id: "EC35",
+        name: "an extra top-level field",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: CHANGED_SETTINGS, extra: 7 },
+    },
+    { id: "EC37", name: "no clearData", message: { type: MESSAGE_TYPE.SETTINGS } },
+    {
+        id: "EC40",
+        name: "a missing field",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, timeLimit: undefined } },
+    },
+    {
+        id: "EC41",
+        name: "an unknown field",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, extra: 7 } },
+    },
+    {
+        id: "EC44",
+        name: "a fractional number",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, mapSize: 5.5 } },
+    },
+    {
+        id: "EC45",
+        name: "a number as a string",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, mapSize: "5" } },
+    },
+    {
+        id: "EC47",
+        name: "an unknown string",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, actors: "dog" } },
+    },
+    {
+        id: "BV16",
+        name: "mapSize above the maximum",
+        message: { type: MESSAGE_TYPE.SETTINGS, clearData: { ...CHANGED_SETTINGS, mapSize: 21 } },
+    },
+])(
+    "$id the server rejects settings with $name, closes the connection and the game continues for the others",
+    async testCase => {
+        // Arrange
+        const player = await connectPlayer();
+        const rejectedPlayer = await connectPlayer();
+        const game = player.game;
+        const expected = {
+            close: { code: CLOSE.INVALID_MESSAGE.CODE, reason: CLOSE.INVALID_MESSAGE.REASON },
+            game: game,
+            turn: [DIRECTION.UP],
+        };
 
-    // Act
-    const closed = rejectedPlayer.nextClose();
-    rejectedPlayer.sendMessage(testCase.message);
-    const actualClose = await closed;
-    const turn = player.nextMessage(MESSAGE_TYPE.MOVES);
-    player.sendMove(DIRECTION.UP);
-    const actual = { close: actualClose, game: player.game, turn: await turn };
+        // Act
+        const closed = rejectedPlayer.nextClose();
+        rejectedPlayer.sendMessage(testCase.message);
+        const actualClose = await closed;
+        const turn = player.nextMessage(MESSAGE_TYPE.MOVES);
+        player.sendMove(DIRECTION.UP);
+        const actual = { close: actualClose, game: player.game, turn: await turn };
 
-    // Assert
-    expect(actual).toEqual(expected);
-});
+        // Assert
+        expect(actual).toEqual(expected);
+    },
+);
 
 // The applying player moves first; its settings and the other player's move then arrive in either order.
 test.each([
-    { id: 'EC51', order: 'the settings before the other move' },
-    { id: 'EC52', order: 'the other move before the settings' }
-])('$id with $order, all players end with the same new game that no move of the previous game affects', async testCase => {
-    // Arrange
-    const applyingPlayer = await connectPlayer();
-    const otherPlayer = await connectPlayer();
-    const previousGame = applyingPlayer.game;
-    const expected = {
-        sameGameForBoth: true,
-        settings: CHANGED_SETTINGS,
-        map: squareMap(CHANGED_SETTINGS.mapSize),
-        typesSinceNewGame: [[], []],
-        newGameTurn: [DIRECTION.DOWN, DIRECTION.RIGHT]
-    };
+    { id: "EC51", order: "the settings before the other move" },
+    { id: "EC52", order: "the other move before the settings" },
+])(
+    "$id with $order, all players end with the same new game that no move of the previous game affects",
+    async testCase => {
+        // Arrange
+        const applyingPlayer = await connectPlayer();
+        const otherPlayer = await connectPlayer();
+        const previousGame = applyingPlayer.game;
+        const expected = {
+            sameGameForBoth: true,
+            settings: CHANGED_SETTINGS,
+            map: squareMap(CHANGED_SETTINGS.mapSize),
+            typesSinceNewGame: [[], []],
+            newGameTurn: [DIRECTION.DOWN, DIRECTION.RIGHT],
+        };
 
-    // Act
-    applyingPlayer.sendMove(DIRECTION.UP);
-    await applyingPlayer.sync();
-    if (testCase.id === 'EC51') {
-        applyingPlayer.sendSettings(CHANGED_SETTINGS);
+        // Act
+        applyingPlayer.sendMove(DIRECTION.UP);
         await applyingPlayer.sync();
-        // The other player sent its move before the new game reached it.
-        otherPlayer.sendMove(DIRECTION.LEFT, previousGame.gameId);
+        if (testCase.id === "EC51") {
+            applyingPlayer.sendSettings(CHANGED_SETTINGS);
+            await applyingPlayer.sync();
+            // The other player sent its move before the new game reached it.
+            otherPlayer.sendMove(DIRECTION.LEFT, previousGame.gameId);
+            await otherPlayer.sync();
+        } else {
+            otherPlayer.sendMove(DIRECTION.LEFT, previousGame.gameId);
+            await otherPlayer.sync();
+            applyingPlayer.sendSettings(CHANGED_SETTINGS);
+            await applyingPlayer.sync();
+        }
         await otherPlayer.sync();
-    } else {
-        otherPlayer.sendMove(DIRECTION.LEFT, previousGame.gameId);
-        await otherPlayer.sync();
-        applyingPlayer.sendSettings(CHANGED_SETTINGS);
-        await applyingPlayer.sync();
-    }
-    await otherPlayer.sync();
-    const game = applyingPlayer.game;
-    const actualTypesSinceNewGame = [applyingPlayer.typesSinceLastGame(), otherPlayer.typesSinceLastGame()];
-    const newGameTurn = applyingPlayer.nextMessage(MESSAGE_TYPE.MOVES);
-    applyingPlayer.sendMove(DIRECTION.RIGHT);
-    otherPlayer.sendMove(DIRECTION.DOWN);
-    const actual = {
-        sameGameForBoth: JSON.stringify(otherPlayer.game) === JSON.stringify(game),
-        settings: game.settings,
-        map: mapDimensions(game),
-        typesSinceNewGame: actualTypesSinceNewGame,
-        newGameTurn: (await newGameTurn).toSorted()
-    };
+        const game = applyingPlayer.game;
+        const actualTypesSinceNewGame = [applyingPlayer.typesSinceLastGame(), otherPlayer.typesSinceLastGame()];
+        const newGameTurn = applyingPlayer.nextMessage(MESSAGE_TYPE.MOVES);
+        applyingPlayer.sendMove(DIRECTION.RIGHT);
+        otherPlayer.sendMove(DIRECTION.DOWN);
+        const actual = {
+            sameGameForBoth: JSON.stringify(otherPlayer.game) === JSON.stringify(game),
+            settings: game.settings,
+            map: mapDimensions(game),
+            typesSinceNewGame: actualTypesSinceNewGame,
+            newGameTurn: (await newGameTurn).toSorted(),
+        };
 
-    // Assert
-    expect(actual).toEqual(expected);
-});
+        // Assert
+        expect(actual).toEqual(expected);
+    },
+);
 
-test('EC53 of several settings, the server applies the ones it receives last', async () => {
+test("EC53 of several settings, the server applies the ones it receives last", async () => {
     // Arrange
     const firstPlayer = await connectPlayer();
     const secondPlayer = await connectPlayer();
@@ -556,7 +627,7 @@ test('EC53 of several settings, the server applies the ones it receives last', a
     await firstPlayer.sync();
     const actual = {
         settings: [firstPlayer.game.settings, secondPlayer.game.settings],
-        sameGameForBoth: JSON.stringify(firstPlayer.game) === JSON.stringify(secondPlayer.game)
+        sameGameForBoth: JSON.stringify(firstPlayer.game) === JSON.stringify(secondPlayer.game),
     };
 
     // Assert

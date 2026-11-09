@@ -1,8 +1,8 @@
-import WebSocket from 'ws';
-import { createRequire } from 'node:module';
+import WebSocket from "ws";
+import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { MESSAGE_TYPE } = require('../../shared/protocol.json');
+const { MESSAGE_TYPE } = require("../../shared/protocol.json");
 
 /**
  * A player connected to the game server, which sends client messages and waits for server messages.
@@ -15,8 +15,8 @@ export default class GameClient {
         const client = new GameClient(new WebSocket(`ws://localhost:${port}`));
         const game = client.nextMessage(MESSAGE_TYPE.GAME);
         await new Promise((resolve, reject) => {
-            client.socket.once('open', resolve);
-            client.socket.once('error', reject);
+            client.socket.once("open", resolve);
+            client.socket.once("error", reject);
         });
         await game;
         return client;
@@ -28,7 +28,7 @@ export default class GameClient {
         this.waiting = [];
         this.receivedTypes = [];
         // The game is updated before the promises of nextMessage resolve.
-        this.socket.on('message', data => {
+        this.socket.on("message", data => {
             const message = JSON.parse(data);
             this.receivedTypes.push(message.type);
             if (message.type === MESSAGE_TYPE.GAME) {
@@ -85,7 +85,7 @@ export default class GameClient {
      */
     sync() {
         return new Promise(resolve => {
-            this.socket.once('pong', () => resolve());
+            this.socket.once("pong", () => resolve());
             this.socket.ping();
         });
     }
@@ -95,7 +95,9 @@ export default class GameClient {
      * @returns A promise of the close code and the reason the server sent.
      */
     nextClose() {
-        return new Promise(resolve => this.socket.once('close', (code, reason) => resolve({ code: code, reason: reason.toString() })));
+        return new Promise(resolve =>
+            this.socket.once("close", (code, reason) => resolve({ code: code, reason: reason.toString() })),
+        );
     }
 
     /**

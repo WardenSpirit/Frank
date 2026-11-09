@@ -1,6 +1,6 @@
-import protocol from '../../../shared/protocol.json' with { type: 'json' };
-import viewParams from '../viewParams.json' with { type: 'json' };
-import * as images from '../images.js';
+import protocol from "../../../shared/protocol.json" with { type: "json" };
+import viewParams from "../viewParams.json" with { type: "json" };
+import * as images from "../images.js";
 
 const { DIRECTION } = protocol;
 
@@ -14,14 +14,14 @@ const IMAGE = await images.getImage("HERO");
 const HERO_COUNT = IMAGE.width / viewParams.sourceTileSize;
 
 const HERO_ANIMATION_INTERVAL = 300;
-let lastChangeTime = - HERO_ANIMATION_INTERVAL;
+let lastChangeTime = -HERO_ANIMATION_INTERVAL;
 let lastSourceOrigin = { x: 0, y: 0 };
 
 export function calculateHeroSourceOrigin(heroState, currentTime) {
     let x = lastSourceOrigin.x;
     let y;
     if (currentTime - lastChangeTime > HERO_ANIMATION_INTERVAL) {
-        lastChangeTime = currentTime - currentTime % HERO_ANIMATION_INTERVAL;
+        lastChangeTime = currentTime - (currentTime % HERO_ANIMATION_INTERVAL);
         x = (x + viewParams.sourceTileSize) % (HERO_COUNT * viewParams.sourceTileSize);
     }
     switch (heroState) {
@@ -37,7 +37,7 @@ export function calculateHeroSourceOrigin(heroState, currentTime) {
         case DIRECTION.LEFT:
             y = WALK_LEFT_LINE;
             break;
-        default:        //case "STANDING":
+        default: //case "STANDING":
             y = STANDING_LINE;
             break;
     }

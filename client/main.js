@@ -15,5 +15,5 @@ connection.connect({
             controls.allowTurn();
         }
     },
-    onPlayers: players => model.setPlayers(players)
+    onPlayers: players => model.setPlayers(players),
 });

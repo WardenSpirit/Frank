@@ -1,6 +1,6 @@
 # Unit and integration tests
 
-Run `npm ci` and `npm test` from the repository root with Node.js 22.x (22.12 or newer), 24.x, or 26 or newer. Tests use Vitest. Cases use deterministic inputs and create their own game or factory where needed. Integration tests in `websocket.test.js` start the WebSocket server on a free port and connect real clients to it.
+Run `npm ci` and `npm test` from the repository root with Node.js 22.x (22.13 or newer), 24.x, or 26 or newer. Tests use Vitest. Cases use deterministic inputs and create their own game or factory where needed. Integration tests in `websocket.test.js` start the WebSocket server on a free port and connect real clients to it.
 
 ## Cases and inputs
 

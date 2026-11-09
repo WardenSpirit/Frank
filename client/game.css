@@ -4,9 +4,10 @@
     padding: 0;
 }
 
-html,body {
+html,
+body {
     overscroll-behavior-y: contain;
-    background-color: #5D5650;
+    background-color: #5d5650;
 }
 
 div.page {
@@ -14,10 +15,10 @@ div.page {
 }
 
 canvas {
-  image-rendering: pixelated;
+    image-rendering: pixelated;
 }
 
-div>canvas.main {
+div > canvas.main {
     width: 100vw;
     height: 100vw;
     max-width: 100vh;
@@ -27,7 +28,7 @@ div>canvas.main {
     left: 0;
 }
 
-div>canvas.table {
+div > canvas.table {
     width: 100vw;
     max-width: 100vh;
     max-height: 20vh;

@@ -28,15 +28,7 @@ export function measureBitmapText(text) {
  * @param {number} scaleY
  * @returns {number} Rendered text width.
  */
-export function drawBitmapText(
-    ctx,
-    charImg,
-    text,
-    x,
-    y,
-    scaleX = 1,
-    scaleY = scaleX
-) {
+export function drawBitmapText(ctx, charImg, text, x, y, scaleX = 1, scaleY = scaleX) {
     let currentX = x;
 
     for (const character of text.toLowerCase()) {
@@ -58,7 +50,7 @@ export function drawBitmapText(
             currentX,
             y,
             width * scaleX,
-            charImg.height * scaleY
+            charImg.height * scaleY,
         );
 
         currentX += width * scaleX;

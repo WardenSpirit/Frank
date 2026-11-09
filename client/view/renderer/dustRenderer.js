@@ -1,8 +1,7 @@
-import viewParams from '../viewParams.json' with { type: 'json' };
-import * as dustParser from '../parser/dustParser.js';
-import * as drawingContext from './drawingContext.js'
-import * as images from '../images.js';
-
+import viewParams from "../viewParams.json" with { type: "json" };
+import * as dustParser from "../parser/dustParser.js";
+import * as drawingContext from "./drawingContext.js";
+import * as images from "../images.js";
 
 /**
  * Parameters, which are used for drawing the hero.
@@ -76,7 +75,12 @@ function updateDusts(currentTime) {
 
 function clearDust(dust) {
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
-    drawingContext.objectContext.clearRect(targetOrigin.x, targetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
+    drawingContext.objectContext.clearRect(
+        targetOrigin.x,
+        targetOrigin.y,
+        drawingContext.SQUARE.width,
+        drawingContext.SQUARE.height,
+    );
 }
 
 async function drawDust(i) {
@@ -88,5 +92,15 @@ async function drawDust(i) {
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
     const IMAGE = await images.getImage("DUST");
-    drawingContext.objectContext.drawImage(IMAGE, sourceOrigin.x, sourceOrigin.y, viewParams.sourceTileSize, viewParams.sourceTileSize, targetOrigin.x, targetOrigin.y, drawingContext.SQUARE.width, drawingContext.SQUARE.height);
+    drawingContext.objectContext.drawImage(
+        IMAGE,
+        sourceOrigin.x,
+        sourceOrigin.y,
+        viewParams.sourceTileSize,
+        viewParams.sourceTileSize,
+        targetOrigin.x,
+        targetOrigin.y,
+        drawingContext.SQUARE.width,
+        drawingContext.SQUARE.height,
+    );
 }

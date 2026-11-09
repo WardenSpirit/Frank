@@ -1,28 +1,35 @@
 {
-  "name": "server",
-  "version": "2.0.1",
-  "description": "A game based on limited communication",
-  "main": "index.js",
-  "engines": {
-    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
-  },
-  "scripts": {
-    "start": "node .",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:report": "vitest run --reporter=default --reporter=junit --outputFile=.vitest/junit.xml",
-    "predeploy": "npm install"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.19.2",
-    "http": "^0.0.1-security",
-    "ws": "^8.18.0"
-  },
-  "devDependencies": {
-    "@vitest/coverage-v8": "5.0.5",
-    "vitest": "5.0.5"
-  }
+    "name": "server",
+    "version": "2.0.1",
+    "description": "A game based on limited communication",
+    "main": "index.js",
+    "engines": {
+        "node": "^22.13.0 || ^24.0.0 || >=26.0.0"
+    },
+    "scripts": {
+        "start": "node .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "eslint .",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:report": "vitest run --reporter=default --reporter=junit --outputFile=.vitest/junit.xml",
+        "predeploy": "npm install"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.19.2",
+        "http": "^0.0.1-security",
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "10.0.1",
+        "@vitest/coverage-v8": "5.0.5",
+        "eslint": "10.14.0",
+        "globals": "17.14.0",
+        "prettier": "3.9.10",
+        "vitest": "5.0.5"
+    }
 }

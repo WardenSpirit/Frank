@@ -1,4 +1,4 @@
-import viewParams from '../viewParams.json' with { type: 'json' };
+import viewParams from "../viewParams.json" with { type: "json" };
 
 /**
  * Canvases and context configuration settings.
@@ -44,18 +44,34 @@ function calculateTargetOrigin(position) {
 }
 
 function calculatePointsTargetOrigin(characterIndex) {
-    return { x: DIGIT_SIZE * (1 + characterIndex), y: DIGIT_SIZE};
+    return { x: DIGIT_SIZE * (1 + characterIndex), y: DIGIT_SIZE };
 }
 
 function calculatePlayersTargetOrigin(characterIndex, digitsNumber) {
-    return { x: stateCanvas.width + DIGIT_SIZE * (-1 - digitsNumber + characterIndex), y: DIGIT_SIZE};
+    return { x: stateCanvas.width + DIGIT_SIZE * (-1 - digitsNumber + characterIndex), y: DIGIT_SIZE };
 }
 
 function calculateInfoTextTargetOrigin(infoTextWidth, infoTextHeight) {
-    return { x: (stateCanvas.width - infoTextWidth) / 2,
-        y: (stateCanvas.height - infoTextHeight) / 2};
+    return { x: (stateCanvas.width - infoTextWidth) / 2, y: (stateCanvas.height - infoTextHeight) / 2 };
 }
 
-export {initSquareProportions, mapCanvas, objectCanvas, filterCanvas, stateCanvas, settingsCanvas,
-    mapContext, objectContext, filterContext, tableContext, stateContext, settingsContext, SQUARE, DIGIT_SIZE,
-    calculateTargetOrigin, calculatePointsTargetOrigin, calculatePlayersTargetOrigin, calculateInfoTextTargetOrigin}
+export {
+    initSquareProportions,
+    mapCanvas,
+    objectCanvas,
+    filterCanvas,
+    stateCanvas,
+    settingsCanvas,
+    mapContext,
+    objectContext,
+    filterContext,
+    tableContext,
+    stateContext,
+    settingsContext,
+    SQUARE,
+    DIGIT_SIZE,
+    calculateTargetOrigin,
+    calculatePointsTargetOrigin,
+    calculatePlayersTargetOrigin,
+    calculateInfoTextTargetOrigin,
+};

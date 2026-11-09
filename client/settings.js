@@ -1,13 +1,9 @@
-import settingsSchema from '../shared/settings.json' with { type: 'json' };
-import { SETTING_FIELDS, getDefaultSettings } from '../shared/settings.js';
+import settingsSchema from "../shared/settings.json" with { type: "json" };
+import { SETTING_FIELDS, getDefaultSettings } from "../shared/settings.js";
 
 export { SETTING_FIELDS, getDefaultSettings };
 
-export const FORM_ITEMS = [
-    ...SETTING_FIELDS,
-    'APPLY',
-    'CLOSE'
-];
+export const FORM_ITEMS = [...SETTING_FIELDS, "APPLY", "CLOSE"];
 
 // The settings of the last game; null until the first game comes and once the connection closes.
 let activeSettings = null;
@@ -29,7 +25,7 @@ let highlightedIndex = 0;
 export function changeSettingValue(field, currentValue, step) {
     const config = settingsSchema[field];
 
-    if (config.type === 'number') {
+    if (config.type === "number") {
         const rangeLength = config.max - config.min + 1;
         const offset = (currentValue - config.min + step + rangeLength) % rangeLength;
         return config.min + offset;
@@ -128,15 +124,9 @@ export function stepHighlightedSetting(step) {
     }
     const currentItem = FORM_ITEMS[highlightedIndex];
     if (SETTING_FIELDS.includes(currentItem)) {
-        editedSettings[currentItem] = changeSettingValue(
-            currentItem,
-            editedSettings[currentItem],
-            step
-        );
-    } else if (currentItem === 'APPLY' || currentItem === 'CLOSE') {
-        highlightedIndex = currentItem === 'APPLY'
-            ? FORM_ITEMS.indexOf('CLOSE')
-            : FORM_ITEMS.indexOf('APPLY');
+        editedSettings[currentItem] = changeSettingValue(currentItem, editedSettings[currentItem], step);
+    } else if (currentItem === "APPLY" || currentItem === "CLOSE") {
+        highlightedIndex = currentItem === "APPLY" ? FORM_ITEMS.indexOf("CLOSE") : FORM_ITEMS.indexOf("APPLY");
     }
 }
 

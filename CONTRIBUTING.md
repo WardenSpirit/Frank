@@ -105,21 +105,24 @@ The author replies to each thread either with the fix or a reason to keep the co
 
 ## Code style and testing
 
-Follow the surrounding style: four-space indentation and semicolons. Avoid reformatting unrelated code.
-
-With Node.js 22.x (22.12 or newer), 24.x, or 26 or newer:
+With Node.js 22.x (22.13 or newer), 24.x, or 26 or newer:
 
 ```sh
-npm ci
-npm test
-npm start
+npm ci                 # install the dependencies
+npm run format         # format the code with Prettier; Markdown is formatted by hand
+npm run format:check   # only list unformatted files
+npm run lint           # check the code with the recommended ESLint rules
+npm test               # run the tests
+npm start              # start the server
 ```
+
+Run `format`, `lint` and `test` before submitting an MR. To keep comments aligned in a column in YAML, put `# prettier-ignore` on the line above the key whose block contains them. Above the first key of a mapping, it excludes the whole mapping, so never put it above the first key of the file; in `.gitlab-ci.yml`, `workflow:` has it above `rules:`. GitLab CI runs these checks in every MR, on `master` after a merge and on release tags before the deployment.
 
 Open [http://localhost:3000/](http://localhost:3000/). Check the changed behavior; for multiplayer changes, also check two tabs, movement, state updates, and disconnecting a player. Record steps and results in the MR.
 
 To test from another device, for example a phone, see [Testing from other devices](README.md#testing-from-other-devices) in the README.
 
-Unit tests use Vitest. Run `npm test` before submitting an MR. Use `npm run test:coverage` for coverage and `npm run test:report` for a JUnit report.
+Unit tests use Vitest. Use `npm run test:coverage` for coverage and `npm run test:report` for a JUnit report.
 
 When adding automated tests:
 

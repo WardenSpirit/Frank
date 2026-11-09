@@ -1,48 +1,44 @@
-import { test, expect, beforeEach, vi } from 'vitest';
-import parametrizedTest, { parseNumber } from './support/parametrizedTest.js';
-import settingsSchema from '../shared/settings.json' with { type: 'json' };
-import { SETTING_FIELDS, changeSettingValue, getDefaultSettings } from '../client/settings.js';
-import { parseSettings } from '../shared/settings.js';
+import { test, expect, beforeEach, vi } from "vitest";
+import parametrizedTest, { parseNumber } from "./support/parametrizedTest.js";
+import settingsSchema from "../shared/settings.json" with { type: "json" };
+import { SETTING_FIELDS, changeSettingValue, getDefaultSettings } from "../client/settings.js";
+import { parseSettings } from "../shared/settings.js";
 
 // A fresh instance of the module for each test, so the form state of one test doesn't leak into the next.
 let settings;
 
 function parseSettingValue(field, rawValue) {
-    return settingsSchema[field].type === 'number' ? parseNumber(rawValue) : rawValue;
+    return settingsSchema[field].type === "number" ? parseNumber(rawValue) : rawValue;
 }
 
 function allValidValues(config) {
-    return config.type === 'number'
+    return config.type === "number"
         ? Array.from({ length: config.max - config.min + 1 }, (_, offset) => config.min + offset)
         : config.values;
 }
 
 beforeEach(async () => {
     vi.resetModules();
-    settings = await import('../client/settings.js');
+    settings = await import("../client/settings.js");
 });
 
 // 32 separate tests for EC/BV; each test name starts with the BV it covers
-parametrizedTest(
-    'changeSettingValue steps and wraps within field bounds',
-    'settings-values.csv',
-    testCase => {
-        // Arrange
-        const field = testCase.field;
-        const currentValue = parseSettingValue(field, testCase.currentValue);
-        const step = parseNumber(testCase.step);
-        const expectedValue = parseSettingValue(field, testCase.expectedValue);
+parametrizedTest("changeSettingValue steps and wraps within field bounds", "settings-values.csv", testCase => {
+    // Arrange
+    const field = testCase.field;
+    const currentValue = parseSettingValue(field, testCase.currentValue);
+    const step = parseNumber(testCase.step);
+    const expectedValue = parseSettingValue(field, testCase.expectedValue);
 
-        // Act
-        const actualValue = changeSettingValue(field, currentValue, step);
+    // Act
+    const actualValue = changeSettingValue(field, currentValue, step);
 
-        // Assert
-        expect(actualValue).toBe(expectedValue);
-    }
-);
+    // Assert
+    expect(actualValue).toBe(expectedValue);
+});
 
 // changeSettingValue doesn't check its arguments, so every value it can return from a valid one must pass the server.
-test.each(SETTING_FIELDS)('changeSettingValue returns only values the server accepts for %s', field => {
+test.each(SETTING_FIELDS)("changeSettingValue returns only values the server accepts for %s", field => {
     // Arrange
     const steps = [-1, 1];
     const expectedRejected = [];
@@ -50,14 +46,18 @@ test.each(SETTING_FIELDS)('changeSettingValue returns only values the server acc
     // Act
     const actualRejected = allValidValues(settingsSchema[field])
         .flatMap(currentValue => steps.map(step => ({ currentValue, step })))
-        .map(({ currentValue, step }) => ({ currentValue, step, newValue: changeSettingValue(field, currentValue, step) }))
+        .map(({ currentValue, step }) => ({
+            currentValue,
+            step,
+            newValue: changeSettingValue(field, currentValue, step),
+        }))
         .filter(({ newValue }) => parseSettings({ ...getDefaultSettings(), [field]: newValue }) === null);
 
     // Assert
     expect(actualRejected).toEqual(expectedRejected);
 });
 
-test('submitSettingsForm returns the edited settings with all fields when values changed', () => {
+test("submitSettingsForm returns the edited settings with all fields when values changed", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
@@ -65,10 +65,10 @@ test('submitSettingsForm returns the edited settings with all fields when values
     const expectedSubmitted = {
         mapSize: 14,
         holeRatio: 33,
-        actors: 'cat',
-        tiles: 'volcano',
+        actors: "cat",
+        tiles: "volcano",
         maxPlayers: 10,
-        timeLimit: 60
+        timeLimit: 60,
     };
     const expectedFields = Object.keys(settingsSchema).toSorted();
 
@@ -83,7 +83,7 @@ test('submitSettingsForm returns the edited settings with all fields when values
     expect(actualOpen).toBe(false);
 });
 
-test('openSettingsForm opens with the default settings before the first game comes', () => {
+test("openSettingsForm opens with the default settings before the first game comes", () => {
     // Arrange
     const expectedEdited = getDefaultSettings();
 
@@ -95,7 +95,7 @@ test('openSettingsForm opens with the default settings before the first game com
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('submitSettingsForm returns null before the first game comes', () => {
+test("submitSettingsForm returns null before the first game comes", () => {
     // Arrange
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
@@ -109,13 +109,13 @@ test('submitSettingsForm returns null before the first game comes', () => {
     expect(actualOpen).toBe(false);
 });
 
-test('openSettingsForm opens with the pending settings until a game with other settings comes', () => {
+test("openSettingsForm opens with the pending settings until a game with other settings comes", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
     settings.submitSettingsForm();
-    const expectedEdited = { ...getDefaultSettings(), actors: 'cat' };
+    const expectedEdited = { ...getDefaultSettings(), actors: "cat" };
 
     // Act
     settings.openSettingsForm();
@@ -125,7 +125,7 @@ test('openSettingsForm opens with the pending settings until a game with other s
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('submitSettingsForm returns null when the pending settings are applied again', () => {
+test("submitSettingsForm returns null when the pending settings are applied again", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
@@ -140,7 +140,7 @@ test('submitSettingsForm returns null when the pending settings are applied agai
     expect(actualSubmitted).toBeNull();
 });
 
-test('submitSettingsForm returns an edit back to the active settings while other settings are pending', () => {
+test("submitSettingsForm returns an edit back to the active settings while other settings are pending", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
@@ -157,13 +157,13 @@ test('submitSettingsForm returns an edit back to the active settings while other
     expect(actualSubmitted).toEqual(expectedSubmitted);
 });
 
-test('receiveSettings drops the pending settings when a game with other settings comes', () => {
+test("receiveSettings drops the pending settings when a game with other settings comes", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
     settings.submitSettingsForm();
-    const appliedSettings = { ...getDefaultSettings(), tiles: 'garden' };
+    const appliedSettings = { ...getDefaultSettings(), tiles: "garden" };
     const expectedEdited = appliedSettings;
 
     // Act
@@ -175,13 +175,13 @@ test('receiveSettings drops the pending settings when a game with other settings
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('receiveSettings keeps the pending settings when a game with the same settings comes', () => {
+test("receiveSettings keeps the pending settings when a game with the same settings comes", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
     settings.submitSettingsForm();
-    const expectedEdited = { ...getDefaultSettings(), actors: 'cat' };
+    const expectedEdited = { ...getDefaultSettings(), actors: "cat" };
 
     // Act
     settings.receiveSettings(getDefaultSettings());
@@ -192,9 +192,9 @@ test('receiveSettings keeps the pending settings when a game with the same setti
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('dropSettings makes the form open with the default settings and submit nothing', () => {
+test("dropSettings makes the form open with the default settings and submit nothing", () => {
     // Arrange
-    settings.receiveSettings({ ...getDefaultSettings(), tiles: 'garden' });
+    settings.receiveSettings({ ...getDefaultSettings(), tiles: "garden" });
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
     settings.submitSettingsForm();
@@ -212,7 +212,7 @@ test('dropSettings makes the form open with the default settings and submit noth
     expect(actualSubmitted).toBeNull();
 });
 
-test('submitSettingsForm returns null when values are unchanged', () => {
+test("submitSettingsForm returns null when values are unchanged", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
@@ -226,9 +226,9 @@ test('submitSettingsForm returns null when values are unchanged', () => {
     expect(actualOpen).toBe(false);
 });
 
-test('submitSettingsForm judges changes against the settings of the last game', () => {
+test("submitSettingsForm judges changes against the settings of the last game", () => {
     // Arrange
-    settings.receiveSettings({ ...getDefaultSettings(), actors: 'cat' });
+    settings.receiveSettings({ ...getDefaultSettings(), actors: "cat" });
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake', the default
     const expectedSubmitted = getDefaultSettings();
@@ -240,12 +240,12 @@ test('submitSettingsForm judges changes against the settings of the last game', 
     expect(actualSubmitted).toEqual(expectedSubmitted);
 });
 
-test('submitSettingsForm returns null when an edit equals the settings another player applied meanwhile', () => {
+test("submitSettingsForm returns null when an edit equals the settings another player applied meanwhile", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
-    settings.receiveSettings({ ...getDefaultSettings(), actors: 'cat' });
+    settings.receiveSettings({ ...getDefaultSettings(), actors: "cat" });
 
     // Act
     const actualSubmitted = settings.submitSettingsForm();
@@ -254,13 +254,13 @@ test('submitSettingsForm returns null when an edit equals the settings another p
     expect(actualSubmitted).toBeNull();
 });
 
-test('receiveSettings keeps the edits in an open form', () => {
+test("receiveSettings keeps the edits in an open form", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.setHighlightedItem('mapSize');
+    settings.setHighlightedItem("mapSize");
     settings.stepHighlightedSetting(1); // edited mapSize = 15
-    const appliedSettings = { ...getDefaultSettings(), tiles: 'garden' };
+    const appliedSettings = { ...getDefaultSettings(), tiles: "garden" };
     const expectedEdited = { ...getDefaultSettings(), mapSize: 15 };
     const expectedSubmitted = expectedEdited;
 
@@ -275,13 +275,13 @@ test('receiveSettings keeps the edits in an open form', () => {
 });
 
 // The form opened before the first game starts from the defaults of the client, which must have every server field.
-test('submitSettingsForm returns settings the server accepts after edits begun before the first game', () => {
+test("submitSettingsForm returns settings the server accepts after edits begun before the first game", () => {
     // Arrange
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
     settings.receiveSettings(getDefaultSettings());
     const submitted = settings.submitSettingsForm();
-    const expectedParsed = { ...getDefaultSettings(), actors: 'cat' };
+    const expectedParsed = { ...getDefaultSettings(), actors: "cat" };
 
     // Act
     const actualParsed = parseSettings(submitted);
@@ -290,7 +290,7 @@ test('submitSettingsForm returns settings the server accepts after edits begun b
     expect(actualParsed).toEqual(expectedParsed);
 });
 
-test('receiveSettings makes a closed form open with the new settings', () => {
+test("receiveSettings makes a closed form open with the new settings", () => {
     // Arrange
     const appliedSettings = { ...getDefaultSettings(), mapSize: 5, holeRatio: 0, timeLimit: 120 };
     const expectedEdited = appliedSettings;
@@ -304,12 +304,12 @@ test('receiveSettings makes a closed form open with the new settings', () => {
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('closeSettingsForm discards edits against the settings of the last game', () => {
+test("closeSettingsForm discards edits against the settings of the last game", () => {
     // Arrange
     const appliedSettings = { ...getDefaultSettings(), maxPlayers: 3 };
     settings.receiveSettings(appliedSettings);
     settings.openSettingsForm();
-    settings.setHighlightedItem('maxPlayers');
+    settings.setHighlightedItem("maxPlayers");
     settings.stepHighlightedSetting(1); // edited maxPlayers = 4
     const expectedEdited = appliedSettings;
 
@@ -322,16 +322,16 @@ test('closeSettingsForm discards edits against the settings of the last game', (
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('closeSettingsForm discards edits against the pending settings', () => {
+test("closeSettingsForm discards edits against the pending settings", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
     settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
     settings.submitSettingsForm();
     settings.openSettingsForm();
-    settings.setHighlightedItem('mapSize');
+    settings.setHighlightedItem("mapSize");
     settings.stepHighlightedSetting(1); // edited mapSize = 15
-    const expectedEdited = { ...getDefaultSettings(), actors: 'cat' };
+    const expectedEdited = { ...getDefaultSettings(), actors: "cat" };
 
     // Act
     settings.closeSettingsForm();
@@ -342,15 +342,15 @@ test('closeSettingsForm discards edits against the pending settings', () => {
     expect(actualEdited).toEqual(expectedEdited);
 });
 
-test('getDefaultSettings returns all configured default values', () => {
+test("getDefaultSettings returns all configured default values", () => {
     // Arrange
     const expectedDefaults = {
         mapSize: 14,
         holeRatio: 33,
-        actors: 'snake',
-        tiles: 'volcano',
+        actors: "snake",
+        tiles: "volcano",
         maxPlayers: 10,
-        timeLimit: 60
+        timeLimit: 60,
     };
 
     // Act
@@ -360,7 +360,7 @@ test('getDefaultSettings returns all configured default values', () => {
     expect(actualDefaults).toEqual(expectedDefaults);
 });
 
-test('getDefaultSettings returns settings the server accepts', () => {
+test("getDefaultSettings returns settings the server accepts", () => {
     // Arrange
     const expectedParsed = getDefaultSettings();
 
@@ -371,7 +371,7 @@ test('getDefaultSettings returns settings the server accepts', () => {
     expect(actualParsed).toEqual(expectedParsed);
 });
 
-test('toggleSettingsForm opens and closes the form', () => {
+test("toggleSettingsForm opens and closes the form", () => {
     // Act
     const actualOpenedResult = settings.toggleSettingsForm();
     const actualOpenAfterOpening = settings.isSettingsOpen();
@@ -385,10 +385,10 @@ test('toggleSettingsForm opens and closes the form', () => {
     expect(actualOpenAfterClosing).toBe(false);
 });
 
-test('moveHighlight wraps from the first item to the last item', () => {
+test("moveHighlight wraps from the first item to the last item", () => {
     // Arrange
     settings.openSettingsForm(); // highlights the first item, 'actors'
-    const expectedItem = 'CLOSE';
+    const expectedItem = "CLOSE";
 
     // Act
     settings.moveHighlight(-1);
@@ -398,11 +398,11 @@ test('moveHighlight wraps from the first item to the last item', () => {
     expect(actualItem).toBe(expectedItem);
 });
 
-test('moveHighlight wraps from the last item to the first item', () => {
+test("moveHighlight wraps from the last item to the first item", () => {
     // Arrange
     settings.openSettingsForm();
-    settings.setHighlightedItem('CLOSE');
-    const expectedItem = 'actors';
+    settings.setHighlightedItem("CLOSE");
+    const expectedItem = "actors";
 
     // Act
     settings.moveHighlight(1);
@@ -412,7 +412,7 @@ test('moveHighlight wraps from the last item to the first item', () => {
     expect(actualItem).toBe(expectedItem);
 });
 
-test('moveHighlight does nothing when the form is closed', () => {
+test("moveHighlight does nothing when the form is closed", () => {
     // Arrange
     const expectedIndex = settings.getHighlightedIndex();
 
@@ -425,33 +425,33 @@ test('moveHighlight does nothing when the form is closed', () => {
     expect(actualIndex).toBe(expectedIndex);
 });
 
-test('setHighlightedItem selects a valid form item', () => {
+test("setHighlightedItem selects a valid form item", () => {
     // Arrange
     settings.openSettingsForm();
-    const expectedItem = 'mapSize';
+    const expectedItem = "mapSize";
 
     // Act
-    settings.setHighlightedItem('mapSize');
+    settings.setHighlightedItem("mapSize");
     const actualItem = settings.getHighlightedItem();
 
     // Assert
     expect(actualItem).toBe(expectedItem);
 });
 
-test('setHighlightedItem ignores an unknown item', () => {
+test("setHighlightedItem ignores an unknown item", () => {
     // Arrange
     settings.openSettingsForm();
     const expectedIndex = settings.getHighlightedIndex();
 
     // Act
-    settings.setHighlightedItem('UNKNOWN');
+    settings.setHighlightedItem("UNKNOWN");
     const actualIndex = settings.getHighlightedIndex();
 
     // Assert
     expect(actualIndex).toBe(expectedIndex);
 });
 
-test('stepHighlightedSetting does nothing when the form is closed', () => {
+test("stepHighlightedSetting does nothing when the form is closed", () => {
     // Arrange
     const expectedSettings = settings.getEditedSettings();
 
@@ -463,11 +463,11 @@ test('stepHighlightedSetting does nothing when the form is closed', () => {
     expect(actualSettings).toEqual(expectedSettings);
 });
 
-test('stepHighlightedSetting switches from APPLY to CLOSE', () => {
+test("stepHighlightedSetting switches from APPLY to CLOSE", () => {
     // Arrange
     settings.openSettingsForm();
-    settings.setHighlightedItem('APPLY');
-    const expectedItem = 'CLOSE';
+    settings.setHighlightedItem("APPLY");
+    const expectedItem = "CLOSE";
 
     // Act
     settings.stepHighlightedSetting(1);
@@ -477,11 +477,11 @@ test('stepHighlightedSetting switches from APPLY to CLOSE', () => {
     expect(actualItem).toBe(expectedItem);
 });
 
-test('stepHighlightedSetting switches from CLOSE to APPLY', () => {
+test("stepHighlightedSetting switches from CLOSE to APPLY", () => {
     // Arrange
     settings.openSettingsForm();
-    settings.setHighlightedItem('CLOSE');
-    const expectedItem = 'APPLY';
+    settings.setHighlightedItem("CLOSE");
+    const expectedItem = "APPLY";
 
     // Act
     settings.stepHighlightedSetting(1);
@@ -491,7 +491,7 @@ test('stepHighlightedSetting switches from CLOSE to APPLY', () => {
     expect(actualItem).toBe(expectedItem);
 });
 
-test('openSettingsForm resets the highlight and discards previous edits', () => {
+test("openSettingsForm resets the highlight and discards previous edits", () => {
     // Arrange
     settings.openSettingsForm();
     settings.moveHighlight(2); // highlight 'mapSize'

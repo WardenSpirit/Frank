@@ -1,7 +1,7 @@
-import protocol from '../../../shared/protocol.json' with { type: 'json' };
-import viewParams from '../viewParams.json' with { type: 'json' };
-import * as generalTileParser from './generalTileParser.js';
-import * as images from '../images.js';
+import protocol from "../../../shared/protocol.json" with { type: "json" };
+import viewParams from "../viewParams.json" with { type: "json" };
+import * as generalTileParser from "./generalTileParser.js";
+import * as images from "../images.js";
 
 const { TERRAIN } = protocol;
 
@@ -12,15 +12,16 @@ const IMAGE = await images.getImage("PATH");
 const PATH_COUNT = IMAGE.width / viewParams.sourceTileSize;
 
 /**
- * Returns an Image object for the tile regarding to the passed surrounding terrain.
+ * Returns the origin (x, y in pixels) of a randomly chosen path tile in the PATH image.
  */
-function getPathSource(map, position) {        // surroundings – a 3×3 array should be read around the position – with values 0 and 1 (and 'undefined's at the borders) indicating grass and water tiles around. The middle ([1][1]) is the surrounded tile.
+function getPathSource() {
     let sourceOrigin;
     sourceOrigin = getPathOrigin();
     return sourceOrigin;
 }
 
-function getHoleSource(map, position) {        // surroundings – a 3×3 array should be read around the position – with values 0 and 1 (and 'undefined's at the borders) indicating grass and water tiles around. The middle ([1][1]) is the surrounded tile.
+function getHoleSource(map, position) {
+    // surroundings – a 3×3 array should be read around the position – with values 0 and 1 (and 'undefined's at the borders) indicating grass and water tiles around. The middle ([1][1]) is the surrounded tile.
     let sourceOrigin;
     sourceOrigin = getHoleOrigin(map, position);
     return sourceOrigin;
@@ -51,8 +52,12 @@ function getSurroundings(map, position) {
 }
 
 function getSurrounding(position, shiftX, shiftY, map) {
-    if (position.x + shiftX < 0 || position.x + shiftX >= map.length ||
-        position.y + shiftY < 0 || position.y + shiftY >= map[0].length) {
+    if (
+        position.x + shiftX < 0 ||
+        position.x + shiftX >= map.length ||
+        position.y + shiftY < 0 ||
+        position.y + shiftY >= map[0].length
+    ) {
         return false;
     }
     return map[position.x + shiftX][position.y + shiftY] === TERRAIN.HOLE;

@@ -1,4 +1,4 @@
-import * as generalTileParser from './generalTileParser.js';
+import * as generalTileParser from "./generalTileParser.js";
 
 export function getDigitsOrigins(number) {
     let digits = Array.from(String(number), Number);

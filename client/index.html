@@ -1,32 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Frank</title>
+        <link rel="stylesheet" href="game.css" />
+    </head>
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Frank</title>
-    <link rel="stylesheet" href="game.css">
-</head>
+    <body>
+        <audio id="background-audio" loop>
+            <source src="./view/assets/Background.ogg" type="audio/ogg" />
+            Váš prohlížeč nepodporuje přehrávání zvuku.
+        </audio>
 
-<body>
+        <div id="page">
+            <canvas id="game" class="main" width="224" height="224"></canvas>
+            <canvas id="hero" class="main" width="224" height="224"></canvas>
+            <canvas id="filter" class="main" width="224" height="224"></canvas>
 
-    <audio id="background-audio" loop>
-        <source src="./view/assets/Background.ogg" type="audio/ogg">
-        Váš prohlížeč nepodporuje přehrávání zvuku.
-    </audio>
+            <canvas id="settings" class="main" width="224" height="224"></canvas>
 
-    <div id="page">
-        <canvas id="game" class="main" width="224" height="224"></canvas>
-        <canvas id="hero" class="main" width="224" height="224"></canvas>
-        <canvas id="filter" class="main" width="224" height="224"></canvas>
-
-        <canvas id="settings" class="main" width="224" height="224"></canvas>
-
-        <canvas id="table" class="table" width="224" height="47"></canvas>
-        <canvas id="stats" class="table" width="224" height="47"></canvas>
-    </div>
-    <script type="module" src="./main.js">
-    </script>
-
-</body>
-
+            <canvas id="table" class="table" width="224" height="47"></canvas>
+            <canvas id="stats" class="table" width="224" height="47"></canvas>
+        </div>
+        <script type="module" src="./main.js"></script>
+    </body>
 </html>

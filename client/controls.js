@@ -9,7 +9,7 @@ const keyDirections = {
     ArrowUp: "up",
     ArrowDown: "down",
     ArrowLeft: "left",
-    ArrowRight: "right"
+    ArrowRight: "right",
 };
 
 let touchStartX = 0;
@@ -50,7 +50,7 @@ function handleTouchStart(e) {
         touchPositions.set(touch.identifier, {
             x: touch.clientX,
             y: touch.clientY,
-            maxMovement: 0
+            maxMovement: 0,
         });
     }
 
@@ -171,19 +171,12 @@ function handleTouchEnd(e) {
     const deltaX = end.clientX - startX;
     const deltaY = end.clientY - startY;
 
-    if (
-        duration >= LONG_TAP_MS &&
-        movement <= TOUCH_MOVE_THRESHOLD
-    ) {
+    if (duration >= LONG_TAP_MS && movement <= TOUCH_MOVE_THRESHOLD) {
         // A stationary one-finger long tap toggles settings.
         controlsSettings.toggleSettings();
-    } else if (
-        Math.abs(deltaX) > Math.abs(deltaY) + TOUCH_MOVE_THRESHOLD
-    ) {
+    } else if (Math.abs(deltaX) > Math.abs(deltaY) + TOUCH_MOVE_THRESHOLD) {
         dispatchDirection(deltaX > 0 ? "right" : "left");
-    } else if (
-        Math.abs(deltaY) > Math.abs(deltaX) + TOUCH_MOVE_THRESHOLD
-    ) {
+    } else if (Math.abs(deltaY) > Math.abs(deltaX) + TOUCH_MOVE_THRESHOLD) {
         dispatchDirection(deltaY > 0 ? "down" : "up");
     } else {
         dispatchTap(end.clientX, end.clientY);

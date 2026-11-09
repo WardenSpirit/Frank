@@ -15,9 +15,9 @@ The game runs on a free [Render](https://render.com/) web service at [https://fr
 
 ### How a release is deployed
 
-Pushing a `vMAJOR.MINOR.PATCH` tag to GitLab starts the `deploy` job defined in [.gitlab-ci.yml](.gitlab-ci.yml). Other tags and untagged commits start no pipeline. The job:
+Pushing a `vMAJOR.MINOR.PATCH` tag to GitLab starts a pipeline whose `deploy` job, defined in [.gitlab-ci.yml](.gitlab-ci.yml), starts after the format, lint and test jobs pass. Other tags start no pipeline; pipelines of merge requests and of `master` have no `deploy` job. The job:
 
-1. fails unless the tagged commit is on `master`, the tag matches `version` in `package.json`, and `npm test` passes,
+1. fails unless the tagged commit is on `master` and the tag matches `version` in `package.json`,
 2. force-pushes the tagged commit to GitHub `master`,
 3. calls the Render deploy hook with the commit SHA, so Render builds and starts exactly that commit.
 
@@ -27,10 +27,12 @@ The job succeeds once Render accepts the deploy, not when the new version is liv
 
 In GitLab, as a Maintainer:
 
-- Settings → Repository → Protected tags: protect `v*`, allowed to create: Maintainers. Protected variables are passed only to pipelines of protected tags.
-- Settings → CI/CD → Variables, both Protected and Masked, with *Expand variable reference* cleared, otherwise GitLab cannot mask the `?` in the deploy hook URL:
+- Settings → Repository → Protected tags: protect `v*`, allowed to create: Maintainers. Protected variables are passed only to pipelines of protected branches and tags.
+- Settings → CI/CD → Variables, both Protected and Masked, limited to the `production` environment, with *Expand variable reference* cleared:
   - `RENDER_DEPLOY_HOOK_URL`: the URL from Render → service → Settings → Deploy Hook.
   - `GITHUB_PUSH_TOKEN`: a fine-grained personal access token of the GitHub repository owner, limited to `WardenSpirit/Frank` with the *Contents: Read and write* permission. Replace it before it expires.
+
+  Limited to `production`, the variables reach only the `deploy` job, not the format, lint and test jobs, which run code from npm packages. With *Expand variable reference* set, GitLab cannot mask the `?` in the deploy hook URL.
 
 Render service settings:
 

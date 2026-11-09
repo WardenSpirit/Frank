@@ -1,12 +1,11 @@
-import * as view from './view/view.js';
-import protocol from '../shared/protocol.json' with { type: 'json' };
+import * as view from "./view/view.js";
+import protocol from "../shared/protocol.json" with { type: "json" };
 import * as settings from "./settings.js";
 
 const { TERRAIN, DIRECTION } = protocol;
 
 let game;
 let points = 0;
-let players;
 
 /**
  * Updates the game model based on the argument. Calls view to start displaying the new game state.
@@ -45,7 +44,7 @@ export function applyMoves(moves) {
         if (isHeroInHole()) {
             if (points > 0) {
                 points--;
-             }
+            }
             view.displayFilter(false);
             view.displayPoints(points);
             return false;
@@ -58,16 +57,25 @@ export function applyMoves(moves) {
         let potentialNewHeroPosition;
         switch (direction) {
             case DIRECTION.UP:
-                potentialNewHeroPosition = { x: game.heroPosition.x, y: (game.heroPosition.y - 1 + game.map[0].length) % game.map[0].length};
+                potentialNewHeroPosition = {
+                    x: game.heroPosition.x,
+                    y: (game.heroPosition.y - 1 + game.map[0].length) % game.map[0].length,
+                };
                 break;
             case DIRECTION.RIGHT:
                 potentialNewHeroPosition = { x: (game.heroPosition.x + 1) % game.map.length, y: game.heroPosition.y };
                 break;
             case DIRECTION.DOWN:
-                potentialNewHeroPosition = { x: game.heroPosition.x, y: (game.heroPosition.y + 1) % game.map[0].length };
+                potentialNewHeroPosition = {
+                    x: game.heroPosition.x,
+                    y: (game.heroPosition.y + 1) % game.map[0].length,
+                };
                 break;
             case DIRECTION.LEFT:
-                potentialNewHeroPosition = { x: (game.heroPosition.x - 1 + game.map.length) % game.map.length, y: game.heroPosition.y };
+                potentialNewHeroPosition = {
+                    x: (game.heroPosition.x - 1 + game.map.length) % game.map.length,
+                    y: game.heroPosition.y,
+                };
                 break;
         }
         game.heroPosition = potentialNewHeroPosition;
@@ -79,11 +87,10 @@ function isTreasureReached() {
 }
 
 function isHeroInHole() {
-    return game.map[game.heroPosition.x][game.heroPosition.y] === TERRAIN.HOLE
+    return game.map[game.heroPosition.x][game.heroPosition.y] === TERRAIN.HOLE;
 }
 
 export function setPlayers(number) {
-    players = number;
     view.displayPlayers(number);
 }
 

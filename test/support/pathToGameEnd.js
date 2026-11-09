@@ -1,8 +1,8 @@
-import { createRequire } from 'node:module';
+import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const Game = require('../../server/game');
-const { DIRECTION } = require('../../shared/protocol.json');
+const Game = require("../../server/game");
+const { DIRECTION } = require("../../shared/protocol.json");
 
 /**
  * Finds a shortest path from the hero to a hole or the treasure with breadth-first search.
@@ -31,7 +31,7 @@ export default function pathToGameEnd(game) {
             queue.push(next.heroPosition);
         }
     }
-    throw new Error('The hero can reach neither a hole nor the treasure.');
+    throw new Error("The hero can reach neither a hole nor the treasure.");
 
     function pathTo(position) {
         const directions = [];

@@ -1,6 +1,5 @@
-import * as drawingContext from './drawingContext.js';
-import * as images from '../images.js';
-
+import * as drawingContext from "./drawingContext.js";
+import * as images from "../images.js";
 
 export async function renderTable() {
     const IMAGE = await images.getImage("TABLE");

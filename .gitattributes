@@ -1,0 +1,2 @@
+# Check out text files with LF line endings on every platform, as Prettier requires.
+* text=auto eol=lf

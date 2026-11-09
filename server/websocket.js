@@ -1,7 +1,7 @@
-const GameFactory = require('./gameFactory.js');
-const { parseClientMessage } = require('./clientMessage.js');
-const { getDefaultSettings } = require('../shared/settings.js');
-const { CLOSE, MESSAGE_TYPE } = require('../shared/protocol.json');
+const GameFactory = require("./gameFactory.js");
+const { parseClientMessage } = require("./clientMessage.js");
+const { getDefaultSettings } = require("../shared/settings.js");
+const { CLOSE, MESSAGE_TYPE } = require("../shared/protocol.json");
 
 let gameFactory = new GameFactory();
 let game = null;
@@ -21,7 +21,7 @@ function onConnect(webSocket) {
     if (webSockets.length == 1) {
         startANewGame();
     } else {
-        webSocket.send(JSON.stringify({type: MESSAGE_TYPE.GAME, clearData: game}));
+        webSocket.send(JSON.stringify({ type: MESSAGE_TYPE.GAME, clearData: game }));
     }
     sendToAll(MESSAGE_TYPE.PLAYERS, webSockets.length);
 
@@ -59,7 +59,7 @@ function onConnect(webSocket) {
         console.log("- invalid frame: " + error.message);
         eliminateWebSocket(webSocket);
     });
-};
+}
 
 function handleMove(webSocket, move) {
     if (move.gameId === game.gameId && !hasAlreadySentMove(webSocket)) {
@@ -151,14 +151,13 @@ function startANewGame() {
 
 /**
  * Sends JSON-stringified data to every connected web socket.
- * @param data 
+ * @param data
  */
 function sendToAll(type, data) {
-    let text = JSON.stringify({type: type, clearData: data})
+    let text = JSON.stringify({ type: type, clearData: data });
     for (let i = 0; i < webSockets.length; i++) {
         webSockets[i].send(text);
     }
 }
-
 
 module.exports = { onConnect };

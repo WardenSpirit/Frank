@@ -1,10 +1,7 @@
 import * as connection from "./connection.js";
 import * as settings from "./settings.js";
 import * as view from "./view/view.js";
-import {
-    APPLY_BUTTON_BOUNDS,
-    CLOSE_BUTTON_BOUNDS
-} from "./view/renderer/settingsRenderer.js";
+import { APPLY_BUTTON_BOUNDS, CLOSE_BUTTON_BOUNDS } from "./view/renderer/settingsRenderer.js";
 import { settingsCanvas } from "./view/renderer/drawingContext.js";
 
 /**
@@ -66,7 +63,7 @@ const directionActions = {
     up: () => settings.moveHighlight(-1),
     down: () => settings.moveHighlight(1),
     left: () => settings.stepHighlightedSetting(-1),
-    right: () => settings.stepHighlightedSetting(1)
+    right: () => settings.stepHighlightedSetting(1),
 };
 
 /**
@@ -102,7 +99,7 @@ export function handleTap(clientX, clientY) {
 
     const point = {
         x: ((clientX - rect.left) / rect.width) * settingsCanvas.width,
-        y: ((clientY - rect.top) / rect.height) * settingsCanvas.height
+        y: ((clientY - rect.top) / rect.height) * settingsCanvas.height,
     };
 
     if (isInsideBounds(point, APPLY_BUTTON_BOUNDS)) {
@@ -125,10 +122,12 @@ export function handleTap(clientX, clientY) {
  * @param bounds The rectangle boundaries.
  */
 function isInsideBounds(point, bounds) {
-    return point.x >= bounds.x &&
+    return (
+        point.x >= bounds.x &&
         point.x <= bounds.x + bounds.width &&
         point.y >= bounds.y &&
-        point.y <= bounds.y + bounds.height;
+        point.y <= bounds.y + bounds.height
+    );
 }
 
 /**

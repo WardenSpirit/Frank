@@ -1,14 +1,14 @@
-import * as terrainRenderer from './renderer/terrainRenderer.js';
-import * as heroRenderer from './renderer/heroRenderer.js';
-import * as dustRenderer from './renderer/dustRenderer.js';
-import * as treasureRenderer from './renderer/treasureRenderer.js';
-import * as filterRenderer from './renderer/filterRenderer.js';
-import * as tableRenderer from './renderer/tableRenderer.js';
-import * as statsRenderer from './renderer/statsRenderer.js';
-import * as infoTextRenderer from './renderer/infoTextRenderer.js';
-import * as drawingContext from './renderer/drawingContext.js';
-import * as settingsRenderer from './renderer/settingsRenderer.js';
-import * as settings from '../settings.js';
+import * as terrainRenderer from "./renderer/terrainRenderer.js";
+import * as heroRenderer from "./renderer/heroRenderer.js";
+import * as dustRenderer from "./renderer/dustRenderer.js";
+import * as treasureRenderer from "./renderer/treasureRenderer.js";
+import * as filterRenderer from "./renderer/filterRenderer.js";
+import * as tableRenderer from "./renderer/tableRenderer.js";
+import * as statsRenderer from "./renderer/statsRenderer.js";
+import * as infoTextRenderer from "./renderer/infoTextRenderer.js";
+import * as drawingContext from "./renderer/drawingContext.js";
+import * as settingsRenderer from "./renderer/settingsRenderer.js";
+import * as settings from "../settings.js";
 
 let infoTextID;
 
@@ -34,10 +34,7 @@ export function renderGame(renderedGame) {
 }
 
 export function renderSettings() {
-    settingsRenderer.renderSettingsForm(
-        settings.getEditedSettings(),
-        settings.getHighlightedIndex()
-    );
+    settingsRenderer.renderSettingsForm(settings.getEditedSettings(), settings.getHighlightedIndex());
 }
 
 export function clearSettings() {
@@ -73,6 +70,8 @@ export function setInfoText(text, delay) {
     if (delay == 0) {
         infoTextRenderer.renderInfoText(text);
     } else {
-        infoTextID = setTimeout(() => { infoTextRenderer.renderInfoText(text); }, delay);
+        infoTextID = setTimeout(() => {
+            infoTextRenderer.renderInfoText(text);
+        }, delay);
     }
 }

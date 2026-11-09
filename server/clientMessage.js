@@ -1,5 +1,5 @@
-const { DIRECTION, MESSAGE_TYPE } = require('../shared/protocol.json');
-const { parseSettings } = require('../shared/settings.js');
+const { DIRECTION, MESSAGE_TYPE } = require("../shared/protocol.json");
+const { parseSettings } = require("../shared/settings.js");
 
 /**
  * Parses and validates a message received from a client.
@@ -35,7 +35,7 @@ function parseClientMessage(text) {
     }
 
     function parseSettingsMessage(message) {
-        if (!Object.keys(message).every(field => field === 'type' || field === 'clearData')) {
+        if (!Object.keys(message).every(field => field === "type" || field === "clearData")) {
             return null;
         }
         const settings = parseSettings(message.clearData);
@@ -52,7 +52,7 @@ function parseClientMessage(text) {
 }
 
 function isObject(value) {
-    return typeof value === 'object' && value !== null && !Array.isArray(value);
+    return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 module.exports = { parseClientMessage };

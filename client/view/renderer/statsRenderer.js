@@ -1,7 +1,7 @@
-import viewParams from '../viewParams.json' with { type: 'json' };
-import * as drawingContext from './drawingContext.js';
-import * as numberParser from '../parser/numberParser.js';
-import * as images from '../images.js';
+import viewParams from "../viewParams.json" with { type: "json" };
+import * as drawingContext from "./drawingContext.js";
+import * as numberParser from "../parser/numberParser.js";
+import * as images from "../images.js";
 
 const IMAGE = await images.getImage("DIGITS");
 
@@ -12,7 +12,9 @@ export function renderPoints(points) {
     clearPoints();
 
     let sourceOrigins = numberParser.getDigitsOrigins(points);
-    let targetOrigins = Array.from({ length: sourceOrigins.length }, (_v, i) => drawingContext.calculatePointsTargetOrigin(i));
+    let targetOrigins = Array.from({ length: sourceOrigins.length }, (_v, i) =>
+        drawingContext.calculatePointsTargetOrigin(i),
+    );
 
     drawDigits(sourceOrigins, targetOrigins);
 
@@ -26,7 +28,8 @@ function clearPoints() {
             oldTargetOrigin.x,
             oldTargetOrigin.y,
             drawingContext.DIGIT_SIZE,
-            drawingContext.DIGIT_SIZE);
+            drawingContext.DIGIT_SIZE,
+        );
     }
 }
 
@@ -35,7 +38,8 @@ function drawDigits(sourceOrigins, targetOrigins) {
         const sourceOrigin = sourceOrigins[i];
         const targetOrigin = targetOrigins[i];
 
-        drawingContext.stateContext.drawImage(IMAGE,
+        drawingContext.stateContext.drawImage(
+            IMAGE,
             sourceOrigin.x,
             sourceOrigin.y,
             viewParams.sourceTileSize,
@@ -43,7 +47,8 @@ function drawDigits(sourceOrigins, targetOrigins) {
             targetOrigin.x,
             targetOrigin.y,
             drawingContext.DIGIT_SIZE,
-            drawingContext.DIGIT_SIZE);
+            drawingContext.DIGIT_SIZE,
+        );
     }
 }
 
@@ -51,7 +56,9 @@ export function renderPlayers(players) {
     clearPlayers();
 
     let sourceOrigins = numberParser.getDigitsOrigins(players);
-    let targetOrigins = Array.from({ length: sourceOrigins.length }, (_v, i) => drawingContext.calculatePlayersTargetOrigin(i, sourceOrigins.length));
+    let targetOrigins = Array.from({ length: sourceOrigins.length }, (_v, i) =>
+        drawingContext.calculatePlayersTargetOrigin(i, sourceOrigins.length),
+    );
 
     drawDigits(sourceOrigins, targetOrigins);
 
@@ -65,6 +72,7 @@ function clearPlayers() {
             oldTargetOrigin.x,
             oldTargetOrigin.y,
             drawingContext.DIGIT_SIZE,
-            drawingContext.DIGIT_SIZE);
+            drawingContext.DIGIT_SIZE,
+        );
     }
 }
