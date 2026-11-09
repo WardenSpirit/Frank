@@ -9,10 +9,19 @@ const { MESSAGE_TYPE } = require("../../shared/protocol.json");
  */
 export default class GameClient {
     /**
+     * For a player the server may reject, who gets REJECTED instead of GAME. Call the methods that wait for server
+     * messages in the same tick, so the first message isn't missed.
+     * @returns A client whose connection is still opening.
+     */
+    static open(port) {
+        return new GameClient(new WebSocket(`ws://localhost:${port}`));
+    }
+
+    /**
      * @returns A promise of a client that has received the game the server sent on connecting.
      */
     static async connect(port) {
-        const client = new GameClient(new WebSocket(`ws://localhost:${port}`));
+        const client = GameClient.open(port);
         const game = client.nextMessage(MESSAGE_TYPE.GAME);
         await new Promise((resolve, reject) => {
             client.socket.once("open", resolve);
@@ -107,6 +116,21 @@ export default class GameClient {
     stopReading() {
         this.socket._socket.pause();
         this.stalled = true;
+    }
+
+    /**
+     * Runs the action once the connection opens, before the client reads anything the server sent on connecting, so a
+     * rejected client can still send before it reads the close frame. Call in the same tick as open.
+     * @returns A promise that resolves once the action has run, or rejects if the connection fails to open.
+     */
+    onOpen(action) {
+        return new Promise((resolve, reject) => {
+            this.socket.once("open", () => {
+                action();
+                resolve();
+            });
+            this.socket.once("error", reject);
+        });
     }
 
     /**

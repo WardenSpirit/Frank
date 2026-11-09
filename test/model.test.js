@@ -17,11 +17,13 @@ vi.mock("../client/view/view.js", () => ({
 
 let model;
 let settings;
+let view;
 
 beforeEach(async () => {
     vi.resetModules();
     model = await import("../client/model.js");
     settings = await import("../client/settings.js");
+    view = await import("../client/view/view.js");
 });
 
 /**
@@ -80,4 +82,23 @@ test("closeConnection drops the active and pending settings", () => {
 
     // Assert
     expect(actualEdited).toEqual(expectedEdited);
+});
+
+// The connection opens before the server rejects the player or closes it, so "wait for game" is pending.
+test.each([
+    { name: "without a rejection", rejected: false, expected: ["maybe refresh", 0] },
+    { name: "after a rejection", rejected: true, expected: ["game is full", 0] },
+])('closeConnection $name leaves the info text "$expected.0"', ({ rejected, expected }) => {
+    // Arrange
+    model.openConnection();
+    if (rejected) {
+        model.rejectConnection();
+    }
+
+    // Act
+    model.closeConnection();
+    const actual = view.setInfoText.mock.calls.at(-1);
+
+    // Assert
+    expect(actual).toEqual(expected);
 });

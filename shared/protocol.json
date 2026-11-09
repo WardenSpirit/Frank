@@ -13,6 +13,7 @@
         "GAME": "GAME",
         "MOVES": "MOVES",
         "PLAYERS": "PLAYERS",
+        "REJECTED": "REJECTED",
         "MOVE": "MOVE",
         "SETTINGS": "SETTINGS"
     },
@@ -20,6 +21,10 @@
         "INVALID_MESSAGE": {
             "CODE": 1008,
             "REASON": "invalid message"
+        },
+        "REJECTED": {
+            "CODE": 1000,
+            "REASON": ""
         }
     }
 }

@@ -7,9 +7,10 @@ let gameWebSocket;
 /**
  * Connects to the server that served this page and passes the connection events and the server messages to the
  * handlers. Call it once: another call would open a second connection and the handlers would get each message twice.
- * @param handlers Object with the functions onOpen(), onClose(), onGame(game), onMoves(moves) and onPlayers(number).
+ * @param handlers Object with the functions onOpen(), onClose(), onGame(game), onMoves(moves), onPlayers(number) and
+ * onRejected(). The server sends REJECTED before it closes the connection, so onRejected() comes before onClose().
  */
-export function connect({ onOpen, onClose, onGame, onMoves, onPlayers }) {
+export function connect({ onOpen, onClose, onGame, onMoves, onPlayers, onRejected }) {
     // The browser resolves '/' against the page origin (http → ws, https → wss).
     gameWebSocket = new WebSocket("/");
 
@@ -36,6 +37,8 @@ export function connect({ onOpen, onClose, onGame, onMoves, onPlayers }) {
             onMoves(clearData);
         } else if (messageType === MESSAGE_TYPE.PLAYERS) {
             onPlayers(clearData);
+        } else if (messageType === MESSAGE_TYPE.REJECTED) {
+            onRejected();
         }
     });
 }

@@ -16,4 +16,5 @@ connection.connect({
         }
     },
     onPlayers: players => model.setPlayers(players),
+    onRejected: () => model.rejectConnection(),
 });

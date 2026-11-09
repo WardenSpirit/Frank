@@ -19,6 +19,7 @@
     { "id": "EC7", "name": "the server type GAME", "message": { "type": "GAME", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },
     { "id": "EC7", "name": "the server type MOVES", "message": { "type": "MOVES", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },
     { "id": "EC7", "name": "the server type PLAYERS", "message": { "type": "PLAYERS", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },
+    { "id": "EC7", "name": "the server type REJECTED", "message": { "type": "REJECTED", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },
     { "id": "EC8", "name": "an unknown type", "message": { "type": "JUMP", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },
     { "id": "EC8", "name": "the inherited property name toString as type", "message": { "type": "toString", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },
     { "id": "EC8", "name": "the inherited property name __proto__ as type", "message": { "type": "__proto__", "clearData": { "direction": "UP", "gameId": 1 } }, "expected": null },

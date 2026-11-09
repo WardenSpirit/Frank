@@ -18,7 +18,7 @@ Every message is a JSON object sent as a text frame:
 | Position | `{"x": <column>, "y": <row>}`, zero-based; `UP` decreases `y`. The map wraps around at its edges. |
 | Map | An array of `mapSize` columns, each with `mapSize` values of `TERRAIN` (`0` path, `1` hole), indexed as `map[x][y]`, where `mapSize` is the one in the settings of the game. `mapSize`² · `holeRatio` / 100 squares, rounded down or up, are holes. |
 | Game ID | An integer that identifies a game. Each new game has one that differs from all previous games since the server started. Clients only send it back in `MOVE`. |
-| Settings | `{"mapSize": <integer>, "holeRatio": <integer>, "actors": <string>, "tiles": <string>, "maxPlayers": <integer>, "timeLimit": <integer>}` with every field of [`shared/settings.json`](../shared/settings.json), which defines the type, the allowed values and the default of each field. Ranges are inclusive and strings are case-sensitive. Only `mapSize` and `holeRatio` affect the game so far. |
+| Settings | `{"mapSize": <integer>, "holeRatio": <integer>, "actors": <string>, "tiles": <string>, "maxPlayers": <integer>, "timeLimit": <integer>}` with every field of [`shared/settings.json`](../shared/settings.json), which defines the type, the allowed values and the default of each field. Ranges are inclusive and strings are case-sensitive. Only `mapSize`, `holeRatio` and `maxPlayers` take effect so far. |
 | Game | `{"map": <map>, "treasurePosition": <position>, "heroPosition": <position>, "gameId": <game ID>, "settings": <settings>}`, where `settings` are the ones the game was created with. The first game since the server started has the default settings. |
 
 ## Server → client
@@ -26,13 +26,18 @@ Every message is a JSON object sent as a text frame:
 | `type` | `clearData` | Sent to | When |
 |---|---|---|---|
 | `GAME` | Game | All players | A new game starts: the first player connects, a turn ends the game (after `MOVES`), or the server applies a valid `SETTINGS`, also in the middle of a turn and without `MOVES`. |
-| `GAME` | Game | The connecting player | A player connects while a game is running. |
+| `GAME` | Game | The connecting player | A player connects while a game is running and the server accepts them (see `REJECTED`). |
 | `MOVES` | An array of directions in the order they arrived at the server | All players | A turn ends: the turn has as many moves as there are connected players, checked after every move and every disconnect. Moves of players who disconnected during the turn stay in the array and count, so a disconnect can end the turn before every connected player has moved. |
-| `PLAYERS` | The number of connected players | All players | A player connects (after `GAME`) or disconnects. |
+| `PLAYERS` | The number of connected players | All players | The server accepts a connecting player (after `GAME`), or a player disconnects. |
+| `REJECTED` | `null` | The connecting client | A client connects while `maxPlayers` or more players are connected, where `maxPlayers` is the one in the current settings. The client gets no `GAME` or `PLAYERS`, and the server closes the connection with the close code `1000` (normal closure) and no reason, both in `CLOSE.REJECTED`. |
 
 Clients apply `MOVES` in order and stop at the treasure or a hole, like the server does. After a turn that ends the game, the next message is `GAME` with a new game.
 
 Every new game has the current settings: the defaults until the server applies a valid `SETTINGS`, then the settings of the last `SETTINGS` it received, even after all players disconnect. Valid settings always start a new game, even when they equal the current ones. The server discards the moves of the current turn, so every player can move in the new game, and moves sent for the previous game are ignored (see [Validation](#validation)). Clients take the settings of each `GAME` as the current ones, so a client sends `SETTINGS` only with values that differ from the settings of the last game, even if another player applied them.
+
+A rejected client doesn't count as a player: not in `PLAYERS` and not in a turn, and the server ignores its messages. Settings with a `maxPlayers` lower than the number of connected players don't disconnect anyone: every player gets the new game, and the server rejects connecting clients until fewer than `maxPlayers` players are connected.
+
+A player who has sent the close frame has disconnected, like a player whose connection the server closes for an invalid message or frame: the server removes them at once, so they no longer count toward `maxPlayers`, in `PLAYERS` or in a turn, although the connection closes only once their network answers, which takes up to 30 s if it stalls. A connection that drops without a close frame is removed when the server notices that it has closed.
 
 ### Example: `GAME`
 
@@ -67,6 +72,14 @@ Two players are connected.
 {"type": "PLAYERS", "clearData": 2}
 ```
 
+### Example: `REJECTED`
+
+Ten players are connected with the default settings, so the server rejects the eleventh client.
+
+```json
+{"type": "REJECTED", "clearData": null}
+```
+
 ## Client → server
 
 | `type` | `clearData` | When |
@@ -94,7 +107,7 @@ The player applies a 20×20 map with 40 % holes and the cat textures.
 
 ```text
 client                            server
-  | -- connect ----------------------> |
+  | -- connect ----------------------> |  fewer than maxPlayers players are connected
   | <--------------------------- GAME  |  a new game or the running one
   | <------------------------ PLAYERS  |  to all players
   | -- MOVE -------------------------> |  each player once per turn
@@ -106,6 +119,11 @@ client                            server
   | <---------------------- close 1008 |  the player leaves the turn
   | -- an invalid frame -------------> |
   | <-------------- close 1007 or 1002 |  the player leaves the turn
+
+client                            server
+  | -- connect ----------------------> |  maxPlayers or more players are connected
+  | <----------------------- REJECTED  |  instead of GAME and PLAYERS
+  | <---------------------- close 1000 |
 ```
 
 ## Validation

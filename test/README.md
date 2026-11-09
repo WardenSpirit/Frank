@@ -10,7 +10,7 @@ CSV files in `fixtures/` have a header, a unique behavior `name`, inputs, and ex
 
 Client messages contain quotes and commas, which the CSV loader doesn't support, so they are in `fixtures/client-messages.json`. Each case has an `id` from [Client messages](#client-messages), a unique `name`, either a `message` that the test serializes to JSON or raw `data`, and the `expected` parsed message, or `null` for a message the server rejects.
 
-After each integration test, a client applies the default settings and disconnects, because the server keeps them even after all players disconnect. Integration tests that need a game to end walk the hero along a shortest path to a hole or the treasure, which `support/pathToGameEnd.js` finds on the random map the server sent. `GameClient.sync` pings the server and waits for the pong. The server answers a ping only after handling the earlier messages of the socket, so tests can check that a turn hasn't ended yet and fix the order in which moves of several players arrive.
+After each integration test, a client applies the default settings and disconnects, because the server keeps them even after all players disconnect. Integration tests that need a game to end walk the hero along a shortest path to a hole or the treasure, which `support/pathToGameEnd.js` finds on the random map the server sent. `GameClient.sync` pings the server and waits for the pong. The server answers a ping only after handling the earlier messages of the socket, so tests can check that a turn hasn't ended yet and fix the order in which moves of several players arrive. `GameClient.open` returns a client before its connection opens, so a test can wait for `REJECTED` instead of `GAME`, and `GameClient.onOpen` lets a rejected client send before it reads the close frame. The server doesn't answer a ping once it has sent the close frame, so a test waits for the close of a rejected client instead: the client answers the close frame after its earlier messages, and the server closes the connection only after the answer.
 
 Movement fixtures use `last` for the final coordinate on each axis of a map with the default `mapSize`. Hole-count fixtures specify `mapSize`, `holeRatio`, a constant random value and the expected number of holes, see [Map generation](#map-generation).
 
@@ -24,12 +24,13 @@ Movement fixtures use `last` for the final coordinate on each axis of a map with
 | `parseClientMessage`, `parseSettings` | JSON syntax, top-level value, `type`, `clearData`, direction and `gameId` of client messages, fields not in the protocol, the fields of `SETTINGS` and their types, ranges and allowed strings | `fixtures/client-messages.json`, `clientMessage.test.js` |
 | `onConnect` with client messages | Accepted and rejected messages, a rejected player leaving the turn, a second move in a turn, moves gathered before a turn ends, moves for the previous game after a turn or a disconnect has ended it, for the current and for the next game, a new game on valid settings, rejected settings, settings and a move in both delivery orders, several settings | `websocket.test.js` |
 | `onConnect` with settings across games | The default settings of the first game, the current settings kept by the next game after a finished one, by the running game a player connects to and by a new game after all players disconnect and one connects, a map of `mapSize` × `mapSize` | `websocket.test.js` |
+| `onConnect` with the number of players | Players accepted up to `maxPlayers` and the next one rejected, at the smallest and the largest `maxPlayers`; a rejected player whose connection is still closing counted neither in `PLAYERS` nor in a turn; a move of a rejected player ignored; a text frame of a rejected player that isn't valid UTF-8, after which the game goes on; settings that lower `maxPlayers` below the number of players and keep every player, and a player connecting after them while more, as many or fewer players than `maxPlayers` are connected; a player who sends the close frame and stalls, after which the others get `PLAYERS` and their turn ends; a player accepted while the connection of the only other player is closing, who is then the only one in `PLAYERS` and in the turn | `websocket.test.js` |
 | `getListenHost` | `LISTEN_HOST` unset, empty and set to a custom value (`0.0.0.0`), `HOST` set while `LISTEN_HOST` is unset | `listenHost.test.js` |
 | `changeSettingValue` | Valid setting values, increments and decrements, boundary values and wraparound; every value it returns from a valid one passes `parseSettings` | `fixtures/settings-values.csv`, `settings.test.js` |
 | Settings form state and navigation | Default settings, opening and closing, highlight navigation and wraparound, submitting changed and unchanged settings, pending settings until a game comes, the form before the first game and after the connection closes, discarding unapplied edits, actions while closed, taking the settings of each game while the form is open and closed | `settings.test.js` |
 | Settings form controller | Enter while the form is closed, Apply with an open connection and without one | `controlsSettings.test.js` |
 | `applyMoves` of the client model | Whether the game goes on after a move onto a path, onto the treasure and into a hole, no moves, and moves after the treasure that it skips | `model.test.js` |
-| `closeConnection` of the client model | Dropping the active and pending settings | `model.test.js` |
+| `closeConnection`, `rejectConnection` of the client model | Dropping the active and pending settings, the info text after a close with and without a rejection | `model.test.js` |
 | `renderPoints`, `renderPlayers` | The position and the fixed size of the digits on the smallest, default and largest map, clearing the digits drawn for a map of another size | `statsRenderer.test.js` |
 
 ## Tests
@@ -59,7 +60,7 @@ Each test name starts with the IDs it covers.
 | EC4 | top-level value | not an object | rejects | `null`, `1`, `"UP"`, `["MOVE",…]` | `clientMessage.test.js` |
 | EC5 | `type` | `MOVE` | accepts | `MOVE` | via EC13 |
 | EC6 | `type` | missing | rejects | `{"clearData":…}` | `clientMessage.test.js`, `websocket.test.js` |
-| EC7 | `type` | a server message type | rejects | `GAME`, `MOVES`, `PLAYERS` | `clientMessage.test.js` |
+| EC7 | `type` | a server message type | rejects | `GAME`, `MOVES`, `PLAYERS`, `REJECTED` | `clientMessage.test.js` |
 | EC8 | `type` | another string | rejects | `JUMP`, `toString`, `__proto__` | `clientMessage.test.js`, `websocket.test.js` |
 | EC9 | `type` | not a string | rejects | `1`, `null` | `clientMessage.test.js` |
 | EC10 | `clearData` of `MOVE` | an object | accepts | `{"direction":"UP","gameId":1}` | via EC13 |
@@ -132,8 +133,8 @@ Each test name starts with the IDs it covers.
 | BV19 | `holeRatio` = max | `40` | EC42 | `clientMessage.test.js` |
 | BV20 | `holeRatio` = max + 1 | `41` | EC43 | `clientMessage.test.js` |
 | BV21 | `maxPlayers` = min − 1 | `0` | EC43 | `clientMessage.test.js` |
-| BV22 | `maxPlayers` = min | `1` | EC42 | `clientMessage.test.js` |
-| BV23 | `maxPlayers` = max | `10` | EC42 | `clientMessage.test.js` |
+| BV22 | `maxPlayers` = min | `1` | EC42 | `clientMessage.test.js`, `websocket.test.js` |
+| BV23 | `maxPlayers` = max | `10` | EC42 | `clientMessage.test.js`, `websocket.test.js` |
 | BV24 | `maxPlayers` = max + 1 | `11` | EC43 | `clientMessage.test.js` |
 | BV25 | `timeLimit` = min − 1 | `4` | EC43 | `clientMessage.test.js` |
 | BV26 | `timeLimit` = min | `5` | EC42 | `clientMessage.test.js` |
@@ -145,6 +146,29 @@ Each test name starts with the IDs it covers.
 | BV32 | letter case of `tiles` | `Volcano` | EC47 | `clientMessage.test.js` |
 | BV33 | spaces around `tiles` | `volcano ` | EC47 | `clientMessage.test.js` |
 | BV34 | length of `tiles` 0 | `""` | EC47 | `clientMessage.test.js` |
+
+## Number of players
+
+Equivalence classes (EC) and boundary values (BV) of the number *n* of connected players compared with `maxPlayers` *m* of the current settings, when a client connects or settings change *m*, of the connection of a leaving player, and of the frames a rejected client sends before its connection closes, as specified in [docs/PROTOCOL.md](../docs/PROTOCOL.md). The IDs continue those of [Client messages](#client-messages), because the tests are in `websocket.test.js` too and their names start with the IDs.
+
+| ID | Category | Class | Server | Tests |
+|---|---|---|---|---|
+| EC54 | *n* compared with *m* | *n* < *m* | accepts: sends `GAME` to the player and `PLAYERS` to all players | `websocket.test.js` |
+| EC55 | *n* compared with *m* | *n* = *m* | rejects: sends `REJECTED` with `clearData` `null` and closes the connection with code `1000` and no reason; the client doesn't count in `PLAYERS` or in a turn | `websocket.test.js` |
+| EC56 | a frame of a rejected client before its connection closes | a message, valid or not | ignores it | `websocket.test.js` |
+| EC57 | a frame of a rejected client before its connection closes | text that isn't valid UTF-8 | its WebSocket library ends the connection; the client keeps the close code `1000`, and the game goes on | `websocket.test.js` |
+| EC58 | *n* compared with *m* | *n* > *m* | rejects, like EC55 | `websocket.test.js` |
+| EC59 | `maxPlayers` of accepted settings compared with *n* | lower | keeps every player: all of them get the new game and count in its turns | `websocket.test.js` |
+| EC60 | the connection of a player | closing: the player has sent the close frame, but the connection hasn't closed yet | removes the player as soon as the close frame arrives: doesn't count them in *n*, in `PLAYERS` or in a turn | `websocket.test.js` |
+
+The representative of EC56 is a valid `MOVE` for the running game, which would end the turn of a single player if the server counted it. EC54 and EC55 meet between the *m*-th player, the last one accepted, and the (*m* + 1)-th, the first one rejected. The tests use the smallest and the largest *m*, BV22 and BV23; with *m* = 1, there is no (*m* − 1)-th player. *n* exceeds *m* only after settings lower *m* below *n* (EC59). The tests lower *m* to 2 with 3 players connected, the nearest value below *n*, and then 0, 1 or 2 of the players leave, so the next player to connect meets BV38, BV37 or BV36. In the tests of EC60, a player sends the close frame and stops reading, like a stalled network, so the server holds the connection closing. In one test, the other player gets `PLAYERS` and their turn ends at once. In the other, the leaving player is the only one with *m* = 1, and the next player meets BV36, not BV37, is the only one in `PLAYERS`, and their move alone ends the turn.
+
+| ID | Boundary | Value | Class | Tests |
+|---|---|---|---|---|
+| BV35 | *n* = *m* − 2 | the 9th player with *m* = 10 | EC54 | `websocket.test.js` |
+| BV36 | *n* = *m* − 1 | the 1st player with *m* = 1, the 10th player with *m* = 10, the 2nd player with *m* = 2 lowered by settings, the 2nd player with *m* = 1 while the connection of the 1st one is closing | EC54 | `websocket.test.js` |
+| BV37 | *n* = *m* | the 2nd player with *m* = 1, the 11th player with *m* = 10, the 3rd player with *m* = 2 lowered by settings | EC55 | `websocket.test.js` |
+| BV38 | *n* = *m* + 1 | the 4th player with *m* = 2 lowered by settings | EC58 | `websocket.test.js` |
 
 ## Map generation
 

@@ -6,6 +6,7 @@ const { TERRAIN, DIRECTION } = protocol;
 
 let game;
 let points = 0;
+let rejected = false;
 
 /**
  * Updates the game model based on the argument. Calls view to start displaying the new game state.
@@ -98,7 +99,21 @@ export function openConnection() {
     view.setInfoText("wait for game", 500);
 }
 
+/**
+ * The server rejected the player because the game is full. It closes the connection right after, and the player may
+ * refresh once someone leaves.
+ */
+export function rejectConnection() {
+    rejected = true;
+    view.setInfoText("game is full", 0);
+}
+
+/**
+ * Drops the settings. A rejected player keeps the text saying why, instead of the one that suggests refreshing.
+ */
 export function closeConnection() {
     settings.dropSettings();
-    view.setInfoText("maybe refresh", 0);
+    if (!rejected) {
+        view.setInfoText("maybe refresh", 0);
+    }
 }

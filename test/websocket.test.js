@@ -31,7 +31,7 @@ afterEach(async () => {
     players.forEach(player => player.close());
     players = [];
     await vi.waitFor(() => expect(server.clients.size).toBe(0));
-    await restoreDefaultSettings();
+    await applySettingsAndLeave(DEFAULT_SETTINGS);
 });
 
 afterAll(async () => {
@@ -39,11 +39,12 @@ afterAll(async () => {
 });
 
 /**
- * The server keeps the settings even when all players disconnect, so a client applies the defaults and leaves.
+ * The server keeps the settings even when all players disconnect, so a client applies them and leaves before the
+ * players of a test connect, and afterEach restores the defaults the same way.
  */
-async function restoreDefaultSettings() {
+async function applySettingsAndLeave(settings) {
     const player = await GameClient.connect(server.address().port);
-    await applySettings(player, DEFAULT_SETTINGS);
+    await applySettings(player, settings);
     player.close();
     await vi.waitFor(() => expect(server.clients.size).toBe(0));
 }
@@ -52,6 +53,36 @@ async function connectPlayer() {
     const player = await GameClient.connect(server.address().port);
     players.push(player);
     return player;
+}
+
+/**
+ * For a player the server may reject. Call the methods that wait for server messages in the same tick.
+ */
+function openPlayer() {
+    const player = GameClient.open(server.address().port);
+    players.push(player);
+    return player;
+}
+
+/**
+ * Call in the same tick as openPlayer.
+ * @returns A promise of the type and clearData of the first message the server sends to the player, GAME or REJECTED.
+ */
+function firstMessage(player) {
+    return Promise.race(
+        [MESSAGE_TYPE.GAME, MESSAGE_TYPE.REJECTED].map(type =>
+            player.nextMessage(type).then(clearData => ({ type: type, clearData: clearData })),
+        ),
+    );
+}
+
+/**
+ * Call in the same tick as openPlayer. A server that accepted the player wouldn't close the connection, so the promise
+ * then resolves once the player gets GAME, and the test fails with a diff instead of a timeout.
+ * @returns A promise of the close code and the reason the server sent, or null if the server accepted the player.
+ */
+function nextCloseUnlessAccepted(player) {
+    return Promise.race([player.nextClose(), player.nextMessage(MESSAGE_TYPE.GAME).then(() => null)]);
 }
 
 /**
@@ -628,6 +659,246 @@ test("EC53 of several settings, the server applies the ones it receives last", a
     const actual = {
         settings: [firstPlayer.game.settings, secondPlayer.game.settings],
         sameGameForBoth: JSON.stringify(firstPlayer.game) === JSON.stringify(secondPlayer.game),
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// The players before the last two accepted ones connect in Arrange; with maxPlayers 1, only one player is accepted.
+test.each([
+    { ids: "EC54 EC55 BV22 BV36 BV37", maxPlayers: 1 },
+    { ids: "EC54 EC55 BV23 BV35 BV36 BV37", maxPlayers: 10 },
+])(
+    "$ids with maxPlayers $maxPlayers, the server accepts players up to the limit and rejects the next one",
+    async testCase => {
+        // Arrange
+        await applySettingsAndLeave({ ...DEFAULT_SETTINGS, maxPlayers: testCase.maxPlayers });
+        const acceptedInAct = Math.min(testCase.maxPlayers, 2);
+        for (let i = 0; i < testCase.maxPlayers - acceptedInAct; i++) {
+            await connectPlayer();
+        }
+        const expected = {
+            acceptedTypes: Array(acceptedInAct).fill(MESSAGE_TYPE.GAME),
+            rejectedMessage: { type: MESSAGE_TYPE.REJECTED, clearData: null },
+            rejectedClose: { code: CLOSE.REJECTED.CODE, reason: CLOSE.REJECTED.REASON },
+            rejectedTypes: [MESSAGE_TYPE.REJECTED],
+        };
+
+        // Act
+        // Each player connects once the previous one has got its first message.
+        const actualAcceptedTypes = [];
+        for (let i = 0; i < acceptedInAct; i++) {
+            actualAcceptedTypes.push((await firstMessage(openPlayer())).type);
+        }
+        const rejectedPlayer = openPlayer();
+        const rejectedMessage = firstMessage(rejectedPlayer);
+        const closed = nextCloseUnlessAccepted(rejectedPlayer);
+        const actual = {
+            acceptedTypes: actualAcceptedTypes,
+            rejectedMessage: await rejectedMessage,
+            rejectedClose: await closed,
+            rejectedTypes: rejectedPlayer.receivedTypes,
+        };
+
+        // Assert
+        expect(actual).toEqual(expected);
+    },
+);
+
+test("EC55 BV22 BV37 a rejected player whose connection is still closing changes neither the number of players nor the turn", async () => {
+    // Arrange
+    await applySettingsAndLeave({ ...DEFAULT_SETTINGS, maxPlayers: 1 });
+    const player = await connectPlayer();
+    const expected = { connections: 2, typesSinceGame: [MESSAGE_TYPE.PLAYERS], turnAfterOneMove: [DIRECTION.UP] };
+
+    // Act
+    // The server has handled the connection before the client sees it open. The client never answers the close frame,
+    // so the server keeps the connection closing.
+    const rejectedPlayer = openPlayer();
+    await rejectedPlayer.onOpen(() => rejectedPlayer.stopReading());
+    await player.sync();
+    const actualTypesSinceGame = player.typesSinceLastGame();
+    let actualTurn = null;
+    player.nextMessage(MESSAGE_TYPE.MOVES).then(moves => {
+        actualTurn = moves;
+    });
+    player.sendMove(DIRECTION.UP);
+    await player.sync();
+    // The server still holds the connection of the rejected player.
+    const actual = {
+        connections: server.clients.size,
+        typesSinceGame: actualTypesSinceGame,
+        turnAfterOneMove: actualTurn,
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// A rejected player sends as soon as its connection opens, before it reads the close frame. The server doesn't answer a
+// ping once it has sent the close frame, so the tests wait for the close instead: the player answers the close frame
+// after its message, and the server closes the connection only after the answer.
+test("EC55 EC56 BV22 BV37 the server ignores a move of a rejected player for the running game", async () => {
+    // Arrange
+    await applySettingsAndLeave({ ...DEFAULT_SETTINGS, maxPlayers: 1 });
+    const player = await connectPlayer();
+    const expected = [DIRECTION.LEFT];
+
+    // Act
+    // A counted move would end the turn of the only player before the player moves.
+    const moves = player.nextMessage(MESSAGE_TYPE.MOVES);
+    const rejectedPlayer = openPlayer();
+    const closed = nextCloseUnlessAccepted(rejectedPlayer);
+    rejectedPlayer.onOpen(() => rejectedPlayer.sendMove(DIRECTION.UP, player.game.gameId));
+    await closed;
+    player.sendMove(DIRECTION.LEFT);
+    const actual = await moves;
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("EC55 EC57 BV22 BV37 a rejected player that sends a text frame that isn't valid UTF-8 gets the normal close and the game goes on", async () => {
+    // Arrange
+    await applySettingsAndLeave({ ...DEFAULT_SETTINGS, maxPlayers: 1 });
+    const player = await connectPlayer();
+    const expected = {
+        rejectedClose: { code: CLOSE.REJECTED.CODE, reason: CLOSE.REJECTED.REASON },
+        turn: [DIRECTION.UP],
+    };
+
+    // Act
+    // The server had sent its close frame before the invalid frame came, so the close code stays the normal one.
+    const rejectedPlayer = openPlayer();
+    const closed = nextCloseUnlessAccepted(rejectedPlayer);
+    rejectedPlayer.onOpen(() => rejectedPlayer.sendInvalidUtf8());
+    const actualRejectedClose = await closed;
+    const turn = player.nextMessage(MESSAGE_TYPE.MOVES);
+    player.sendMove(DIRECTION.UP);
+    const actual = { rejectedClose: actualRejectedClose, turn: await turn };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("EC59 settings with maxPlayers lower than the number of players keep every player in the new game", async () => {
+    // Arrange
+    const applyingPlayer = await connectPlayer();
+    const otherPlayers = [await connectPlayer(), await connectPlayer()];
+    const expected = {
+        sameGameForAll: true,
+        maxPlayers: 2,
+        typesSinceGame: [[], [], []],
+        turn: [DIRECTION.DOWN, DIRECTION.LEFT, DIRECTION.UP],
+    };
+
+    // Act
+    const otherGames = otherPlayers.map(player => player.nextMessage(MESSAGE_TYPE.GAME));
+    const game = await applySettings(applyingPlayer, { ...DEFAULT_SETTINGS, maxPlayers: 2 });
+    const actualOtherGames = await Promise.all(otherGames);
+    // A player the server dropped would make the others get PLAYERS and the turn end without its move.
+    const allPlayers = [applyingPlayer, ...otherPlayers];
+    await Promise.all(allPlayers.map(player => player.sync()));
+    const actualTypesSinceGame = allPlayers.map(player => player.typesSinceLastGame());
+    const turn = applyingPlayer.nextMessage(MESSAGE_TYPE.MOVES);
+    applyingPlayer.sendMove(DIRECTION.UP);
+    otherPlayers[0].sendMove(DIRECTION.LEFT);
+    otherPlayers[1].sendMove(DIRECTION.DOWN);
+    const actual = {
+        sameGameForAll: actualOtherGames.every(otherGame => JSON.stringify(otherGame) === JSON.stringify(game)),
+        maxPlayers: game.settings.maxPlayers,
+        typesSinceGame: actualTypesSinceGame,
+        turn: (await turn).toSorted(),
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+// The settings lower maxPlayers to 2 while 3 players are connected; leaving players then bring n from m + 1 to m − 1.
+test.each([
+    { ids: "EC58 BV38", leaving: 0, type: MESSAGE_TYPE.REJECTED },
+    { ids: "EC55 BV37", leaving: 1, type: MESSAGE_TYPE.REJECTED },
+    { ids: "EC54 BV36", leaving: 2, type: MESSAGE_TYPE.GAME },
+])(
+    "$ids when settings have lowered maxPlayers to 2 for 3 players and $leaving of them have left, a connecting player gets $type",
+    async testCase => {
+        // Arrange
+        const connectedPlayers = [await connectPlayer(), await connectPlayer(), await connectPlayer()];
+        await applySettings(connectedPlayers[0], { ...DEFAULT_SETTINGS, maxPlayers: 2 });
+        connectedPlayers.slice(0, testCase.leaving).forEach(player => player.close());
+        await vi.waitFor(() => expect(server.clients.size).toBe(connectedPlayers.length - testCase.leaving));
+        const expected = testCase.type;
+
+        // Act
+        const actual = (await firstMessage(openPlayer())).type;
+
+        // Assert
+        expect(actual).toEqual(expected);
+    },
+);
+
+test("EC60 when a player sends the close frame, the other players get PLAYERS and their turn ends while the connection is still closing", async () => {
+    // Arrange
+    const leavingPlayer = await connectPlayer();
+    const [leavingConnection] = server.clients;
+    const player = await connectPlayer();
+    player.sendMove(DIRECTION.UP);
+    await player.sync();
+    const expected = { players: 1, turn: [DIRECTION.UP], connections: 2 };
+
+    // Act
+    let actualPlayers = null;
+    let actualTurn = null;
+    player.nextMessage(MESSAGE_TYPE.PLAYERS).then(count => {
+        actualPlayers = count;
+    });
+    player.nextMessage(MESSAGE_TYPE.MOVES).then(moves => {
+        actualTurn = moves;
+    });
+    // The player sends its close frame but never reads the answer, so the server keeps the connection closing.
+    leavingPlayer.close();
+    leavingPlayer.stopReading();
+    await vi.waitFor(() => expect(leavingConnection.readyState).toBe(leavingConnection.CLOSING));
+    await player.sync();
+    // The server still holds the connection of the leaving player.
+    const actual = { players: actualPlayers, turn: actualTurn, connections: server.clients.size };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
+test("EC54 EC60 BV22 BV36 with maxPlayers 1, the server accepts a player while the connection of the only other player is closing, and counts only the new player in PLAYERS and in the turn", async () => {
+    // Arrange
+    await applySettingsAndLeave({ ...DEFAULT_SETTINGS, maxPlayers: 1 });
+    const leavingPlayer = await connectPlayer();
+    const [leavingConnection] = server.clients;
+    // The player sends its close frame but never reads the answer, so the server keeps the connection closing.
+    leavingPlayer.close();
+    leavingPlayer.stopReading();
+    await vi.waitFor(() => expect(leavingConnection.readyState).toBe(leavingConnection.CLOSING));
+    const expected = { type: MESSAGE_TYPE.GAME, connections: 2, players: 1, turnAfterOneMove: [DIRECTION.UP] };
+
+    // Act
+    const player = openPlayer();
+    let actualPlayers = null;
+    let actualTurn = null;
+    player.nextMessage(MESSAGE_TYPE.PLAYERS).then(count => {
+        actualPlayers = count;
+    });
+    const actualType = (await firstMessage(player)).type;
+    player.nextMessage(MESSAGE_TYPE.MOVES).then(moves => {
+        actualTurn = moves;
+    });
+    player.sendMove(DIRECTION.UP);
+    await player.sync();
+    // The server still holds the connection of the leaving player.
+    const actual = {
+        type: actualType,
+        connections: server.clients.size,
+        players: actualPlayers,
+        turnAfterOneMove: actualTurn,
     };
 
     // Assert

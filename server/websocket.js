@@ -17,7 +17,27 @@ let alreadySentMove = [];
 function onConnect(webSocket) {
     console.log("+ connection");
 
+    // A client rejected over the player limit gets these listeners too, because it can send an invalid frame before
+    // its connection closes.
+    webSocket.on("close", () => {
+        console.log("- connection");
+        eliminateWebSocket(webSocket);
+    });
+
+    // ws rejects an invalid frame itself, for example a text frame that isn't valid UTF-8, and starts closing the
+    // connection with its own close code. An error without a listener would crash the server.
+    webSocket.on("error", error => {
+        console.log("- invalid frame: " + error.message);
+        eliminateWebSocket(webSocket);
+    });
+
+    if (webSockets.length >= settings.maxPlayers) {
+        rejectOverLimit(webSocket);
+        return;
+    }
+
     webSockets.push(webSocket);
+    eliminateWhenClosing(webSocket);
     if (webSockets.length == 1) {
         startANewGame();
     } else {
@@ -34,7 +54,7 @@ function onConnect(webSocket) {
         // Every client message is JSON in a text frame, so a binary frame is invalid even if its bytes are a valid MOVE.
         const message = isBinary ? null : parseClientMessage(data.toString());
         if (message === null) {
-            rejectClient(webSocket);
+            webSocket.close(CLOSE.INVALID_MESSAGE.CODE, CLOSE.INVALID_MESSAGE.REASON);
             return;
         }
 
@@ -47,18 +67,32 @@ function onConnect(webSocket) {
                 break;
         }
     });
+}
 
-    webSocket.on("close", () => {
-        console.log("- connection");
-        eliminateWebSocket(webSocket);
-    });
+/**
+ * Rejects a client that connects while maxPlayers or more players are connected. The client never becomes a player: it
+ * gets neither the game nor the number of players, and the server ignores its messages. The client hasn't broken any
+ * rule, so its connection closes normally.
+ */
+function rejectOverLimit(webSocket) {
+    console.log("x connection: " + webSockets.length + " players connected, maxPlayers " + settings.maxPlayers);
+    webSocket.send(JSON.stringify({ type: MESSAGE_TYPE.REJECTED, clearData: null }));
+    webSocket.close(CLOSE.REJECTED.CODE, CLOSE.REJECTED.REASON);
+}
 
-    // ws rejects an invalid frame itself, for example a text frame that isn't valid UTF-8, and starts closing the
-    // connection with its own close code. An error without a listener would crash the server.
-    webSocket.on("error", error => {
-        console.log("- invalid frame: " + error.message);
+/**
+ * Removes the player from the game as soon as the connection starts closing, not once it has closed. A player who has
+ * sent the close frame has left, like one the server disconnects for an invalid message or frame, but the connection
+ * closes only once the player's network answers, which takes up to 30 s if it stalls. The limit, PLAYERS and the turn
+ * must not count the player in the meantime. ws has no event for the close frame, but it calls the close method of
+ * the web socket itself on receiving the close frame or an invalid frame, so the method is wrapped.
+ */
+function eliminateWhenClosing(webSocket) {
+    const close = webSocket.close;
+    webSocket.close = function (...args) {
         eliminateWebSocket(webSocket);
-    });
+        close.apply(webSocket, args);
+    };
 }
 
 function handleMove(webSocket, move) {
@@ -90,18 +124,9 @@ function hasAlreadySentMove(webSocket) {
 }
 
 /**
- * Closes the connection of a client that sent an invalid message, for example an outdated client. The client may
- * already consider its move sent, so the turn would otherwise wait for it forever. The client is removed from the turn
- * right away, because the connection closes only once the client answers the close frame.
- */
-function rejectClient(webSocket) {
-    eliminateWebSocket(webSocket);
-    webSocket.close(CLOSE.INVALID_MESSAGE.CODE, CLOSE.INVALID_MESSAGE.REASON);
-}
-
-/**
- * Removes the web socket from the game. A rejected client is removed twice, on rejection or on an invalid frame and
- * then on close; the second call does nothing.
+ * Removes the web socket from the game. A leaving player is removed when the connection starts closing and again when
+ * it has closed; the second call does nothing, but it is the only one for a connection that drops without a close
+ * frame. A client rejected over the player limit is never added, so calls for it do nothing either.
  */
 function eliminateWebSocket(webSocket) {
     const index = webSockets.indexOf(webSocket);
