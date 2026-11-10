@@ -24,13 +24,29 @@ tableContext.imageSmoothingEnabled = false;
 stateContext.imageSmoothingEnabled = false;
 settingsContext.imageSmoothingEnabled = false;
 
-const SQUARE = {};
+// The size of a tile of the map on its canvas: the size of a tile in the images, so everything is drawn without scaling,
+// at whole pixels. The browser scales the canvas to the page, see game.css.
+const SQUARE = { width: viewParams.sourceTileSize, height: viewParams.sourceTileSize };
 // The size of a digit of the points and the number of players. Their canvas doesn't change with the size of the map.
 const DIGIT_SIZE = viewParams.sourceTileSize;
 
+/**
+ * Fits the canvases of the map and of the objects to a map of mapWidth × mapHeight tiles. A map of another size has
+ * a canvas of another size, instead of tiles which don't fit the canvas into whole pixels: the edges of a tile at
+ * fractional coordinates are blended with the transparent canvas, so a line of the page shows between the tiles.
+ * The canvases are cleared, which is what setting their size does, even to the size they already have. The hero and
+ * the dust of the previous game rely on that, so keep setting the size of the canvases for every game.
+ */
 function initSquareProportions(mapWidth, mapHeight) {
-    SQUARE.width = mapCanvas.width / mapWidth;
-    SQUARE.height = mapCanvas.height / mapHeight;
+    for (const [canvas, context] of [
+        [mapCanvas, mapContext],
+        [objectCanvas, objectContext],
+    ]) {
+        canvas.width = mapWidth * SQUARE.width;
+        canvas.height = mapHeight * SQUARE.height;
+        // Setting the size of a canvas resets its context.
+        context.imageSmoothingEnabled = false;
+    }
 }
 
 /**

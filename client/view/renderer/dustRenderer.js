@@ -9,9 +9,23 @@ import * as images from "../images.js";
 const DUST_ANIMATION_INTERVAL = 150;
 
 /**
+ * The sprite sheet of the dust, loaded at the import, so drawDust is synchronous: nothing can reset the dusts between
+ * choosing the dust to draw and drawing it.
+ */
+const IMAGE = await images.getImage("DUST");
+
+/**
  * Coordinations of animation "dusts", that use to be displayed behind the hero after he/she moves.
  */
 let dusts = [];
+
+/**
+ * Forgets the dust of the previous game: its positions are on the map of that game, which can have another size. It
+ * doesn't clear the canvas, which drawingContext.initSquareProportions does.
+ */
+export function reset() {
+    dusts = [];
+}
 
 export function addDust(dustyPosition) {
     dusts[dusts.length] = { position: dustyPosition, spawnTime: calculateSpawnTime(), phase: 0, toBeDrawn: true };
@@ -83,7 +97,7 @@ function clearDust(dust) {
     );
 }
 
-async function drawDust(i) {
+function drawDust(i) {
     const dust = dusts[i];
     const sourceOrigin = dustParser.calculateDustSourceOrigin(dust);
     if (!sourceOrigin) {
@@ -91,7 +105,6 @@ async function drawDust(i) {
         return;
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(dust.position);
-    const IMAGE = await images.getImage("DUST");
     drawingContext.objectContext.drawImage(
         IMAGE,
         sourceOrigin.x,

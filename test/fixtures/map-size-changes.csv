@@ -1,0 +1,7 @@
+name,previousMapSize,nextMapSize
+smallest map to the largest map,5,20
+largest map to the smallest map,20,5
+default map to a smaller map,14,9
+smaller map to the default map,9,14
+default map to a map of the same size,14,14
+default map to the next larger map,14,15

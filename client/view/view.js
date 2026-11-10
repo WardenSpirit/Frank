@@ -22,6 +22,10 @@ export async function renderGame(renderedGame) {
     const textures = renderedGame.settings;
     await images.getTextureImages(textures);
     drawingContext.initSquareProportions(renderedGame.map.length, renderedGame.map[0].length);
+    // The canvas of the hero and the dust is cleared by now. Forget the hero and the dust of the previous game before the
+    // first await below, so the animation can't draw them on the canvas of this game, at positions of the previous map.
+    heroRenderer.reset();
+    dustRenderer.reset();
 
     await heroRenderer.loadHeroImage(textures);
     await terrainRenderer.renderMap(renderedGame.map, textures);
