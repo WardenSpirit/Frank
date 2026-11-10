@@ -8,22 +8,27 @@ import * as statsRenderer from "./renderer/statsRenderer.js";
 import * as infoTextRenderer from "./renderer/infoTextRenderer.js";
 import * as drawingContext from "./renderer/drawingContext.js";
 import * as settingsRenderer from "./renderer/settingsRenderer.js";
+import * as images from "./images.js";
 import * as settings from "../settings.js";
 
 let infoTextID;
 
 /**
- * Displays the specified game on the screen.
+ * Displays the specified game on the screen with the textures of its settings. Rejects, before anything is drawn, when
+ * an image of the textures fails to load, so the screen keeps the previous game.
  * @param renderedGame The game to be rendered.
  */
-export function renderGame(renderedGame) {
+export async function renderGame(renderedGame) {
+    const textures = renderedGame.settings;
+    await images.getTextureImages(textures);
     drawingContext.initSquareProportions(renderedGame.map.length, renderedGame.map[0].length);
 
-    terrainRenderer.renderMap(renderedGame.map);
+    await heroRenderer.loadHeroImage(textures);
+    await terrainRenderer.renderMap(renderedGame.map, textures);
     heroRenderer.setNewPosition(renderedGame.heroPosition);
     heroRenderer.startRenderingHero();
     dustRenderer.startRenderingDust();
-    treasureRenderer.renderTreasure(renderedGame.treasurePosition);
+    treasureRenderer.renderTreasure(renderedGame.treasurePosition, textures);
     tableRenderer.renderTable();
     statsRenderer.renderPoints(renderedGame.points);
     setInfoText("use arrows or drag", 5000);
@@ -45,11 +50,12 @@ export function clearSettings() {
  * Displays the move specified by old and new coordinations pairs on the screen.
  * @param oldHeroPosition The position which the hero moves from.
  * @param newHeroPosition The position which the hero moves to.
+ * @param direction The direction of the move, which the hero turns to.
  */
-export function displayMove(oldHeroPosition, newHeroPosition) {
+export function displayMove(oldHeroPosition, newHeroPosition, direction) {
     dustRenderer.addDust(oldHeroPosition);
     dustRenderer.removeDust(newHeroPosition);
-    heroRenderer.setNewPosition(newHeroPosition);
+    heroRenderer.setNewPosition(newHeroPosition, direction);
 }
 
 export function displayFilter(isGood) {

@@ -14,8 +14,8 @@ const { CLOSE, DIRECTION, MESSAGE_TYPE } = require("../shared/protocol.json");
 const CLOSE_CODE_INVALID_DATA = 1007;
 const DEFAULT_SETTINGS = getDefaultSettings();
 // Every field differs from the default; without holes the hero can only end the game at the treasure.
-const CHANGED_SETTINGS = { mapSize: 5, holeRatio: 0, actors: "cat", tiles: "garden", maxPlayers: 5, timeLimit: 30 };
-const OTHER_SETTINGS = { mapSize: 20, holeRatio: 40, actors: "snake", tiles: "garden", maxPlayers: 1, timeLimit: 120 };
+const CHANGED_SETTINGS = { mapSize: 5, holeRatio: 0, actors: "snake", tiles: "volcano", maxPlayers: 5, timeLimit: 30 };
+const OTHER_SETTINGS = { mapSize: 20, holeRatio: 40, actors: "cat", tiles: "volcano", maxPlayers: 1, timeLimit: 120 };
 const DEFAULT_TIME_LIMIT_MS = DEFAULT_SETTINGS.timeLimit * 1000;
 const CHANGED_TIME_LIMIT_MS = CHANGED_SETTINGS.timeLimit * 1000;
 

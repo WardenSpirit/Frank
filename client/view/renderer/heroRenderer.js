@@ -10,9 +10,21 @@ let oldHeroSourceOrigin = { x: 0, y: 0 };
 
 let heroToRedraw = true;
 
-let heroState = "STANDING";
+let heroState = heroParser.STANDING;
+let heroImage;
 
-export function setNewPosition(newHeroPosition) {
+/**
+ * Loads the sprite sheet of the hero for the textures. The hero is drawn from it from now on.
+ */
+export async function loadHeroImage(textures) {
+    heroImage = await images.getImage("HERO", textures);
+}
+
+/**
+ * Moves the hero to the position and turns it to the direction. A new game has no move, so the hero stands then.
+ */
+export function setNewPosition(newHeroPosition, direction = heroParser.STANDING) {
+    heroState = direction;
     targetOriginsToClear.push({ x: heroTargetOrigin.x, y: heroTargetOrigin.y });
     heroTargetOrigin = drawingContext.calculateTargetOrigin(newHeroPosition);
     heroToRedraw = true;
@@ -20,7 +32,7 @@ export function setNewPosition(newHeroPosition) {
 
 export function startRenderingHero() {
     requestAnimationFrame(function animateHero(currentTime) {
-        let heroSourceOrigin = heroParser.calculateHeroSourceOrigin(heroState, currentTime);
+        let heroSourceOrigin = heroParser.calculateHeroSourceOrigin(heroState, currentTime, heroImage);
         const sourceChanged =
             heroSourceOrigin.x != oldHeroSourceOrigin.x || heroSourceOrigin.y != oldHeroSourceOrigin.y;
         if (sourceChanged) {
@@ -51,10 +63,9 @@ function clearHero(targetOriginsToClear) {
     }
 }
 
-async function drawHero(heroSourceOrigin, heroTargetOrigin) {
-    const IMAGE = await images.getImage("HERO");
+function drawHero(heroSourceOrigin, heroTargetOrigin) {
     drawingContext.objectContext.drawImage(
-        IMAGE,
+        heroImage,
         heroSourceOrigin.x,
         heroSourceOrigin.y,
         viewParams.sourceTileSize,

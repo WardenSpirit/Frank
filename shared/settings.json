@@ -2,12 +2,12 @@
     "actors": {
         "type": "string",
         "values": ["snake", "cat"],
-        "default": "snake"
+        "default": "cat"
     },
     "tiles": {
         "type": "string",
         "values": ["volcano", "garden"],
-        "default": "volcano"
+        "default": "garden"
     },
     "mapSize": {
         "type": "number",

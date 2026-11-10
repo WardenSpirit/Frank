@@ -11,4 +11,11 @@ function getTileSourceOrigin(row, column) {
     };
 }
 
-export { getRandomOriginInLine, getTileSourceOrigin };
+/**
+ * Returns the number of tiles in a line of the sprite sheet.
+ */
+function getTileCountInLine(image) {
+    return image.width / viewParams.sourceTileSize;
+}
+
+export { getRandomOriginInLine, getTileSourceOrigin, getTileCountInLine };

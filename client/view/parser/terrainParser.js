@@ -1,23 +1,13 @@
 import protocol from "../../../shared/protocol.json" with { type: "json" };
-import viewParams from "../viewParams.json" with { type: "json" };
 import * as generalTileParser from "./generalTileParser.js";
-import * as images from "../images.js";
 
 const { TERRAIN } = protocol;
 
 /**
- * Parameters which are used when calculating the correct part of picture source. That part is then drew on the canvases.
+ * Returns the source origin of a random path tile of the sprite sheet.
  */
-const IMAGE = await images.getImage("PATH");
-const PATH_COUNT = IMAGE.width / viewParams.sourceTileSize;
-
-/**
- * Returns the origin (x, y in pixels) of a randomly chosen path tile in the PATH image.
- */
-function getPathSource() {
-    let sourceOrigin;
-    sourceOrigin = getPathOrigin();
-    return sourceOrigin;
+function getPathSource(pathImage) {
+    return getPathOrigin(generalTileParser.getTileCountInLine(pathImage));
 }
 
 function getHoleSource(map, position) {
@@ -27,8 +17,8 @@ function getHoleSource(map, position) {
     return sourceOrigin;
 }
 
-function getPathOrigin() {
-    return generalTileParser.getRandomOriginInLine(0, PATH_COUNT);
+function getPathOrigin(pathCount) {
+    return generalTileParser.getRandomOriginInLine(0, pathCount);
 }
 
 function getHoleOrigin(map, position) {

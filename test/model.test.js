@@ -7,7 +7,7 @@ const { PATH, HOLE } = TERRAIN;
 
 // The model needs no canvases to decide whether the game goes on.
 vi.mock("../client/view/view.js", () => ({
-    renderGame: vi.fn(),
+    renderGame: vi.fn(async () => {}),
     displayMove: vi.fn(),
     displayFilter: vi.fn(),
     displayPoints: vi.fn(),
@@ -173,7 +173,7 @@ test.each([
         gainPoints(points);
         const game = { ...createGame(), gameId: 2, ...timeoutField };
         let actualRenderedPoints;
-        view.renderGame.mockImplementation(renderedGame => {
+        view.renderGame.mockImplementation(async renderedGame => {
             actualRenderedPoints = renderedGame.points;
         });
         vi.clearAllMocks(); // the calls of the setup aren't under test
@@ -205,11 +205,34 @@ test("TL-EC14 TL-EC15 the point lost on a timeout stays lost in the next game", 
     expect(actualPoints).toEqual(expectedPoints);
 });
 
+// A game whose image fails to load isn't drawn, so the screen keeps the previous game. The model still holds the new
+// game and takes its moves; updateGame catches the rejection of renderGame. The mock of renderGame returns an object with
+// only catch, because a real rejected promise would be handled by the spy itself and never count as unhandled.
+test("updateGame catches the rejection of renderGame and the hero still moves", () => {
+    // Arrange
+    const game = createGame();
+    const rendering = { catch: vi.fn() };
+    view.renderGame.mockReturnValue(rendering);
+    const expected = { catchHandlerType: "function", moveResult: true, heroPosition: { x: 1, y: 2 } };
+
+    // Act
+    model.updateGame(game);
+    const moveResult = model.applyMoves([DIRECTION.DOWN]);
+    const actual = {
+        catchHandlerType: typeof rendering.catch.mock.calls[0]?.[0],
+        moveResult,
+        heroPosition: game.heroPosition,
+    };
+
+    // Assert
+    expect(actual).toEqual(expected);
+});
+
 test("closeConnection drops the active and pending settings", () => {
     // Arrange
-    model.updateGame({ ...createGame(), settings: { ...getDefaultSettings(), tiles: "garden" } });
+    model.updateGame({ ...createGame(), settings: { ...getDefaultSettings(), tiles: "volcano" } });
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
     const expectedEdited = getDefaultSettings();
 

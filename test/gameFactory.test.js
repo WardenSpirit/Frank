@@ -204,7 +204,7 @@ test("createGame gives each new game the next gameId", () => {
 test("createGame keeps the settings it was given", () => {
     // Arrange
     const factory = new GameFactory(seededRandom(5));
-    const settings = { ...getDefaultSettings(), mapSize: 9, actors: "cat" };
+    const settings = { ...getDefaultSettings(), mapSize: 9, actors: "snake" };
     const expected = { ...settings };
 
     // Act

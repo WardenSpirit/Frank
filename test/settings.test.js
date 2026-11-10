@@ -61,12 +61,12 @@ test("submitSettingsForm returns the edited settings with all fields when values
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     const expectedSubmitted = {
         mapSize: 14,
         holeRatio: 33,
-        actors: "cat",
-        tiles: "volcano",
+        actors: "snake",
+        tiles: "garden",
         maxPlayers: 10,
         timeLimit: 60,
     };
@@ -98,7 +98,7 @@ test("openSettingsForm opens with the default settings before the first game com
 test("submitSettingsForm returns null before the first game comes", () => {
     // Arrange
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
 
     // Act
     const actualSubmitted = settings.submitSettingsForm();
@@ -113,9 +113,9 @@ test("openSettingsForm opens with the pending settings until a game with other s
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
-    const expectedEdited = { ...getDefaultSettings(), actors: "cat" };
+    const expectedEdited = { ...getDefaultSettings(), actors: "snake" };
 
     // Act
     settings.openSettingsForm();
@@ -129,7 +129,7 @@ test("submitSettingsForm returns null when the pending settings are applied agai
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
     settings.openSettingsForm();
 
@@ -144,10 +144,10 @@ test("submitSettingsForm returns an edit back to the active settings while other
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' back to 'snake'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' back to 'cat'
     const expectedSubmitted = getDefaultSettings();
 
     // Act
@@ -161,9 +161,9 @@ test("receiveSettings drops the pending settings when a game with other settings
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
-    const appliedSettings = { ...getDefaultSettings(), tiles: "garden" };
+    const appliedSettings = { ...getDefaultSettings(), tiles: "volcano" };
     const expectedEdited = appliedSettings;
 
     // Act
@@ -179,9 +179,9 @@ test("receiveSettings keeps the pending settings when a game with the same setti
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
-    const expectedEdited = { ...getDefaultSettings(), actors: "cat" };
+    const expectedEdited = { ...getDefaultSettings(), actors: "snake" };
 
     // Act
     settings.receiveSettings(getDefaultSettings());
@@ -194,9 +194,9 @@ test("receiveSettings keeps the pending settings when a game with the same setti
 
 test("dropSettings makes the form open with the default settings and submit nothing", () => {
     // Arrange
-    settings.receiveSettings({ ...getDefaultSettings(), tiles: "garden" });
+    settings.receiveSettings({ ...getDefaultSettings(), tiles: "volcano" });
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
     const expectedEdited = getDefaultSettings();
 
@@ -204,7 +204,7 @@ test("dropSettings makes the form open with the default settings and submit noth
     settings.dropSettings();
     settings.openSettingsForm();
     const actualEdited = settings.getEditedSettings();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     const actualSubmitted = settings.submitSettingsForm();
 
     // Assert
@@ -228,9 +228,9 @@ test("submitSettingsForm returns null when values are unchanged", () => {
 
 test("submitSettingsForm judges changes against the settings of the last game", () => {
     // Arrange
-    settings.receiveSettings({ ...getDefaultSettings(), actors: "cat" });
+    settings.receiveSettings({ ...getDefaultSettings(), actors: "snake" });
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake', the default
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat', the default
     const expectedSubmitted = getDefaultSettings();
 
     // Act
@@ -244,8 +244,8 @@ test("submitSettingsForm returns null when an edit equals the settings another p
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
-    settings.receiveSettings({ ...getDefaultSettings(), actors: "cat" });
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
+    settings.receiveSettings({ ...getDefaultSettings(), actors: "snake" });
 
     // Act
     const actualSubmitted = settings.submitSettingsForm();
@@ -260,7 +260,7 @@ test("receiveSettings keeps the edits in an open form", () => {
     settings.openSettingsForm();
     settings.setHighlightedItem("mapSize");
     settings.stepHighlightedSetting(1); // edited mapSize = 15
-    const appliedSettings = { ...getDefaultSettings(), tiles: "garden" };
+    const appliedSettings = { ...getDefaultSettings(), tiles: "volcano" };
     const expectedEdited = { ...getDefaultSettings(), mapSize: 15 };
     const expectedSubmitted = expectedEdited;
 
@@ -278,10 +278,10 @@ test("receiveSettings keeps the edits in an open form", () => {
 test("submitSettingsForm returns settings the server accepts after edits begun before the first game", () => {
     // Arrange
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.receiveSettings(getDefaultSettings());
     const submitted = settings.submitSettingsForm();
-    const expectedParsed = { ...getDefaultSettings(), actors: "cat" };
+    const expectedParsed = { ...getDefaultSettings(), actors: "snake" };
 
     // Act
     const actualParsed = parseSettings(submitted);
@@ -326,12 +326,12 @@ test("closeSettingsForm discards edits against the pending settings", () => {
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     settings.openSettingsForm();
-    settings.stepHighlightedSetting(1); // changes 'actors' from 'snake' to 'cat'
+    settings.stepHighlightedSetting(1); // changes 'actors' from 'cat' to 'snake'
     settings.submitSettingsForm();
     settings.openSettingsForm();
     settings.setHighlightedItem("mapSize");
     settings.stepHighlightedSetting(1); // edited mapSize = 15
-    const expectedEdited = { ...getDefaultSettings(), actors: "cat" };
+    const expectedEdited = { ...getDefaultSettings(), actors: "snake" };
 
     // Act
     settings.closeSettingsForm();
@@ -347,8 +347,8 @@ test("getDefaultSettings returns all configured default values", () => {
     const expectedDefaults = {
         mapSize: 14,
         holeRatio: 33,
-        actors: "snake",
-        tiles: "volcano",
+        actors: "cat",
+        tiles: "garden",
         maxPlayers: 10,
         timeLimit: 60,
     };

@@ -1,8 +1,9 @@
 import viewParams from "../viewParams.json" with { type: "json" };
 import * as images from "../images.js";
+import * as generalTileParser from "./generalTileParser.js";
 
 const IMAGE = await images.getImage("DUST");
-const DUST_COUNT = IMAGE.width / viewParams.sourceTileSize;
+const DUST_COUNT = generalTileParser.getTileCountInLine(IMAGE);
 const Y = 0;
 
 export function calculateDustSourceOrigin(dust) {

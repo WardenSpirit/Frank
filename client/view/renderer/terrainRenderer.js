@@ -6,24 +6,32 @@ import * as images from "../images.js";
 
 const { TERRAIN } = protocol;
 
-export async function renderMap(map) {
+/**
+ * Draws the map with the images of the textures. Resolves when the whole map is drawn.
+ */
+export async function renderMap(map, textures) {
+    const [pathImage, holeImage] = await Promise.all([
+        images.getImage("PATH", textures),
+        images.getImage("HOLE", textures),
+    ]);
+
     drawingContext.mapContext.clearRect(0, 0, drawingContext.mapCanvas.width, drawingContext.mapCanvas.height);
 
     for (let x = 0; x < map.length; x++) {
         for (let y = 0; y < map[x].length; y++) {
-            renderTerrain(map, { x: x, y: y });
+            renderTerrain(map, { x: x, y: y }, pathImage, holeImage);
         }
     }
 }
 
-async function renderTerrain(map, position) {
+function renderTerrain(map, position, pathImage, holeImage) {
     let sourceOrigin;
     let image;
     if (map[position.x][position.y] === TERRAIN.PATH) {
-        image = await images.getImage("PATH");
-        sourceOrigin = terrainParser.getPathSource();
+        image = pathImage;
+        sourceOrigin = terrainParser.getPathSource(pathImage);
     } else {
-        image = await images.getImage("HOLE");
+        image = holeImage;
         sourceOrigin = terrainParser.getHoleSource(map, position);
     }
     const targetOrigin = drawingContext.calculateTargetOrigin(position);

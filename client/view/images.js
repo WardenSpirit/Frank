@@ -1,16 +1,36 @@
+import settingsSchema from "../../shared/settings.json" with { type: "json" };
+
 const ASSETS_PATH = "../view/assets/";
 const SETTINGS_ASSETS_PATH = ASSETS_PATH + "settings/png/";
+const TEXTURES_PATH = ASSETS_PATH + "textures/";
 
+// The only registry of the titles: a title maps to the path of its image, or, for an image which depends on a texture
+// set, to a function which returns the path for the textures.
 const IMAGE_PATHS = new Map();
 const IMAGES = new Map();
 
+// The images which depend on a texture set: the `file` in the directory of the set which the settings pick for `kind`.
+const TEXTURE_IMAGES = new Map([
+    ["HERO", { kind: "actors", file: "Hero.png" }],
+    ["TREASURE", { kind: "actors", file: "Treasure.png" }],
+    ["PATH", { kind: "tiles", file: "Path.png" }],
+    ["HOLE", { kind: "tiles", file: "Hole.png" }],
+]);
+
+function textureImagePath({ kind, file }, texture) {
+    if (!settingsSchema[kind].values.includes(texture)) {
+        throw new Error(`Unknown ${kind} texture: ${texture}`);
+    }
+    return `${TEXTURES_PATH}${kind}/${texture}/${file}`;
+}
+
+for (const [title, textureImage] of TEXTURE_IMAGES) {
+    IMAGE_PATHS.set(title, textures => textureImagePath(textureImage, textures[textureImage.kind]));
+}
+
 export const charsToWidths = new Map();
 
-IMAGE_PATHS.set("PATH", ASSETS_PATH + "Path.png");
-IMAGE_PATHS.set("HOLE", ASSETS_PATH + "Hole.png");
-IMAGE_PATHS.set("HERO", ASSETS_PATH + "Hero.png");
 IMAGE_PATHS.set("DUST", ASSETS_PATH + "Dust.png");
-IMAGE_PATHS.set("TREASURE", ASSETS_PATH + "Treasure.png");
 IMAGE_PATHS.set("GOOD_FILTER", ASSETS_PATH + "Good_filter.png");
 IMAGE_PATHS.set("BAD_FILTER", ASSETS_PATH + "Bad_filter.png");
 IMAGE_PATHS.set("TABLE", ASSETS_PATH + "Table.png");
@@ -33,32 +53,74 @@ IMAGE_PATHS.set("SETTINGS_APPLY_DIM", SETTINGS_ASSETS_PATH + "apply_dim.png");
 IMAGE_PATHS.set("SETTINGS_CLOSE_DARK", SETTINGS_ASSETS_PATH + "close_dark.png");
 IMAGE_PATHS.set("SETTINGS_CLOSE_DIM", SETTINGS_ASSETS_PATH + "close_dim.png");
 
-let imagesPromise;
-
-async function loadImages() {
-    for (const [key, path] of IMAGE_PATHS) {
-        const image = new Image();
-        image.src = path;
-        await image.decode();
-        IMAGES.set(key, image);
-    }
-}
-
-export async function getImage(title) {
-    if (!imagesPromise) {
-        imagesPromise = loadImages();
-    }
-
-    await imagesPromise;
-
-    const image = IMAGES.get(title);
-
-    if (!image) {
+// Returns the path of the image of the title. Throws for an unknown title, for a title which depends on a texture
+// when the textures are missing, and for a texture which isn't in the settings.
+function getImagePath(title, textures) {
+    const path = IMAGE_PATHS.get(title);
+    if (path === undefined) {
         throw new Error(`Unknown image: ${title}`);
     }
-
-    return image;
+    if (typeof path === "string") {
+        return path;
+    }
+    if (!textures) {
+        throw new Error(`The image ${title} depends on a texture, so it needs the textures argument`);
+    }
+    return path(textures);
 }
+
+// Caches the promise of the image. A failed image leaves the cache, so the next call loads it again.
+function loadImage(path) {
+    if (!IMAGES.has(path)) {
+        IMAGES.set(
+            path,
+            (async () => {
+                try {
+                    const image = new Image();
+                    image.src = path;
+                    await image.decode();
+                    return image;
+                } catch (error) {
+                    IMAGES.delete(path);
+                    throw error;
+                }
+            })(),
+        );
+    }
+    return IMAGES.get(path);
+}
+
+/**
+ * Returns the image of the title.
+ *
+ * @param {string} title
+ * @param {{actors: string, tiles: string}} [textures] The applied settings, or any object with these two fields.
+ *     Required for the images which depend on a texture (HERO, TREASURE, PATH, HOLE).
+ * @returns {Promise<HTMLImageElement>}
+ */
+export function getImage(title, textures) {
+    return loadImage(getImagePath(title, textures));
+}
+
+/**
+ * Returns the images which depend on the textures (HERO, TREASURE, PATH, HOLE). Rejects when any of them fails, so a
+ * caller can draw all of them or none.
+ *
+ * @param {{actors: string, tiles: string}} textures
+ * @returns {Promise<HTMLImageElement[]>}
+ */
+export function getTextureImages(textures) {
+    return Promise.all([...TEXTURE_IMAGES.keys()].map(title => getImage(title, textures)));
+}
+
+// Loads the images of all texture sets of the settings (2 actors x 2 images + 2 tiles x 2 images) when the module is
+// loaded. A game then never waits for an image, so the rendering of a game finishes before a message of the next game
+// is handled and the games can't overwrite each other. A failed image is ignored here.
+await Promise.allSettled(
+    [...TEXTURE_IMAGES.values()].flatMap(textureImage =>
+        settingsSchema[textureImage.kind].values.map(texture => loadImage(textureImagePath(textureImage, texture))),
+    ),
+);
 
 charsToWidths.set("a", 6);
 charsToWidths.set("b", 5);

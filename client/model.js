@@ -22,7 +22,9 @@ export function updateGame(newGame) {
     newGame.points = points;
     game = newGame;
     settings.receiveSettings(game.settings);
-    view.renderGame(game);
+    // A game with an image which fails to load isn't drawn: the screen keeps the previous game and the hero can still
+    // move. The next game loads the image again.
+    view.renderGame(game).catch(() => {});
 }
 
 export function getGameId() {

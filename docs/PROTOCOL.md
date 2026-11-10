@@ -18,7 +18,7 @@ Every message is a JSON object sent as a text frame:
 | Position | `{"x": <column>, "y": <row>}`, zero-based; `UP` decreases `y`. The map wraps around at its edges. |
 | Map | An array of `mapSize` columns, each with `mapSize` values of `TERRAIN` (`0` path, `1` hole), indexed as `map[x][y]`, where `mapSize` is the one in the settings of the game. `mapSize`² · `holeRatio` / 100 squares, rounded down or up, are holes. |
 | Game ID | An integer that identifies a game. Each new game has one that differs from all previous games since the server started. Clients only send it back in `MOVE`. |
-| Settings | `{"mapSize": <integer>, "holeRatio": <integer>, "actors": <string>, "tiles": <string>, "maxPlayers": <integer>, "timeLimit": <integer>}` with every field of [`shared/settings.json`](../shared/settings.json), which defines the type, the allowed values and the default of each field. Ranges are inclusive and strings are case-sensitive. Only `mapSize`, `holeRatio`, `maxPlayers` and `timeLimit` take effect so far. |
+| Settings | `{"mapSize": <integer>, "holeRatio": <integer>, "actors": <string>, "tiles": <string>, "maxPlayers": <integer>, "timeLimit": <integer>}` with every field of [`shared/settings.json`](../shared/settings.json), which defines the type, the allowed values and the default of each field. Ranges are inclusive and strings are case-sensitive. `mapSize`, `holeRatio`, `maxPlayers` and `timeLimit` affect the game on the server. `actors` and `tiles` don't affect it: they only choose the textures that every client draws for the game: `actors` the hero and the treasure, `tiles` the path and the holes. |
 | Game | `{"map": <map>, "treasurePosition": <position>, "heroPosition": <position>, "gameId": <game ID>, "settings": <settings>, "remainingMs": <integer>}`, where `settings` are the ones the game was created with and `remainingMs` is the time left to the game in milliseconds at the moment the server sends it (see [Time limit](#time-limit)). The first game since the server started has the default settings. The `GAME` that a timeout starts has also the field `"timeout": true`; no other `GAME` has it, not even the one sent to a player who connects to that game. |
 
 ## Server → client
@@ -57,7 +57,7 @@ A game with the default settings, shortened to a 3×3 map; the real map has `map
         "treasurePosition": {"x": 2, "y": 1},
         "heroPosition": {"x": 0, "y": 0},
         "gameId": 1,
-        "settings": {"mapSize": 14, "holeRatio": 33, "actors": "snake", "tiles": "volcano", "maxPlayers": 10, "timeLimit": 60},
+        "settings": {"mapSize": 14, "holeRatio": 33, "actors": "cat", "tiles": "garden", "maxPlayers": 10, "timeLimit": 60},
         "remainingMs": 60000
     }
 }
@@ -75,7 +75,7 @@ The 60 s of the game above ran out, so the server starts the next game with the 
         "treasurePosition": {"x": 1, "y": 2},
         "heroPosition": {"x": 2, "y": 0},
         "gameId": 2,
-        "settings": {"mapSize": 14, "holeRatio": 33, "actors": "snake", "tiles": "volcano", "maxPlayers": 10, "timeLimit": 60},
+        "settings": {"mapSize": 14, "holeRatio": 33, "actors": "cat", "tiles": "garden", "maxPlayers": 10, "timeLimit": 60},
         "remainingMs": 60000,
         "timeout": true
     }
@@ -123,10 +123,10 @@ The player moves up in the game with `gameId` 1.
 
 ### Example: `SETTINGS`
 
-The player applies a 20×20 map with 40 % holes and the cat textures.
+The player applies a 20×20 map with 40 % holes and the snake and volcano textures.
 
 ```json
-{"type": "SETTINGS", "clearData": {"mapSize": 20, "holeRatio": 40, "actors": "cat", "tiles": "garden", "maxPlayers": 10, "timeLimit": 60}}
+{"type": "SETTINGS", "clearData": {"mapSize": 20, "holeRatio": 40, "actors": "snake", "tiles": "volcano", "maxPlayers": 10, "timeLimit": 60}}
 ```
 
 ## Message flow

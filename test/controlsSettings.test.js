@@ -31,7 +31,7 @@ test("handleKeyDown leaves Enter unhandled and sends nothing while the form is c
     // Arrange
     settings.receiveSettings(getDefaultSettings());
     keyDown("KeyS");
-    handleDirection("right"); // changes 'actors' from 'snake' to 'cat'
+    handleDirection("right"); // changes 'actors' from 'cat' to 'snake'
     keyDown("Escape");
 
     // Act
@@ -49,8 +49,8 @@ test("handleKeyDown sends the edited settings on Apply with an open connection",
     connection.isConnected.mockReturnValue(true);
     settings.receiveSettings(getDefaultSettings());
     keyDown("KeyS");
-    handleDirection("right"); // changes 'actors' from 'snake' to 'cat'
-    const expectedSettings = { ...getDefaultSettings(), actors: "cat" };
+    handleDirection("right"); // changes 'actors' from 'cat' to 'snake'
+    const expectedSettings = { ...getDefaultSettings(), actors: "snake" };
     settings.setHighlightedItem("APPLY");
 
     // Act
@@ -70,7 +70,7 @@ test("handleKeyDown closes the form and drops the edits on Apply without an open
     connection.isConnected.mockReturnValue(false);
     settings.receiveSettings(getDefaultSettings());
     keyDown("KeyS");
-    handleDirection("right"); // changes 'actors' from 'snake' to 'cat'
+    handleDirection("right"); // changes 'actors' from 'cat' to 'snake'
     settings.setHighlightedItem("APPLY");
 
     // Act
