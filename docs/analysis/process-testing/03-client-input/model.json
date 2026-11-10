@@ -1,0 +1,705 @@
+{
+    "graphId": null,
+    "name": "Frank CP1 - Touch gesture recognition and dispatch",
+    "description": "The player makes a touch gesture. The client recognises swipes, taps, long presses and two-finger taps, then sends the recognised action to the active screen. Cancelled gestures are ignored.",
+    "publishStatus": null,
+    "folderId": null,
+    "ownerId": null,
+    "readUsersIds": [],
+    "categories": [],
+    "start": {
+        "innerId": 1,
+        "description": "",
+        "name": "Start",
+        "x": 190,
+        "y": 80,
+        "categories": [],
+        "attributes": [],
+        "viewModifier": {
+            "priority": 1,
+            "nodeSize": "default",
+            "nodeFillColor": "default",
+            "nodeOutlineColor": "default",
+            "edgeColor": "default",
+            "label": "The player begins a touch gesture."
+        }
+    },
+    "nodes": [
+        {
+            "innerId": 2,
+            "description": "",
+            "name": "TRACK",
+            "x": 210,
+            "y": 255,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Track touch positions, movement and duration"
+            }
+        },
+        {
+            "innerId": 3,
+            "description": "",
+            "name": "CANCELLED",
+            "x": 210,
+            "y": 445,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Was the touch cancelled?"
+            }
+        },
+        {
+            "innerId": 4,
+            "description": "",
+            "name": "RELEASED",
+            "x": 550,
+            "y": 450,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Are all fingers lifted after a tracked start?"
+            }
+        },
+        {
+            "innerId": 5,
+            "description": "",
+            "name": "FINAL",
+            "x": 940,
+            "y": 450,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is the final touch position available?"
+            }
+        },
+        {
+            "innerId": 6,
+            "description": "",
+            "name": "FINGERS",
+            "x": 1270,
+            "y": 450,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "How many fingers were used?"
+            }
+        },
+        {
+            "innerId": 7,
+            "description": "",
+            "name": "TWO_TAP",
+            "x": 1270,
+            "y": 740,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Did both fingers move at most 15 px?"
+            }
+        },
+        {
+            "innerId": 8,
+            "description": "",
+            "name": "LONG_TAP",
+            "x": 1700,
+            "y": 450,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Held at least 400 ms and moved at most 15 px?"
+            }
+        },
+        {
+            "innerId": 9,
+            "description": "",
+            "name": "HORIZONTAL",
+            "x": 2040,
+            "y": 720,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is abs(dx) > abs(dy) + 5?"
+            }
+        },
+        {
+            "innerId": 10,
+            "description": "",
+            "name": "VERTICAL",
+            "x": 2600,
+            "y": 710,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is abs(dy) > abs(dx) + 5?"
+            }
+        },
+        {
+            "innerId": 11,
+            "description": "",
+            "name": "DX",
+            "x": 2040,
+            "y": 1110,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Which horizontal direction?"
+            }
+        },
+        {
+            "innerId": 12,
+            "description": "",
+            "name": "DY",
+            "x": 2610,
+            "y": 1110,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Which vertical direction?"
+            }
+        },
+        {
+            "innerId": 13,
+            "description": "",
+            "name": "RIGHT",
+            "x": 1840,
+            "y": 1480,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Dispatch right direction to active screen"
+            }
+        },
+        {
+            "innerId": 14,
+            "description": "",
+            "name": "LEFT",
+            "x": 2180,
+            "y": 1480,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Dispatch left direction to active screen"
+            }
+        },
+        {
+            "innerId": 15,
+            "description": "",
+            "name": "UP",
+            "x": 2490,
+            "y": 1480,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Dispatch up direction to active screen"
+            }
+        },
+        {
+            "innerId": 16,
+            "description": "",
+            "name": "DOWN",
+            "x": 2800,
+            "y": 1480,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Dispatch down direction to active screen"
+            }
+        },
+        {
+            "innerId": 17,
+            "description": "",
+            "name": "TAP",
+            "x": 3090,
+            "y": 710,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Dispatch tap to settings buttons or music control"
+            }
+        },
+        {
+            "innerId": 18,
+            "description": "",
+            "name": "TOGGLE",
+            "x": 1270,
+            "y": 1110,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Toggle the settings panel"
+            }
+        },
+        {
+            "innerId": 19,
+            "description": "",
+            "name": "NO_ACTION",
+            "x": 190,
+            "y": 1100,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "No action dispatched for this touch event"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "innerId": 1,
+            "description": "",
+            "source": 1,
+            "target": 2,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": null
+            }
+        },
+        {
+            "innerId": 2,
+            "description": "",
+            "source": 2,
+            "target": 3,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": null
+            }
+        },
+        {
+            "innerId": 3,
+            "description": "",
+            "source": 3,
+            "target": 4,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no (normal touchend)"
+            }
+        },
+        {
+            "innerId": 4,
+            "description": "",
+            "source": 3,
+            "target": 19,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes (touchcancel or cancelled)"
+            }
+        },
+        {
+            "innerId": 5,
+            "description": "",
+            "source": 4,
+            "target": 5,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 6,
+            "description": "",
+            "source": 4,
+            "target": 19,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no (wait for next touchend)"
+            }
+        },
+        {
+            "innerId": 7,
+            "description": "",
+            "source": 5,
+            "target": 6,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 8,
+            "description": "",
+            "source": 5,
+            "target": 19,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 9,
+            "description": "",
+            "source": 6,
+            "target": 7,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "2 fingers"
+            }
+        },
+        {
+            "innerId": 10,
+            "description": "",
+            "source": 6,
+            "target": 8,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "1 finger"
+            }
+        },
+        {
+            "innerId": 11,
+            "description": "",
+            "source": 6,
+            "target": 19,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "3 or more fingers"
+            }
+        },
+        {
+            "innerId": 12,
+            "description": "",
+            "source": 7,
+            "target": 18,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 13,
+            "description": "",
+            "source": 7,
+            "target": 19,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 14,
+            "description": "",
+            "source": 8,
+            "target": 9,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 15,
+            "description": "",
+            "source": 8,
+            "target": 18,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 16,
+            "description": "",
+            "source": 9,
+            "target": 10,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 17,
+            "description": "",
+            "source": 9,
+            "target": 11,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 18,
+            "description": "",
+            "source": 10,
+            "target": 12,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 19,
+            "description": "",
+            "source": 10,
+            "target": 17,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no (tap)"
+            }
+        },
+        {
+            "innerId": 20,
+            "description": "",
+            "source": 11,
+            "target": 13,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "dx > 0"
+            }
+        },
+        {
+            "innerId": 21,
+            "description": "",
+            "source": 11,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "dx < 0"
+            }
+        },
+        {
+            "innerId": 22,
+            "description": "",
+            "source": 12,
+            "target": 15,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "dy < 0"
+            }
+        },
+        {
+            "innerId": 23,
+            "description": "",
+            "source": 12,
+            "target": 16,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "dy > 0"
+            }
+        }
+    ]
+}

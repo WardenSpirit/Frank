@@ -1,0 +1,420 @@
+{
+    "testSetName": "TDL 2",
+    "graphName": "Frank CP1 - WebSocket client frame: validate and dispatch",
+    "algorithmType": "PCT",
+    "tdl": 2,
+    "reduction": false,
+    "showNodes": false,
+    "testPaths": [
+        {
+            "testPathId": 1,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 8,
+                    "edgeLabel": "SETTINGS"
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 25,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 16,
+                    "edgeLabel": "yes"
+                }
+            ]
+        },
+        {
+            "testPathId": 2,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "MOVE"
+                },
+                {
+                    "edgeId": 18,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 20,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 22,
+                    "edgeLabel": "yes"
+                }
+            ]
+        },
+        {
+            "testPathId": 3,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 4,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 4,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 5,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 6,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 6,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "other message type"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 7,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 8,
+                    "edgeLabel": "SETTINGS"
+                },
+                {
+                    "edgeId": 11,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 8,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 8,
+                    "edgeLabel": "SETTINGS"
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 25,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 13,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 9,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 8,
+                    "edgeLabel": "SETTINGS"
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 25,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 15,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 10,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "MOVE"
+                },
+                {
+                    "edgeId": 17,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 11,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "MOVE"
+                },
+                {
+                    "edgeId": 18,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 19,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 12,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "MOVE"
+                },
+                {
+                    "edgeId": 18,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 20,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 21,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        },
+        {
+            "testPathId": 13,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 8,
+                    "edgeLabel": "SETTINGS"
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 24,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 23
+                }
+            ]
+        }
+    ]
+}

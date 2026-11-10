@@ -1,0 +1,390 @@
+{
+    "testSetName": "TDL 2",
+    "graphName": "Frank CP1 - Touch gesture recognition and dispatch",
+    "algorithmType": "PCT",
+    "tdl": 2,
+    "reduction": false,
+    "showNodes": false,
+    "testPaths": [
+        {
+            "testPathId": 1,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "1 finger"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 17,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 20,
+                    "edgeLabel": "dx \u003e 0"
+                }
+            ]
+        },
+        {
+            "testPathId": 2,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "1 finger"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 17,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 21,
+                    "edgeLabel": "dx \u003c 0"
+                }
+            ]
+        },
+        {
+            "testPathId": 3,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "1 finger"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 16,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 18,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 22,
+                    "edgeLabel": "dy \u003c 0"
+                }
+            ]
+        },
+        {
+            "testPathId": 4,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "1 finger"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 16,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 18,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 23,
+                    "edgeLabel": "dy \u003e 0"
+                }
+            ]
+        },
+        {
+            "testPathId": 5,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "1 finger"
+                },
+                {
+                    "edgeId": 14,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 16,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 19,
+                    "edgeLabel": "no (tap)"
+                }
+            ]
+        },
+        {
+            "testPathId": 6,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "2 fingers"
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "yes"
+                }
+            ]
+        },
+        {
+            "testPathId": 7,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "1 finger"
+                },
+                {
+                    "edgeId": 15,
+                    "edgeLabel": "yes"
+                }
+            ]
+        },
+        {
+            "testPathId": 8,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 4,
+                    "edgeLabel": "yes (touchcancel or cancelled)"
+                }
+            ]
+        },
+        {
+            "testPathId": 9,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 6,
+                    "edgeLabel": "no (wait for next touchend)"
+                }
+            ]
+        },
+        {
+            "testPathId": 10,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 8,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 11,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 11,
+                    "edgeLabel": "3 or more fingers"
+                }
+            ]
+        },
+        {
+            "testPathId": 12,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "no (normal touchend)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "2 fingers"
+                },
+                {
+                    "edgeId": 13,
+                    "edgeLabel": "no"
+                }
+            ]
+        }
+    ]
+}

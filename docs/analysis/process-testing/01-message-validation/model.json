@@ -1,0 +1,703 @@
+{
+    "graphId": null,
+    "name": "Frank CP1 - WebSocket client frame: validate and dispatch",
+    "description": "The server checks incoming WebSocket messages and validates MOVE or SETTINGS data. A valid message is passed to its handler; an invalid message causes the client connection to be rejected.",
+    "publishStatus": null,
+    "folderId": null,
+    "ownerId": null,
+    "readUsersIds": [],
+    "categories": [],
+    "start": {
+        "innerId": 1,
+        "description": "",
+        "name": "Start",
+        "x": -55,
+        "y": -250,
+        "categories": [],
+        "attributes": [],
+        "viewModifier": {
+            "priority": 1,
+            "nodeSize": "default",
+            "nodeFillColor": "default",
+            "nodeOutlineColor": "default",
+            "edgeColor": "default",
+            "label": "The server receives a WebSocket message from a client."
+        }
+    },
+    "nodes": [
+        {
+            "innerId": 2,
+            "description": "",
+            "name": "CONNECTED",
+            "x": -35,
+            "y": -90,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is the connection still open?"
+            }
+        },
+        {
+            "innerId": 3,
+            "description": "",
+            "name": "PARSE",
+            "x": 75,
+            "y": 80,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is this a text frame with valid JSON?"
+            }
+        },
+        {
+            "innerId": 4,
+            "description": "",
+            "name": "OBJECT",
+            "x": 400,
+            "y": 80,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is the JSON value an object?"
+            }
+        },
+        {
+            "innerId": 5,
+            "description": "",
+            "name": "TYPE",
+            "x": 710,
+            "y": 80,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "What message type is it?"
+            }
+        },
+        {
+            "innerId": 6,
+            "description": "",
+            "name": "ENVELOPE",
+            "x": 1100,
+            "y": 80,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Are the only top-level keys type and clearData?"
+            }
+        },
+        {
+            "innerId": 7,
+            "description": "",
+            "name": "SET_KEYS",
+            "x": 1100,
+            "y": 870,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Does clearData contain exactly six required setting keys?"
+            }
+        },
+        {
+            "innerId": 8,
+            "description": "",
+            "name": "SET_VALUES",
+            "x": 1100,
+            "y": 1130,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Are setting values valid (types, ranges and options)?"
+            }
+        },
+        {
+            "innerId": 9,
+            "description": "",
+            "name": "SETTINGS",
+            "x": 1090,
+            "y": 1420,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Pass settings to handleSettings"
+            }
+        },
+        {
+            "innerId": 10,
+            "description": "",
+            "name": "MOVE_DATA",
+            "x": 700,
+            "y": 380,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is the MOVE data an object?"
+            }
+        },
+        {
+            "innerId": 11,
+            "description": "",
+            "name": "DIRECTION",
+            "x": 700,
+            "y": 650,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is the move direction valid?"
+            }
+        },
+        {
+            "innerId": 12,
+            "description": "",
+            "name": "GAME_ID",
+            "x": 690,
+            "y": 1110,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is gameId an integer?"
+            }
+        },
+        {
+            "innerId": 13,
+            "description": "",
+            "name": "MOVE",
+            "x": 690,
+            "y": 1420,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Pass move to handleMove"
+            }
+        },
+        {
+            "innerId": 14,
+            "description": "",
+            "name": "REJECT",
+            "x": 60,
+            "y": 660,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Remove the client and close the connection"
+            }
+        },
+        {
+            "innerId": 15,
+            "description": "",
+            "name": "IGNORED",
+            "x": -145,
+            "y": 80,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Ignore message on closed connection"
+            }
+        },
+        {
+            "innerId": 16,
+            "description": "",
+            "name": "CLOSED",
+            "x": 50,
+            "y": 1390,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Invalid message rejected"
+            }
+        },
+        {
+            "innerId": 17,
+            "description": "",
+            "name": "SET_OBJECT",
+            "x": 1100,
+            "y": 330,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "Is clearData a non-array object?"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "innerId": 1,
+            "description": "",
+            "source": 1,
+            "target": 2,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": null
+            }
+        },
+        {
+            "innerId": 2,
+            "description": "",
+            "source": 2,
+            "target": 15,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 3,
+            "description": "",
+            "source": 2,
+            "target": 3,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 4,
+            "description": "",
+            "source": 3,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 5,
+            "description": "",
+            "source": 3,
+            "target": 4,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 6,
+            "description": "",
+            "source": 4,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 7,
+            "description": "",
+            "source": 4,
+            "target": 5,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 8,
+            "description": "",
+            "source": 5,
+            "target": 6,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "SETTINGS"
+            }
+        },
+        {
+            "innerId": 9,
+            "description": "",
+            "source": 5,
+            "target": 10,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "MOVE"
+            }
+        },
+        {
+            "innerId": 10,
+            "description": "",
+            "source": 5,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "other message type"
+            }
+        },
+        {
+            "innerId": 11,
+            "description": "",
+            "source": 6,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 12,
+            "description": "",
+            "source": 6,
+            "target": 17,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 13,
+            "description": "",
+            "source": 7,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 14,
+            "description": "",
+            "source": 7,
+            "target": 8,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 15,
+            "description": "",
+            "source": 8,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 16,
+            "description": "",
+            "source": 8,
+            "target": 9,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 17,
+            "description": "",
+            "source": 10,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 18,
+            "description": "",
+            "source": 10,
+            "target": 11,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 19,
+            "description": "",
+            "source": 11,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 20,
+            "description": "",
+            "source": 11,
+            "target": 12,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 21,
+            "description": "",
+            "source": 12,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 22,
+            "description": "",
+            "source": 12,
+            "target": 13,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        },
+        {
+            "innerId": 23,
+            "description": "",
+            "source": 14,
+            "target": 16,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": null
+            }
+        },
+        {
+            "innerId": 24,
+            "description": "",
+            "source": 17,
+            "target": 14,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "no"
+            }
+        },
+        {
+            "innerId": 25,
+            "description": "",
+            "source": 17,
+            "target": 7,
+            "categories": [],
+            "attributes": [],
+            "viewModifier": {
+                "priority": 1,
+                "nodeSize": "default",
+                "nodeFillColor": "default",
+                "nodeOutlineColor": "default",
+                "edgeColor": "default",
+                "label": "yes"
+            }
+        }
+    ]
+}

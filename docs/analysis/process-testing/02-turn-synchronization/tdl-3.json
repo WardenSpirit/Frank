@@ -1,0 +1,231 @@
+{
+    "testSetName": "TDL 3",
+    "graphName": "Frank CP1 - Server turn: collect moves, disconnect and resolve",
+    "algorithmType": "PCT",
+    "tdl": 3,
+    "reduction": false,
+    "showNodes": false,
+    "testPaths": [
+        {
+            "testPathId": 1,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2,
+                    "edgeLabel": "handleMove (validated MOVE)"
+                },
+                {
+                    "edgeId": 4,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 2,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2,
+                    "edgeLabel": "handleMove (validated MOVE)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 6,
+                    "edgeLabel": "yes"
+                }
+            ]
+        },
+        {
+            "testPathId": 3,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "eliminateWebSocket (close, error or rejection)"
+                },
+                {
+                    "edgeId": 9,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 4,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "eliminateWebSocket (close, error or rejection)"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 11
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 5,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2,
+                    "edgeLabel": "handleMove (validated MOVE)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 8
+                },
+                {
+                    "edgeId": 12,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 6,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2,
+                    "edgeLabel": "handleMove (validated MOVE)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 8
+                },
+                {
+                    "edgeId": 13,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 14
+                },
+                {
+                    "edgeId": 15
+                },
+                {
+                    "edgeId": 16
+                },
+                {
+                    "edgeId": 17,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 7,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 3,
+                    "edgeLabel": "eliminateWebSocket (close, error or rejection)"
+                },
+                {
+                    "edgeId": 10,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 11
+                },
+                {
+                    "edgeId": 13,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 14
+                },
+                {
+                    "edgeId": 15
+                },
+                {
+                    "edgeId": 16
+                },
+                {
+                    "edgeId": 17,
+                    "edgeLabel": "no"
+                }
+            ]
+        },
+        {
+            "testPathId": 8,
+            "values": [
+                {
+                    "edgeId": 1
+                },
+                {
+                    "edgeId": 2,
+                    "edgeLabel": "handleMove (validated MOVE)"
+                },
+                {
+                    "edgeId": 5,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 7,
+                    "edgeLabel": "no"
+                },
+                {
+                    "edgeId": 8
+                },
+                {
+                    "edgeId": 13,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 14
+                },
+                {
+                    "edgeId": 15
+                },
+                {
+                    "edgeId": 16
+                },
+                {
+                    "edgeId": 18,
+                    "edgeLabel": "yes"
+                },
+                {
+                    "edgeId": 19
+                }
+            ]
+        }
+    ]
+}
