@@ -50,6 +50,28 @@ Unlike `LISTEN_HOST=0.0.0.0 npm start`, the PowerShell and cmd variants keep the
 
 Other devices then open `http://<LAN IPv4 address of the computer>:3000/`. `hostname -I` or `ip -4 addr` shows the address on Linux, `ipconfig` on Windows. The computer's firewall (for example ufw or Windows Defender Firewall) or client isolation on public Wi-Fi may still block the connection.
 
+#### Windows Firewall configuration
+
+If other devices still cannot connect, check the Windows network profile and firewall settings:
+
+1. **Set the network profile to Private:**
+    - Open `Settings`.
+    - Go to `Network & Internet` → `Wi-Fi`.
+    - Click the currently connected Wi-Fi network.
+    - Under `Network profile`, select `Private`.
+   
+
+2. **Allow incoming connections through Windows Firewall:**
+    - Press `Win + R`, enter `wf.msc`, and press `Enter`.
+    - Open `Inbound Rules` in the left tab and click `New Rule...` on the right (under the `Action` tab).
+    - Select `Port` and click `Next`.
+    - Select `TCP` and enter the port used by the server (e.g. `3000`).
+    - Select `Allow the connection`.
+    - Check `Private` and click `Next`.
+    - Give the rule a descriptive name (e.g. `Frank Development Server 3000`) and finish the config.
+
+Only enable the rule for the `Private` network profile, and only on networks you trust.
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development, testing, issue, and merge request guidelines.
 
@@ -135,6 +157,28 @@ set "LISTEN_HOST=0.0.0.0" && npm start
 Na rozdíl od `LISTEN_HOST=0.0.0.0 npm start` zůstane proměnná ve variantě pro PowerShell i pro cmd nastavená po zbytek relace terminálu, takže každé další `npm start` ve stejném okně server opět zpřístupní. Po skončení ji smazat: v PowerShellu `Remove-Item Env:LISTEN_HOST`, v cmd `set "LISTEN_HOST="` (v uvozovkách, aby v hodnotě nezůstala mezera na konci).
 
 Jiná zařízení pak otevřou `http://<IPv4 adresa počítače v LAN>:3000/`. Adresu ukáže `hostname -I` nebo `ip -4 addr` na Linuxu a `ipconfig` ve Windows. Připojení může i tak blokovat firewall počítače (např. ufw nebo Windows Defender Firewall) nebo izolace klientů na veřejné Wi-Fi.
+
+#### Nastavení Windows Firewallu
+
+Pokud se ostatní zařízení stále nemohou připojit, zkontroluj nastavení síťového profilu a firewallu ve Windows:
+
+1. **Nastavení síťového profilu na privátní (soukromou) síť:**
+    - Otevři `Nastavení`.
+    - Přejdi do `Síť a internet` → `Wi-Fi`.
+    - Klikni na aktuálně připojenou Wi-Fi síť.
+    - V části `Profil sítě` vyber `Privátní`.
+
+
+2. **Povolení příchozích připojení ve Windows Firewallu:**
+    - Zmáčkni `Win + R`, zadej `wf.msc` a potvrď klávesou `Enter`.
+    - V levém panelu otevři `Příchozí pravidla` a v pravém panelu (v části `Akce`) klikni na `Nové pravidlo...`.
+    - Vyber `Port` a klikni na `Další`.
+    - Vyber `TCP` a zadej port (`Konkrétní místní porty)`, na kterém server běží (např. `3000`).
+    - Vyber `Povolit připojení`.
+    - Zaškrtni `Privátní` a klikni na `Další`.
+    - Pravidlo pojmenuj (např. `Frank Development Server 3000`) a stiskni `Dokončit`.
+
+Pravidlo povol pouze pro soukromý profil `Privátní`, a to jen v důvěryhodných sítích.
 
 ## Přispívání
 Pravidla vývoje, testování, práce s issues a merge requesty jsou v souboru [CONTRIBUTING.md](CONTRIBUTING.md).
