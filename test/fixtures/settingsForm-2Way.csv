@@ -1,0 +1,12 @@
+name,mapSize,holeRatio,actors,tiles,maxPlayers,timeLimit
+2way 01,5,0,cat,garden,5,60
+2way 02,5,33,snake,volcano,10,120
+2way 03,5,40,cat,volcano,1,5
+2way 04,14,0,snake,garden,10,5
+2way 05,14,33,cat,volcano,1,60
+2way 06,14,40,snake,garden,5,120
+2way 07,20,0,cat,volcano,1,120
+2way 08,20,33,snake,garden,5,5
+2way 09,20,40,cat,garden,10,60
+2way 10,14,33,snake,garden,1,60
+2way 11,20,40,cat,volcano,5,120

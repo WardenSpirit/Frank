@@ -30,7 +30,7 @@ Movement fixtures use `last` for the final coordinate on each axis of a map with
 | `onConnect` with the time limit | `timeLimit` 5, the default and 120 lasting exactly that long, a new game after the end of a game, after `SETTINGS` and after a timeout restarting the countdown, a turn finished a millisecond before the limit not restarting it, a timeout discarding the moves of the turn, a move for the game a timeout has ended, a player leaving with others staying and the last one leaving by closing the connection, by a rejected message or by an invalid frame, a departure that completes a turn ending the game restarting the countdown, a player connecting after a timeout, the whole time limit as the remaining time of a new game and the time that is left for a player connecting in the middle of a game | `websocket.test.js` |
 | `getListenHost` | `LISTEN_HOST` unset, empty and set to a custom value (`0.0.0.0`), `HOST` set while `LISTEN_HOST` is unset | `listenHost.test.js` |
 | `changeSettingValue` | Valid setting values, increments and decrements, boundary values and wraparound; every value it returns from a valid one passes `parseSettings` | `fixtures/settings-values.csv`, `settings.test.js` |
-| Settings form state and navigation | Default settings, opening and closing, highlight navigation and wraparound, submitting changed and unchanged settings, pending settings until a game comes, the form before the first game and after the connection closes, discarding unapplied edits, actions while closed, taking the settings of each game while the form is open and closed | `settings.test.js` |
+| Settings form state, navigation and combinations | Default settings, opening and closing, highlight navigation and wraparound, submitting changed and unchanged settings, pending settings until a game comes, the form before the first game and after the connection closes, discarding unapplied edits, actions while closed, taking the settings of each game while the form is open and closed; 2-way uniform, 3-way uniform and mixed-strength covering arrays of the six settings fields submitted through `submitSettingsForm` and validated by `parseSettings` | `fixtures/settingsForm-2Way.csv`, `fixtures/settingsForm-3Way.csv`, `fixtures/settingsForm-mixed.csv`, `settings.test.js`, `settings.combinatorial.test.js` |
 | Settings form controller | Enter while the form is closed, Apply with an open connection and without one | `controlsSettings.test.js` |
 | `applyMoves` of the client model | Whether the game goes on after a move onto a path, onto the treasure and into a hole, no moves, and moves after the treasure that it skips; the points and the bad filter after a move into a hole | `model.test.js` |
 | `updateGame` of the client model | A game without `timeout` and with `timeout: false` leaving the points and showing no filter, a timeout taking a point but not below 0 and showing the bad filter and the changed points like a step into a hole, the lost point staying lost in the next game | `model.test.js` |
@@ -268,7 +268,7 @@ All 24 boundary-value rows above represent 32 individual parametrized test cases
 
 ### Factors for combination testing
 
-The six fields are the factors of the settings that `submitSettingsForm()` returns and the client sends in `SETTINGS`. Each numeric factor has three levels: its lower bound, a representative interior value and its upper bound. The string factors have two levels, one for each allowed value. A full combination has 3⁴ × 2² = 324 cases, so a later combination test can use a covering array of these levels instead.
+The six fields are the factors of the settings that `submitSettingsForm()` returns and the client sends in `SETTINGS`. Each numeric factor has three levels: its lower bound, a representative interior value and its upper bound. The string factors have two levels, one for each allowed value. A full combination has 3⁴ × 2² = 324 cases, so the parametrized combination tests in `test/settings.combinatorial.test.js` use covering arrays of these levels instead.
 
 | Factor | Levels | Classes |
 |---|---|---|
@@ -278,6 +278,34 @@ The six fields are the factors of the settings that `submitSettingsForm()` retur
 | `tiles` | `"volcano"`, `"garden"` | EC5, EC6 |
 | `maxPlayers` | `1`, `5`, `10` | EC7 |
 | `timeLimit` | `5`, `60`, `120` | EC8 |
+
+Three covering arrays in `test/fixtures/` are tested with `parametrizedTest` in `test/settings.combinatorial.test.js`, verifying that every combination can be edited in the form, is returned by `submitSettingsForm()`, and passes `parseSettings()` validation:
+
+| Dataset | Cases | Coverage strength | Description |
+|---|---:|---|---|
+| `fixtures/settingsForm-2Way.csv` | 11 | 2-way uniform (`t = 2`) | Covers every pair of factor levels across all six settings fields. |
+| `fixtures/settingsForm-3Way.csv` | 33 | 3-way uniform (`t = 3`) | Covers every triple of factor levels across all six settings fields. |
+| `fixtures/settingsForm-mixed.csv` | 27 | Mixed-strength (`t = 2` base, `t = 3` for numeric factors) | Uses 2-way strength for `actors` and `tiles` and 3-way strength for `mapSize`, `holeRatio`, `maxPlayers` and `timeLimit`. |
+
+The tests stop at the settings and never pass a combination to `createGame()` or a game. `gameFactory.test.js` does that only for the four combinations of the bounds of `mapSize` and `holeRatio`.
+
+In the mixed-strength covering array, `actors` and `tiles` use 2-way interaction strength because they are two-level visual texture selectors that only determine which sprite sheets the client view loads and do not interact with game mechanics or numeric validation rules. The four numeric parameters (`mapSize`, `holeRatio`, `maxPlayers`, `timeLimit`) have three levels each (lower bound, interior value, upper bound). They are the settings the server turns into board dimensions, hole count, player capacity and round duration, so 3-way interaction strength is applied to them to cover all triplets of numeric boundary and interior values. The strength is chosen for the settings these parameters feed, not for an interaction `settings.combinatorial.test.js` could observe: `parseSettings()` validates each field on its own, so the tests can't find a defect that appears only for a certain pair or triplet of values, and they don't check the effect of the settings on the map or the game.
+
+### Verification of combinatorial coverage
+
+The three generated datasets were verified using the ACTS (Automated Combinatorial Testing for Software) tool.
+
+The verification produced the following results:
+
+| Dataset | Number of tests | Covered tuples | Coverage |
+|---|---:|---:|---:|
+| 2-way uniform | 11 | 106 | 100% |
+| 3-way uniform | 33 | 372 | 100% |
+| Mixed-strength | 27 | 112 (4 two-way and 108 three-way) | 100% |
+
+All three datasets achieved complete coverage of their required interactions. ACTS reported no uncovered tuples.
+
+The results confirm that the generated datasets satisfy their respective combinatorial coverage requirements while using substantially fewer test cases than exhaustive testing, which would require 324 combinations.
 
 ### Settings form state and navigation
 
